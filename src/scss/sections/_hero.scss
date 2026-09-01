@@ -366,19 +366,49 @@
 
 .hero-card__art--creative {
   margin-inline: calc(clamp(1rem, 2vw, 1.35rem) * -1);
-  background: repeating-radial-gradient(circle at 0 52%, transparent 0 1.18rem, rgba(9, 10, 13, 0.12) 1.23rem 1.29rem);
+  background: radial-gradient(
+    circle at 0 43%,
+    transparent 0 2.95rem,
+    rgba(9, 10, 13, 0.12) 2.95rem 3rem,
+    transparent 3rem 3.8rem,
+    rgba(9, 10, 13, 0.12) 3.8rem 3.85rem,
+    transparent 3.85rem 4.65rem,
+    rgba(9, 10, 13, 0.12) 4.65rem 4.7rem,
+    transparent 4.7rem 5.5rem,
+    rgba(9, 10, 13, 0.12) 5.5rem 5.55rem,
+    transparent 5.55rem 6.35rem,
+    rgba(9, 10, 13, 0.12) 6.35rem 6.4rem,
+    transparent 6.4rem
+  );
   background-position: left center;
   background-repeat: no-repeat;
-  background-size: 50% 100%;
+  background-size: 46% 100%;
 }
 
 .hero-card__art--creative::after {
   position: absolute;
-  top: 22%;
+  top: 20%;
   right: 0;
-  width: 43%;
-  height: 66%;
-  background: repeating-radial-gradient(circle at 100% 52%, transparent 0 0.68rem, rgba(9, 10, 13, 0.12) 0.73rem 0.79rem);
+  width: 41%;
+  height: 74%;
+  background: radial-gradient(
+    circle at 100% 53%,
+    transparent 0 2.15rem,
+    rgba(9, 10, 13, 0.12) 2.15rem 2.2rem,
+    transparent 2.2rem 2.7rem,
+    rgba(9, 10, 13, 0.12) 2.7rem 2.75rem,
+    transparent 2.75rem 3.25rem,
+    rgba(9, 10, 13, 0.12) 3.25rem 3.3rem,
+    transparent 3.3rem 3.8rem,
+    rgba(9, 10, 13, 0.12) 3.8rem 3.85rem,
+    transparent 3.85rem 4.35rem,
+    rgba(9, 10, 13, 0.12) 4.35rem 4.4rem,
+    transparent 4.4rem 4.9rem,
+    rgba(9, 10, 13, 0.12) 4.9rem 4.95rem,
+    transparent 4.95rem 5.45rem,
+    rgba(9, 10, 13, 0.12) 5.45rem 5.5rem,
+    transparent 5.5rem
+  );
   background-repeat: no-repeat;
   content: '';
 }
@@ -470,7 +500,7 @@
   min-height: 0;
   margin: 0;
   z-index: 0;
-  background-size: 50% 100%;
+  background-size: 46% 100%;
 }
 
 .hero-card--foam strong {

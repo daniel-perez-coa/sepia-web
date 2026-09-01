@@ -10,6 +10,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const menuButton = document.querySelector('[data-menu-toggle]');
 const navigation = document.querySelector('[data-navigation]');
 const header = document.querySelector('[data-header]');
+const pageViews = [...document.querySelectorAll('[data-page-view]')];
 
 const setMenuState = (isOpen) => {
   menuButton?.setAttribute('aria-expanded', String(isOpen));
@@ -35,9 +36,41 @@ window.matchMedia('(min-width: 52rem)').addEventListener('change', (event) => {
   if (event.matches) setMenuState(false);
 });
 
-const syncHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+let activeViewIndex = 0;
+let isAutoSnapping = false;
+let autoSnapTimer;
+
+const getViewIndex = () => {
+  const viewportMarker = window.scrollY + window.innerHeight * 0.5;
+  return pageViews.reduce(
+    (activeIndex, view, index) => (view.offsetTop <= viewportMarker ? index : activeIndex),
+    0,
+  );
+};
+
+const syncHeader = () => {
+  const nextViewIndex = getViewIndex();
+  header?.classList.toggle('is-scrolled', window.scrollY > 24 && nextViewIndex === 0);
+  header?.classList.toggle('is-section-view', nextViewIndex > 0);
+
+  if (isAutoSnapping || nextViewIndex === activeViewIndex) return;
+
+  activeViewIndex = nextViewIndex;
+  isAutoSnapping = true;
+  pageViews[activeViewIndex]?.scrollIntoView({
+    behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    block: 'start',
+  });
+  window.clearTimeout(autoSnapTimer);
+  autoSnapTimer = window.setTimeout(() => {
+    isAutoSnapping = false;
+  }, prefersReducedMotion ? 80 : 850);
+};
+
+activeViewIndex = getViewIndex();
 syncHeader();
 window.addEventListener('scroll', syncHeader, { passive: true });
+window.addEventListener('resize', syncHeader, { passive: true });
 
 const typewriter = document.querySelector('[data-typewriter]');
 

@@ -24,6 +24,10 @@
 .hero {
   position: relative;
   overflow: hidden;
+  min-height: 100svh;
+  height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   padding-top: var(--header-height);
   background:
     linear-gradient(rgba(244, 240, 232, 0.035) 0.0625rem, transparent 0.0625rem),
@@ -116,7 +120,8 @@
   position: relative;
   display: grid;
   overflow: hidden;
-  min-height: 38rem;
+  min-height: 0;
+  height: calc(100svh - var(--header-height) - 2.5rem);
   place-items: center;
   background-color: var(--color-primary);
   isolation: isolate;
@@ -658,6 +663,10 @@
 }
 
 @media (max-width: 51.99rem) {
+  .hero {
+    height: auto;
+  }
+
   .hero__grid {
     min-height: auto;
     grid-template-columns: 1fr;
@@ -677,6 +686,7 @@
   }
 
   .hero__visual {
+    height: auto;
     min-height: 34rem;
   }
 }

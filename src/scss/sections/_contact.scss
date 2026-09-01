@@ -3,6 +3,9 @@
 .contact {
   position: relative;
   overflow: hidden;
+  min-height: calc(100svh - 9rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   background: var(--color-primary);
   color: var(--color-bg);
   isolation: isolate;
@@ -92,6 +95,14 @@
 .social-list > a:hover {
   transform: translateX(0.25rem);
   background: #16171c;
+}
+
+@media (min-width: 60.01rem) {
+  .contact {
+    height: calc(100svh - 9rem);
+    min-height: calc(100svh - 9rem);
+    padding-block: 3rem;
+  }
 }
 
 .social-list .meta {

@@ -1,6 +1,9 @@
 .catalog {
   position: relative;
   overflow: hidden;
+  min-height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   background-color: #f7f3eb;
   background-image:
     linear-gradient(rgba(9, 10, 13, 0.04) 1px, transparent 1px),

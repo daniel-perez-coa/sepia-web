@@ -14,6 +14,44 @@
     backdrop-filter var(--transition);
 }
 
+.site-header__signal {
+  display: none;
+}
+
+.site-header.is-section-view {
+  height: 2.25rem;
+  border-bottom: 0;
+  background: var(--color-fresh);
+  color: var(--color-ink);
+  backdrop-filter: none;
+}
+
+.site-header.is-section-view .brand,
+.site-header.is-section-view .site-nav,
+.site-header.is-section-view .menu-toggle {
+  display: none;
+}
+
+.site-header.is-section-view .site-header__signal {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.site-header.is-section-view .site-header__signal span {
+  flex: 0 0 auto;
+}
+
 .site-header.is-scrolled {
   border-color: rgba(244, 240, 232, 0.1);
   background: rgba(9, 10, 13, 0.88);

@@ -3,6 +3,7 @@
 .site-footer {
   position: relative;
   overflow: hidden;
+  min-height: 9rem;
   background: var(--color-ink);
   color: var(--color-bg);
   isolation: isolate;

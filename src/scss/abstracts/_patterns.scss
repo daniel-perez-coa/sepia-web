@@ -1,0 +1,30 @@
+@mixin curves($color, $width: 7.25rem, $height: 6rem) {
+  background-image: radial-gradient(
+    circle at 100% 50%,
+    transparent 0 1.5rem,
+    $color 1.56rem 1.88rem,
+    transparent 1.94rem
+  );
+  background-size: $width $height;
+}
+
+@mixin bars($color, $bar-width: 3.75rem, $gap: 1.25rem) {
+  background-image: repeating-linear-gradient(
+    90deg,
+    $color 0 $bar-width,
+    transparent $bar-width calc($bar-width + $gap)
+  );
+}
+
+@mixin dots($color, $cell-size: 3.75rem, $dot-size: 0.42rem) {
+  background-image: radial-gradient(circle, $color 0 $dot-size, transparent calc($dot-size + 0.0625rem));
+  background-size: $cell-size $cell-size;
+}
+
+@mixin diagonals($color, $stripe-width: 1.15rem, $gap: 0.75rem) {
+  background-image: repeating-linear-gradient(
+    112deg,
+    $color 0 $stripe-width,
+    transparent $stripe-width calc($stripe-width + $gap)
+  );
+}

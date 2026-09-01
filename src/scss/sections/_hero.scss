@@ -1,3 +1,5 @@
+@use '../abstracts/patterns';
+
 @keyframes rise-in {
   from {
     transform: translateY(1.5rem);
@@ -91,8 +93,9 @@
   overflow: hidden;
   min-height: 38rem;
   place-items: center;
-  background: var(--color-primary) url('/assets/pattern-cobalt.jpg') center / cover;
+  background-color: var(--color-primary);
   isolation: isolate;
+  @include patterns.curves(rgba(244, 240, 232, 0.16));
 }
 
 .hero__visual::after {

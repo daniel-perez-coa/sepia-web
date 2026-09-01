@@ -1,9 +1,24 @@
+@use '../abstracts/patterns';
+
 .capabilities {
+  position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(rgba(9, 10, 13, 0.72), rgba(9, 10, 13, 0.92)),
-    url('/assets/pattern-abyss.jpg') center / cover;
+  background: var(--color-ink);
   color: var(--color-bg);
+  isolation: isolate;
+}
+
+.capabilities::before {
+  position: absolute;
+  z-index: -1;
+  top: clamp(3rem, 7vw, 6rem);
+  right: -3rem;
+  width: min(50vw, 44rem);
+  height: 3.75rem;
+  transform: rotate(-2deg);
+  content: '';
+  opacity: 0.65;
+  @include patterns.bars(rgba(47, 224, 183, 0.2));
 }
 
 .capabilities__header {

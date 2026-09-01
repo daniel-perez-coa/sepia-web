@@ -10,17 +10,6 @@
   }
 }
 
-@keyframes drift {
-  0%,
-  100% {
-    transform: rotate(-5deg) translateY(0);
-  }
-
-  50% {
-    transform: rotate(-3deg) translateY(-0.5rem);
-  }
-}
-
 @keyframes fragment-float {
   from {
     transform: translate3d(0, 0, 0) rotate(var(--fragment-rotation, 0deg));
@@ -165,6 +154,19 @@
   color: #f3f0ea;
   opacity: 0.2;
   animation: fragment-float var(--fragment-duration, 18s) ease-in-out infinite alternate;
+  animation-delay: var(--fragment-delay, -6s);
+}
+
+.hero-fragment:nth-child(3n + 1) {
+  --fragment-delay: -4s;
+}
+
+.hero-fragment:nth-child(3n + 2) {
+  --fragment-delay: -11s;
+}
+
+.hero-fragment:nth-child(3n) {
+  --fragment-delay: -17s;
 }
 
 .hero-fragment--curve {
@@ -309,44 +311,131 @@
   position: absolute;
   z-index: 1;
   display: flex;
-  width: clamp(10rem, 16vw, 13.5rem);
-  aspect-ratio: 0.76;
+  overflow: hidden;
+  width: clamp(11rem, 17vw, 14.5rem);
+  aspect-ratio: 0.72;
   flex-direction: column;
-  justify-content: flex-end;
   padding: clamp(1rem, 2vw, 1.35rem);
   border: 0.0625rem solid rgba(9, 10, 13, 0.12);
-  border-radius: 0.25rem;
-  box-shadow: var(--shadow-card);
+  border-radius: 0.75rem;
+  box-shadow: 0 1.5rem 3.5rem rgba(9, 10, 13, 0.25);
   color: var(--color-ink);
 }
 
+.hero-card__top,
+.hero-card__footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.38rem, 0.62vw, 0.5rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.hero-card__art {
+  position: relative;
+  min-height: clamp(4.25rem, 8vw, 6.5rem);
+  flex: 1;
+  margin-block: 0.7rem 0.35rem;
+}
+
+.hero-card__art--strategy span:first-child {
+  position: absolute;
+  top: 12%;
+  left: 0;
+  width: 68%;
+  height: 70%;
+  background: repeating-linear-gradient(0deg, currentColor 0 0.0625rem, transparent 0.0625rem 0.62rem);
+  opacity: 0.42;
+}
+
+.hero-card__art--strategy span:last-child {
+  position: absolute;
+  top: 4%;
+  right: 0;
+  width: 29%;
+  height: 78%;
+  background: radial-gradient(circle, currentColor 0 0.12rem, transparent 0.15rem);
+  background-size: 0.78rem 0.78rem;
+  opacity: 0.85;
+}
+
+.hero-card__art--creative {
+  margin-inline: calc(clamp(1rem, 2vw, 1.35rem) * -1);
+  background:
+    repeating-radial-gradient(circle at 0 60%, transparent 0 1.05rem, rgba(9, 10, 13, 0.12) 1.1rem 1.16rem),
+    repeating-radial-gradient(circle at 100% 60%, transparent 0 1.05rem, rgba(9, 10, 13, 0.12) 1.1rem 1.16rem);
+}
+
+.hero-card__art--innovation::before {
+  position: absolute;
+  top: 5%;
+  left: 3%;
+  width: 3.7rem;
+  height: 1.35rem;
+  background: repeating-linear-gradient(125deg, currentColor 0 0.22rem, transparent 0.22rem 0.48rem);
+  content: '';
+  opacity: 0.32;
+}
+
+.hero-card__art--innovation::after {
+  position: absolute;
+  right: 3%;
+  bottom: 8%;
+  width: 72%;
+  height: 58%;
+  border-top: 0.0625rem dashed currentColor;
+  border-bottom: 0.0625rem dashed currentColor;
+  border-radius: 50%;
+  content: '';
+  opacity: 0.5;
+  transform: rotate(8deg);
+}
+
 .hero-card strong {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-size: clamp(1.35rem, 2.5vw, 2.15rem);
   letter-spacing: -0.055em;
   line-height: 0.9;
+}
+
+.hero-card__footer {
+  margin-top: 0.8rem;
+  padding-top: 0.55rem;
+  border-top: 0.0625rem solid currentColor;
+}
+
+.hero-card__footer span:last-child:not(:first-child) {
+  font-size: 1rem;
+  line-height: 0.5;
 }
 
 .hero-card--coral {
   top: 7%;
   left: 7%;
-  transform: rotate(-6deg);
-  background: #ff6240;
+  transform: rotate(-5deg);
+  background: linear-gradient(145deg, #ff4a24, #ff6240 70%);
   color: var(--color-bg);
 }
 
 .hero-card--foam {
   top: 31%;
   right: 6%;
-  transform: rotate(5deg);
-  background: #f3f0ea;
+  transform: rotate(4deg);
+  background: linear-gradient(145deg, #f8f5ef, #f3f0ea);
 }
 
 .hero-card--mint {
   bottom: 5%;
   left: 18%;
-  background: #14d7b5;
-  animation: drift 6s ease-in-out infinite;
+  transform: rotate(-4deg);
+  background: linear-gradient(145deg, #18debd, #14d7b5 72%);
 }
 
 .signal-bar {
@@ -409,7 +498,26 @@
   }
 
   .hero-card {
-    width: 8.75rem;
+    width: 9.25rem;
+    padding: 0.8rem;
+  }
+
+  .hero-card__art {
+    min-height: 3.25rem;
+    margin-block: 0.4rem 0.2rem;
+  }
+
+  .hero-card__art--creative {
+    margin-inline: -0.8rem;
+  }
+
+  .hero-card strong {
+    font-size: 1.15rem;
+  }
+
+  .hero-card__footer {
+    margin-top: 0.45rem;
+    padding-top: 0.35rem;
   }
 
   .hero-card--coral {

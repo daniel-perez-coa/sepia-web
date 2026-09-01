@@ -308,6 +308,8 @@
 }
 
 .hero-card {
+  --card-pad: clamp(1.05rem, 2.15vw, 1.45rem);
+
   position: absolute;
   z-index: 1;
   display: flex;
@@ -315,7 +317,7 @@
   width: clamp(11rem, 17vw, 14.5rem);
   aspect-ratio: 0.75;
   flex-direction: column;
-  padding: clamp(1.05rem, 2.15vw, 1.45rem);
+  padding: var(--card-pad);
   border: 0.0625rem solid rgba(9, 10, 13, 0.12);
   border-radius: 0.75rem;
   box-shadow: 0 1.5rem 3.5rem rgba(9, 10, 13, 0.25);
@@ -413,10 +415,14 @@
   content: '';
 }
 
-.hero-card__art--innovation::before {
+.innovation-mark {
   position: absolute;
-  top: 5%;
-  left: 3%;
+  display: block;
+}
+
+.innovation-mark--stripes {
+  top: 6%;
+  left: 8%;
   width: 3.7rem;
   height: 1.35rem;
   background: linear-gradient(
@@ -429,28 +435,59 @@
     currentColor 61% 73%,
     transparent 73%
   );
-  content: '';
   opacity: 0.32;
 }
 
-.hero-card__art--innovation::after {
-  position: absolute;
-  right: 3%;
-  bottom: 8%;
-  width: 72%;
-  height: 58%;
+.innovation-mark--path {
+  height: 2.4rem;
   border-top: 0.0625rem dashed currentColor;
-  border-bottom: 0.0625rem dashed currentColor;
   border-radius: 50%;
-  content: '';
   opacity: 0.5;
-  transform: rotate(8deg);
 }
 
-.hero-card__art--innovation {
-  background:
-    radial-gradient(circle at 84% 24%, currentColor 0 0.1rem, transparent 0.13rem),
-    radial-gradient(circle at 84% 24%, transparent 0 0.78rem, currentColor 0.81rem 0.86rem, transparent 0.89rem);
+.innovation-mark--path::after {
+  position: absolute;
+  top: -0.31rem;
+  right: -0.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  content: '›';
+}
+
+.innovation-mark--path-top {
+  top: 31%;
+  left: 25%;
+  width: 59%;
+  transform: rotate(-5deg);
+}
+
+.innovation-mark--path-bottom {
+  top: 44%;
+  left: 24%;
+  width: 65%;
+  transform: rotate(5deg);
+}
+
+.innovation-mark--target {
+  top: 13%;
+  right: 10%;
+  width: 2rem;
+  aspect-ratio: 1;
+  border: 0.0625rem dashed currentColor;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.innovation-mark--target::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.52rem;
+  aspect-ratio: 1;
+  border: 0.0625rem solid currentColor;
+  border-radius: 50%;
+  content: '';
+  transform: translate(-50%, -50%);
 }
 
 .hero-card strong {
@@ -499,6 +536,25 @@
   color: var(--color-bg);
 }
 
+.hero-card--coral .hero-card__art--strategy {
+  position: absolute;
+  top: 3.15rem;
+  right: var(--card-pad);
+  left: var(--card-pad);
+  height: 6.15rem;
+  min-height: 0;
+  margin: 0;
+}
+
+.hero-card--coral .hero-card__art--strategy span {
+  top: 0;
+  height: 100%;
+}
+
+.hero-card--coral strong {
+  margin-top: auto;
+}
+
 .hero-card--foam {
   top: 31%;
   right: 6%;
@@ -542,6 +598,7 @@
 
 .hero-card--mint strong {
   margin-top: auto;
+  font-size: clamp(1.45rem, 2.6vw, 2.3rem);
 }
 
 .signal-bar {

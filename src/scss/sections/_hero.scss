@@ -419,7 +419,16 @@
   left: 3%;
   width: 3.7rem;
   height: 1.35rem;
-  background: repeating-linear-gradient(125deg, currentColor 0 0.22rem, transparent 0.22rem 0.48rem);
+  background: linear-gradient(
+    125deg,
+    transparent 0 11%,
+    currentColor 11% 23%,
+    transparent 23% 36%,
+    currentColor 36% 48%,
+    transparent 48% 61%,
+    currentColor 61% 73%,
+    transparent 73%
+  );
   content: '';
   opacity: 0.32;
 }
@@ -436,6 +445,12 @@
   content: '';
   opacity: 0.5;
   transform: rotate(8deg);
+}
+
+.hero-card__art--innovation {
+  background:
+    radial-gradient(circle at 84% 24%, currentColor 0 0.1rem, transparent 0.13rem),
+    radial-gradient(circle at 84% 24%, transparent 0 0.78rem, currentColor 0.81rem 0.86rem, transparent 0.89rem);
 }
 
 .hero-card strong {
@@ -512,6 +527,21 @@
   left: 18%;
   transform: rotate(-4deg);
   background: linear-gradient(145deg, #18debd, #14d7b5 72%);
+}
+
+.hero-card--mint .hero-card__art--innovation {
+  position: absolute;
+  top: 2.8rem;
+  right: 0;
+  bottom: 2.35rem;
+  left: 0;
+  min-height: 0;
+  margin: 0;
+  z-index: 0;
+}
+
+.hero-card--mint strong {
+  margin-top: auto;
 }
 
 .signal-bar {

@@ -313,9 +313,9 @@
   display: flex;
   overflow: hidden;
   width: clamp(11rem, 17vw, 14.5rem);
-  aspect-ratio: 0.72;
+  aspect-ratio: 0.75;
   flex-direction: column;
-  padding: clamp(1rem, 2vw, 1.35rem);
+  padding: clamp(1.05rem, 2.15vw, 1.45rem);
   border: 0.0625rem solid rgba(9, 10, 13, 0.12);
   border-radius: 0.75rem;
   box-shadow: 0 1.5rem 3.5rem rgba(9, 10, 13, 0.25);
@@ -348,8 +348,8 @@
   top: 12%;
   left: 0;
   width: 68%;
-  height: 70%;
-  background: repeating-linear-gradient(0deg, currentColor 0 0.0625rem, transparent 0.0625rem 0.62rem);
+  height: 66%;
+  background: repeating-linear-gradient(0deg, currentColor 0 0.0625rem, transparent 0.0625rem 0.58rem);
   opacity: 0.42;
 }
 
@@ -357,9 +357,9 @@
   position: absolute;
   top: 4%;
   right: 0;
-  width: 29%;
-  height: 78%;
-  background: radial-gradient(circle, currentColor 0 0.12rem, transparent 0.15rem);
+  width: 28%;
+  height: 74%;
+  background: radial-gradient(circle, currentColor 0 0.1rem, transparent 0.14rem);
   background-size: 0.78rem 0.78rem;
   opacity: 0.85;
 }
@@ -400,18 +400,30 @@
   position: relative;
   z-index: 1;
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.5vw, 2.15rem);
+  font-size: clamp(1.5rem, 2.8vw, 2.45rem);
   letter-spacing: -0.055em;
   line-height: 0.9;
 }
 
 .hero-card__footer {
+  position: relative;
+  display: block;
   margin-top: 0.8rem;
   padding-top: 0.55rem;
   border-top: 0.0625rem solid currentColor;
 }
 
+.hero-card__footer span:first-child {
+  display: block;
+  padding-right: 1.4rem;
+}
+
 .hero-card__footer span:last-child:not(:first-child) {
+  position: absolute;
+  top: -0.26rem;
+  right: 0;
+  padding-inline: 0.2rem;
+  background: inherit;
   font-size: 1rem;
   line-height: 0.5;
 }
@@ -518,6 +530,10 @@
   .hero-card__footer {
     margin-top: 0.45rem;
     padding-top: 0.35rem;
+  }
+
+  .hero-card__footer span:last-child:not(:first-child) {
+    top: -0.2rem;
   }
 
   .hero-card--coral {

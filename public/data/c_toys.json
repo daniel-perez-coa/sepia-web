@@ -1,0 +1,77 @@
+{
+  "autoplayMs": 6500,
+  "destacados": [
+    {
+      "id": "shift-crew-01",
+      "Titulo1": "Colección [bold]destacada[/bold]",
+      "Titulo1adj": {
+        "horizontal": "left",
+        "vertical": "top",
+        "textAlign": "left",
+        "justify": "start",
+        "boxed": true,
+        "rounded": "pill"
+      },
+      "Photo": "/resources/series-zoo-scene.png",
+      "Titulo2": "SHIFT\nCREW [color=#91A4FF;opacity=0.62]01[/color]",
+      "Titulo2adj": {
+        "horizontal": "left",
+        "vertical": "center",
+        "textAlign": "left",
+        "justify": "start"
+      },
+      "text": "Serie de figuras modulares inspiradas en el movimiento y la transformación.",
+      "Line": "yes",
+      "LinkText": "Ver colección →",
+      "LinkUrl": "#productos"
+    },
+    {
+      "id": "ghost-drop-01",
+      "Titulo1": "Drop [bold]de temporada[/bold]",
+      "Titulo1adj": {
+        "horizontal": "right",
+        "vertical": "top",
+        "textAlign": "right",
+        "justify": "end",
+        "boxed": true,
+        "rounded": "soft"
+      },
+      "Photo": "/resources/drop-ghost-night.png",
+      "Titulo2": "GHOST [color=#B8FF72;opacity=0.9]NIGHT[/color]",
+      "Titulo2adj": {
+        "horizontal": "left",
+        "vertical": "center",
+        "textAlign": "left",
+        "justify": "start"
+      },
+      "text": "Una cápsula nocturna de figuras impresas en 3D y piezas translúcidas.",
+      "Line": "yes",
+      "LinkText": "Descubrir drop →",
+      "LinkUrl": "#productos"
+    },
+    {
+      "id": "ghost-capsule-02",
+      "Titulo1": "Serie [bold]de estudio[/bold]",
+      "Titulo1adj": {
+        "horizontal": "center",
+        "vertical": "top",
+        "textAlign": "center",
+        "justify": "center",
+        "boxed": true,
+        "rounded": "pill"
+      },
+      "Photo": "/resources/series-ghost-studio.png",
+      "Titulo2": "CAPSULE [color=#2FE0B7;opacity=1]02[/color]",
+      "Titulo2adj": {
+        "horizontal": "right",
+        "vertical": "center",
+        "textAlign": "right",
+        "justify": "end"
+      },
+      "text": "Objetos compactos, personajes mínimos y una cápsula lista para coleccionar.",
+      "Line": "no",
+      "LinkText": "Ver cápsula →",
+      "LinkUrl": "#productos"
+    }
+  ]
+}

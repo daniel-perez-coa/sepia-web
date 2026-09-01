@@ -1,6 +1,9 @@
+import { initCatalog } from './catalog.js';
 import { siteConfig } from './site-config.js';
 
 document.documentElement.classList.add('js');
+
+initCatalog();
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

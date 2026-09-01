@@ -1,0 +1,9 @@
+{
+  "tabs": [
+    { "id": "todos", "label": "TODOS", "Collection": "*" },
+    { "id": "shift-crew", "label": "SHIFT CREW", "Collection": "SHIFT CREW" },
+    { "id": "ghost", "label": "GHOST", "Collection": "GHOST" },
+    { "id": "zoo", "label": "ZOO", "Collection": "ZOO" },
+    { "id": "capsulas", "label": "CÁPSULAS", "Collection": "CÁPSULAS" }
+  ]
+}

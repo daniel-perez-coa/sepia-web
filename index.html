@@ -55,7 +55,7 @@
 
         <nav class="site-nav" id="site-navigation" aria-label="Navegación principal" data-navigation>
           <a href="#inicio">Inicio</a>
-          <a href="#nosotros">Nosotros</a>
+          <a href="#catalogo">Catálogo</a>
           <a href="#contacto">Contacto</a>
         </nav>
       </div>
@@ -76,7 +76,7 @@
             <p class="hero__summary">
               Diseñamos, experimentamos y hacemos que lo nuevo exista.
             </p>
-            <a class="button button--fresh" href="#nosotros">
+            <a class="button button--fresh" href="#catalogo">
               Explorar SEPIA
               <span aria-hidden="true">↘</span>
             </a>
@@ -159,47 +159,98 @@
         </div>
       </section>
 
-      <section class="brand-story section" id="nosotros" aria-labelledby="story-title">
+      <section class="catalog section" id="catalogo" aria-labelledby="catalog-title" data-catalog>
         <div class="container">
-          <header class="section-heading section-heading--split" data-reveal>
-            <div>
-              <p class="eyebrow eyebrow--primary">01 / QUIÉNES SOMOS</p>
-              <h2 id="story-title">Una forma de hacer.</h2>
-            </div>
-            <div class="section-heading__copy">
-              <p>
-                SEPIA es una plataforma de creación, producción y movimiento.
-                Nacimos desde casa en Puebla con mentalidad maker.
+          <div class="catalog__intro" data-reveal>
+            <div class="catalog__copy">
+              <p class="eyebrow eyebrow--primary">02 / LO QUE HACEMOS</p>
+              <h2 id="catalog-title">LO QUE<br />HACEMOS</h2>
+              <p class="catalog__category">FIGURAS / TOYS</p>
+              <p class="catalog__summary">
+                Diseñamos e imprimimos en 3D figuras y objetos coleccionables con identidad propia.
               </p>
-              <p>
-                La impresión 3D es una herramienta. Los objetos son el punto de
-                partida. La curiosidad es lo que nos permite seguir creciendo.
-              </p>
+              <a class="button button--fresh" href="#productos">Ver todas las figuras <span>↘</span></a>
             </div>
-          </header>
 
-          <div class="pillar-grid" data-stagger>
-            <article class="pillar-card pillar-card--ink" data-reveal>
-              <span class="meta">01 / MAKE</span>
-              <h3>Crear</h3>
-              <p>Idear, diseñar, modelar, prototipar y experimentar.</p>
-            </article>
-            <article class="pillar-card pillar-card--primary" data-reveal>
-              <span class="meta">02 / PRODUCE</span>
-              <h3>Producir</h3>
-              <p>Estandarizar, repetir y preparar una buena idea para escalar.</p>
-            </article>
-            <article class="pillar-card pillar-card--fresh" data-reveal>
-              <span class="meta">03 / MOVE</span>
-              <h3>Mover</h3>
-              <p>Colocar, distribuir y conectar cada objeto con su siguiente lugar.</p>
-            </article>
-            <article class="pillar-card pillar-card--ink" data-reveal>
-              <span class="meta">04 / SHIFT</span>
-              <h3>Cambiar</h3>
-              <p>Abrir categorías y lanzar propuestas que todavía no existen.</p>
+            <article class="featured-card" aria-label="Colección destacada" aria-live="polite" data-featured>
+              <img src="/resources/series-zoo-scene.png" alt="Figura azul de la colección Zoo" data-featured-photo />
+              <div class="featured-card__shade"></div>
+              <p class="featured-card__label meta" data-featured-title1>Colección <strong>destacada</strong></p>
+              <div class="featured-card__content" data-featured-content>
+                <h3 data-featured-title2>SHIFT<br />CREW <span>01</span></h3>
+                <p data-featured-text>Serie de figuras modulares inspiradas en el movimiento y la transformación.</p>
+                <a href="#productos" data-featured-link>Ver colección →</a>
+              </div>
+              <div class="featured-card__controls">
+                <button type="button" aria-label="Destacado anterior" data-featured-previous>←</button>
+                <div class="featured-card__dots" aria-label="Elegir colección destacada" data-featured-dots></div>
+                <button type="button" aria-label="Destacado siguiente" data-featured-next>→</button>
+              </div>
             </article>
           </div>
+
+          <div class="catalog-toolbar" id="productos" data-reveal>
+            <div class="catalog-tabs" role="tablist" aria-label="Filtrar catálogo" data-catalog-tabs>
+              <button class="is-active" type="button" role="tab" aria-selected="true">Todos</button>
+              <button type="button" role="tab" aria-selected="false">Series</button>
+              <button type="button" role="tab" aria-selected="false">Coleccionables</button>
+              <button type="button" role="tab" aria-selected="false">Nuevos</button>
+              <button type="button" role="tab" aria-selected="false">Best sellers</button>
+            </div>
+            <a href="#productos">Ver todos <span>→</span></a>
+          </div>
+
+          <div class="product-grid" data-product-grid data-reveal>
+            <article class="product-card">
+              <span class="product-card__label meta">NEW</span>
+              <img src="/assets/series-zoo-studio.png" alt="Familia de figuras Zoo en azul" />
+              <h3>ORBIT_01</h3>
+              <p>SHIFT CREW</p>
+              <small>Figura modular azul de edición inicial.</small>
+              <a href="#contacto" aria-label="Ver ORBIT 01">+</a>
+            </article>
+            <article class="product-card product-card--dark">
+              <span class="product-card__label meta">DROP_01</span>
+              <img src="/assets/drop-ghost-night.png" alt="Figuras Ghost en una escena nocturna" />
+              <h3>KUMA_BLACK</h3>
+              <p>GHOST</p>
+              <small>Pieza nocturna con acabado mate profundo.</small>
+              <a href="#contacto" aria-label="Ver KUMA BLACK">+</a>
+            </article>
+            <article class="product-card">
+              <span class="product-card__label meta">NEW</span>
+              <img src="/assets/series-ghost-studio.png" alt="Figuras Ghost en estudio" />
+              <h3>DINO_MATE</h3>
+              <p>CÁPSULAS</p>
+              <small>Compañero compacto para cápsulas de escritorio.</small>
+              <a href="#contacto" aria-label="Ver DINO MATE">+</a>
+            </article>
+            <article class="product-card product-card--dark">
+              <span class="product-card__label meta">SERIES</span>
+              <img src="/assets/series-zoo-scene.png" alt="Figura Zoo en una escena natural" />
+              <h3>BOO_12</h3>
+              <p>ZOO</p>
+              <small>Criatura articulada de la familia Zoo.</small>
+              <a href="#contacto" aria-label="Ver BOO 12">+</a>
+            </article>
+            <article class="product-card">
+              <span class="product-card__label meta">DROP_01</span>
+              <img src="/assets/series-ghost-studio.png" alt="Cápsula y figuras Ghost" />
+              <h3>CAPSULE_01</h3>
+              <p>CÁPSULAS</p>
+              <small>Dúo Ghost con cápsula translúcida.</small>
+              <a href="#contacto" aria-label="Ver CAPSULE 01">+</a>
+            </article>
+          </div>
+
+          <nav class="catalog-pagination" aria-label="Páginas del catálogo" data-catalog-pagination data-reveal>
+            <button type="button" aria-label="Página anterior">←</button>
+            <button class="is-active" type="button" aria-current="page">01</button>
+            <button type="button">02</button>
+            <button type="button">03</button>
+            <button type="button" aria-label="Página siguiente">→</button>
+          </nav>
+          <p class="catalog__status meta" role="status" aria-live="polite" data-catalog-status></p>
         </div>
       </section>
 

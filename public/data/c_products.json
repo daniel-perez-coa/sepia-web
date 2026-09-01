@@ -1,0 +1,100 @@
+{
+  "products": [
+    {
+      "label": "NEW",
+      "photo": "/resources/series-zoo-scene.png",
+      "title": "ORBIT_01",
+      "Collection": "SHIFT CREW",
+      "desc": "Figura modular azul de edición inicial.",
+      "link": "#contacto"
+    },
+    {
+      "label": "DROP_01",
+      "photo": "/resources/drop-ghost-night.png",
+      "title": "KUMA_BLACK",
+      "Collection": "GHOST",
+      "desc": "Pieza nocturna con acabado mate profundo.",
+      "link": "#contacto"
+    },
+    {
+      "label": "NEW",
+      "photo": "/resources/series-ghost-studio.png",
+      "title": "DINO_MATE",
+      "Collection": "CÁPSULAS",
+      "desc": "Compañero compacto para cápsulas de escritorio.",
+      "link": "#contacto"
+    },
+    {
+      "label": "SERIES",
+      "photo": "/resources/series-zoo-studio.png",
+      "title": "BOO_12",
+      "Collection": "ZOO",
+      "desc": "Criatura articulada de la familia Zoo.",
+      "link": "#contacto"
+    },
+    {
+      "label": "DROP_01",
+      "photo": "/resources/series-ghost-studio.png",
+      "title": "CAPSULE_01",
+      "Collection": "CÁPSULAS",
+      "desc": "Dúo Ghost con cápsula translúcida.",
+      "link": "#contacto"
+    },
+    {
+      "label": "NEW",
+      "photo": "/resources/series-zoo-studio.png",
+      "title": "MOSS_02",
+      "Collection": "ZOO",
+      "desc": "Figura azul con silueta orgánica y compacta.",
+      "link": "#contacto"
+    },
+    {
+      "label": "LIMITED",
+      "photo": "/resources/drop-ghost-night.png",
+      "title": "PHANTOM_03",
+      "Collection": "GHOST",
+      "desc": "Edición limitada inspirada en noches de octubre.",
+      "link": "#contacto"
+    },
+    {
+      "label": "SERIES",
+      "photo": "/resources/series-zoo-scene.png",
+      "title": "SHIFT_BLUE",
+      "Collection": "SHIFT CREW",
+      "desc": "Personaje central de la tripulación Shift.",
+      "link": "#contacto"
+    },
+    {
+      "label": "DROP_02",
+      "photo": "/resources/series-ghost-studio.png",
+      "title": "SPECTER_CAT",
+      "Collection": "GHOST",
+      "desc": "Gato fantasma con acabado blanco mineral.",
+      "link": "#contacto"
+    },
+    {
+      "label": "NEW",
+      "photo": "/resources/series-zoo-studio.png",
+      "title": "ZOO_TRIO",
+      "Collection": "ZOO",
+      "desc": "Set de tres criaturas para armar una familia.",
+      "link": "#contacto"
+    },
+    {
+      "label": "CAPSULE",
+      "photo": "/resources/series-ghost-studio.png",
+      "title": "CLEAR_DOME",
+      "Collection": "CÁPSULAS",
+      "desc": "Domo transparente con base intercambiable.",
+      "link": "#contacto"
+    },
+    {
+      "label": "SERIES",
+      "photo": "/resources/series-zoo-scene.png",
+      "title": "ORBIT_02",
+      "Collection": "SHIFT CREW",
+      "desc": "Segunda variación de la serie modular Orbit.",
+      "link": "#contacto"
+    }
+  ]
+}

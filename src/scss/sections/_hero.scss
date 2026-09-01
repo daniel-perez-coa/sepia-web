@@ -312,12 +312,12 @@
   z-index: 1;
   display: flex;
   overflow: hidden;
-  width: clamp(11rem, 17vw, 14.5rem);
+  width: min(31%, 13.5rem);
   aspect-ratio: 0.72;
   flex-direction: column;
   padding: clamp(1rem, 2vw, 1.35rem);
   border: 0.0625rem solid rgba(9, 10, 13, 0.12);
-  border-radius: 0.75rem;
+  border-radius: 1.15rem;
   box-shadow: 0 1.5rem 3.5rem rgba(9, 10, 13, 0.25);
   color: var(--color-ink);
 }
@@ -334,6 +334,7 @@
   font-size: clamp(0.38rem, 0.62vw, 0.5rem);
   font-weight: 600;
   letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
 .hero-card__art {
@@ -417,8 +418,8 @@
 }
 
 .hero-card--coral {
-  top: 7%;
-  left: 7%;
+  top: 28%;
+  left: 2%;
   transform: rotate(-5deg);
   background: linear-gradient(145deg, #ff4a24, #ff6240 70%);
   color: var(--color-bg);
@@ -426,14 +427,16 @@
 
 .hero-card--foam {
   top: 31%;
-  right: 6%;
+  left: 34.5%;
+  right: auto;
   transform: rotate(4deg);
   background: linear-gradient(145deg, #f8f5ef, #f3f0ea);
 }
 
 .hero-card--mint {
-  bottom: 5%;
-  left: 18%;
+  top: 28%;
+  left: 67%;
+  bottom: auto;
   transform: rotate(-4deg);
   background: linear-gradient(145deg, #18debd, #14d7b5 72%);
 }
@@ -464,7 +467,8 @@
   }
 
   .hero-card--foam {
-    right: 2%;
+    left: 34.5%;
+    right: auto;
   }
 }
 
@@ -528,10 +532,12 @@
   .hero-card--foam {
     top: 29%;
     right: 3%;
+    left: auto;
   }
 
   .hero-card--mint {
     bottom: 4%;
     left: 16%;
+    top: auto;
   }
 }

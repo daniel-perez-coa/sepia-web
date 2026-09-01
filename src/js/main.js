@@ -3,6 +3,8 @@ import { siteConfig } from './site-config.js';
 
 document.documentElement.classList.add('js');
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const menuButton = document.querySelector('[data-menu-toggle]');
 const navigation = document.querySelector('[data-navigation]');
 const header = document.querySelector('[data-header]');
@@ -34,6 +36,48 @@ window.matchMedia('(min-width: 52rem)').addEventListener('change', (event) => {
 const syncHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
 syncHeader();
 window.addEventListener('scroll', syncHeader, { passive: true });
+
+const typewriter = document.querySelector('[data-typewriter]');
+
+if (typewriter && !prefersReducedMotion) {
+  const messages = [
+    'HACEMOS\nLO QUE\nSIGUE.',
+    'LAS IDEAS\nSE HACEN COSAS.',
+    'EL FUTURO\nSE HACE AQUÍ.',
+  ];
+  const typeDelay = 58;
+  const deleteDelay = 28;
+  const holdDelay = 1100;
+  const resetDelay = 180;
+  let messageIndex = 0;
+  let characterIndex = 0;
+  let isDeleting = false;
+
+  const updateTypewriter = () => {
+    const characters = Array.from(messages[messageIndex]);
+
+    characterIndex += isDeleting ? -1 : 1;
+    typewriter.textContent = characters.slice(0, characterIndex).join('');
+
+    if (!isDeleting && characterIndex === characters.length) {
+      isDeleting = true;
+      window.setTimeout(updateTypewriter, holdDelay);
+      return;
+    }
+
+    if (isDeleting && characterIndex === 0) {
+      isDeleting = false;
+      messageIndex = (messageIndex + 1) % messages.length;
+      window.setTimeout(updateTypewriter, resetDelay);
+      return;
+    }
+
+    window.setTimeout(updateTypewriter, isDeleting ? deleteDelay : typeDelay);
+  };
+
+  typewriter.textContent = '';
+  window.setTimeout(updateTypewriter, 420);
+}
 
 const gallery = document.querySelector('[data-gallery]');
 
@@ -153,9 +197,7 @@ document.querySelectorAll('[data-current-year]').forEach((element) => {
 });
 
 const revealItems = document.querySelectorAll('[data-reveal]');
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if (!reduceMotion && 'IntersectionObserver' in window) {
+if (!prefersReducedMotion && 'IntersectionObserver' in window) {
   const revealObserver = new IntersectionObserver(
     (entries, observer) => {
       entries.forEach((entry) => {

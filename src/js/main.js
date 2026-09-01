@@ -42,13 +42,14 @@ const typewriter = document.querySelector('[data-typewriter]');
 if (typewriter && !prefersReducedMotion) {
   const messages = [
     'HACEMOS\nLO QUE\nSIGUE.',
-    'LAS IDEAS\nSE HACEN COSAS.',
-    'EL FUTURO\nSE HACE AQUÍ.',
+    'LAS IDEAS\nSE HACEN\nCOSAS.',
+    'EL FUTURO\nSE HACE\nAQUÍ.',
   ];
-  const typeDelay = 58;
-  const deleteDelay = 28;
-  const holdDelay = 1100;
-  const resetDelay = 180;
+  const typeDelay = 82;
+  const lineDelay = 240;
+  const deleteDelay = 45;
+  const holdDelay = 1900;
+  const resetDelay = 400;
   let messageIndex = 0;
   let characterIndex = 0;
   let isDeleting = false;
@@ -72,7 +73,9 @@ if (typewriter && !prefersReducedMotion) {
       return;
     }
 
-    window.setTimeout(updateTypewriter, isDeleting ? deleteDelay : typeDelay);
+    const typedCharacter = characters[characterIndex - 1];
+    const nextDelay = !isDeleting && typedCharacter === '\n' ? lineDelay : typeDelay;
+    window.setTimeout(updateTypewriter, isDeleting ? deleteDelay : nextDelay);
   };
 
   typewriter.textContent = '';

@@ -421,7 +421,7 @@
 }
 
 .innovation-mark--stripes {
-  top: 6%;
+  top: 9%;
   left: 8%;
   width: 3.7rem;
   height: 1.35rem;
@@ -439,9 +439,9 @@
 }
 
 .innovation-mark--path {
-  height: 2.4rem;
   border-top: 0.0625rem dashed currentColor;
-  border-radius: 50%;
+  border-left: 0.0625rem dashed currentColor;
+  border-radius: 100% 0 0;
   opacity: 0.5;
 }
 
@@ -455,21 +455,23 @@
 }
 
 .innovation-mark--path-top {
-  top: 31%;
+  top: 32%;
   left: 25%;
-  width: 59%;
-  transform: rotate(-5deg);
+  width: 63%;
+  height: 4.3rem;
+  transform: rotate(-2deg);
 }
 
 .innovation-mark--path-bottom {
-  top: 44%;
+  top: 46%;
   left: 24%;
   width: 65%;
-  transform: rotate(5deg);
+  height: 2.8rem;
+  transform: rotate(2deg);
 }
 
 .innovation-mark--target {
-  top: 13%;
+  top: 18%;
   right: 10%;
   width: 2rem;
   aspect-ratio: 1;
@@ -579,9 +581,12 @@
 }
 
 .hero-card--mint {
+  --card-pad: 1rem;
+
   bottom: 5%;
   left: 18%;
-  transform: rotate(-4deg);
+  aspect-ratio: 0.61;
+  transform: rotate(4deg);
   background: linear-gradient(145deg, #18debd, #14d7b5 72%);
 }
 
@@ -598,7 +603,8 @@
 
 .hero-card--mint strong {
   margin-top: auto;
-  font-size: clamp(1.45rem, 2.6vw, 2.3rem);
+  font-size: clamp(1.45rem, 2.75vw, 2.4rem);
+  line-height: 0.9;
 }
 
 .signal-bar {

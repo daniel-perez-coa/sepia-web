@@ -369,6 +369,9 @@
   background:
     repeating-radial-gradient(circle at 0 60%, transparent 0 1.05rem, rgba(9, 10, 13, 0.12) 1.1rem 1.16rem),
     repeating-radial-gradient(circle at 100% 60%, transparent 0 1.05rem, rgba(9, 10, 13, 0.12) 1.1rem 1.16rem);
+  background-position: left center, right center;
+  background-repeat: no-repeat;
+  background-size: 54% 100%, 54% 100%;
 }
 
 .hero-card__art--innovation::before {

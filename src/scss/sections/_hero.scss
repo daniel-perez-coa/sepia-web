@@ -366,12 +366,21 @@
 
 .hero-card__art--creative {
   margin-inline: calc(clamp(1rem, 2vw, 1.35rem) * -1);
-  background:
-    repeating-radial-gradient(circle at 0 60%, transparent 0 1.05rem, rgba(9, 10, 13, 0.12) 1.1rem 1.16rem),
-    repeating-radial-gradient(circle at 100% 60%, transparent 0 1.05rem, rgba(9, 10, 13, 0.12) 1.1rem 1.16rem);
-  background-position: left center, right center;
+  background: repeating-radial-gradient(circle at 0 52%, transparent 0 1.18rem, rgba(9, 10, 13, 0.12) 1.23rem 1.29rem);
+  background-position: left center;
   background-repeat: no-repeat;
-  background-size: 54% 100%, 54% 100%;
+  background-size: 50% 100%;
+}
+
+.hero-card__art--creative::after {
+  position: absolute;
+  top: 22%;
+  right: 0;
+  width: 43%;
+  height: 66%;
+  background: repeating-radial-gradient(circle at 100% 52%, transparent 0 0.68rem, rgba(9, 10, 13, 0.12) 0.73rem 0.79rem);
+  background-repeat: no-repeat;
+  content: '';
 }
 
 .hero-card__art--innovation::before {
@@ -461,7 +470,7 @@
   min-height: 0;
   margin: 0;
   z-index: 0;
-  background-size: 54% 100%, 54% 100%;
+  background-size: 50% 100%;
 }
 
 .hero-card--foam strong {

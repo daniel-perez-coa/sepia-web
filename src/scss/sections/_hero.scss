@@ -1,5 +1,3 @@
-@use '../abstracts/patterns';
-
 @keyframes rise-in {
   from {
     transform: translateY(1.5rem);
@@ -20,6 +18,17 @@
 
   50% {
     transform: rotate(-3deg) translateY(-0.5rem);
+  }
+}
+
+@keyframes fragment-float {
+  from {
+    transform: translate3d(0, 0, 0) rotate(var(--fragment-rotation, 0deg));
+  }
+
+  to {
+    transform: translate3d(var(--fragment-x, 1rem), var(--fragment-y, -1rem), 0)
+      rotate(calc(var(--fragment-rotation, 0deg) + 12deg));
   }
 }
 
@@ -122,7 +131,6 @@
   place-items: center;
   background-color: var(--color-primary);
   isolation: isolate;
-  @include patterns.curves(rgba(244, 240, 232, 0.16));
 }
 
 .hero__visual::after {
@@ -144,25 +152,172 @@
   content: '';
 }
 
+.hero-fragments {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-fragment {
+  position: absolute;
+  color: #f3f0ea;
+  opacity: 0.2;
+  animation: fragment-float var(--fragment-duration, 18s) ease-in-out infinite alternate;
+}
+
+.hero-fragment--curve {
+  width: 3.5rem;
+  aspect-ratio: 1;
+  border: 0.45rem solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+
+.hero-fragment--bars {
+  width: 9rem;
+  height: 1.2rem;
+  background: repeating-linear-gradient(90deg, currentColor 0 2.15rem, transparent 2.15rem 3rem);
+}
+
+.hero-fragment--dots {
+  width: 5.8rem;
+  height: 4.6rem;
+  background: radial-gradient(circle, currentColor 0 0.34rem, transparent 0.4rem);
+  background-size: 1.55rem 1.55rem;
+}
+
+.hero-fragment--diagonals {
+  width: 8rem;
+  height: 2.8rem;
+  background: repeating-linear-gradient(112deg, currentColor 0 0.78rem, transparent 0.78rem 1.3rem);
+}
+
+.hero-fragment:nth-child(1) {
+  top: 5%;
+  left: 42%;
+  --fragment-duration: 17s;
+  --fragment-x: 1.8rem;
+  --fragment-y: 1rem;
+}
+
+.hero-fragment:nth-child(2) {
+  top: 13%;
+  right: 4%;
+  color: #14d7b5;
+  --fragment-duration: 23s;
+  --fragment-rotation: -4deg;
+  --fragment-x: -2rem;
+  --fragment-y: 1.4rem;
+}
+
+.hero-fragment:nth-child(3) {
+  top: 29%;
+  left: 2%;
+  color: #ff6240;
+  --fragment-duration: 19s;
+  --fragment-x: 1.2rem;
+  --fragment-y: -1.8rem;
+}
+
+.hero-fragment:nth-child(4) {
+  top: 39%;
+  left: 39%;
+  --fragment-duration: 26s;
+  --fragment-rotation: 6deg;
+  --fragment-x: 2.4rem;
+  --fragment-y: -1rem;
+}
+
+.hero-fragment:nth-child(5) {
+  top: 51%;
+  right: 7%;
+  color: #ff6240;
+  --fragment-duration: 21s;
+  --fragment-x: -1.7rem;
+  --fragment-y: 1.5rem;
+}
+
+.hero-fragment:nth-child(6) {
+  top: 65%;
+  left: 3%;
+  --fragment-duration: 24s;
+  --fragment-rotation: 3deg;
+  --fragment-x: 2rem;
+  --fragment-y: -1.2rem;
+}
+
+.hero-fragment:nth-child(7) {
+  top: 74%;
+  right: 28%;
+  color: #14d7b5;
+  --fragment-duration: 18s;
+  --fragment-x: -1.4rem;
+  --fragment-y: -1.8rem;
+}
+
+.hero-fragment:nth-child(8) {
+  right: 2%;
+  bottom: 3%;
+  color: #ff6240;
+  --fragment-duration: 22s;
+  --fragment-rotation: -8deg;
+  --fragment-x: -2.2rem;
+  --fragment-y: -1rem;
+}
+
+.hero-fragment:nth-child(9) {
+  top: 9%;
+  left: 8%;
+  color: #14d7b5;
+  --fragment-duration: 25s;
+  --fragment-x: 2.2rem;
+  --fragment-y: 1.5rem;
+}
+
+.hero-fragment:nth-child(10) {
+  top: 46%;
+  right: -4%;
+  color: #f3f0ea;
+  --fragment-duration: 20s;
+  --fragment-rotation: -5deg;
+  --fragment-x: -2.6rem;
+  --fragment-y: 1rem;
+}
+
+.hero-fragment:nth-child(11) {
+  bottom: 5%;
+  left: 1%;
+  color: #ff6240;
+  --fragment-duration: 27s;
+  --fragment-x: 1.8rem;
+  --fragment-y: -1.4rem;
+}
+
+.hero-fragment:nth-child(12) {
+  top: 22%;
+  left: 51%;
+  color: #14d7b5;
+  --fragment-duration: 16s;
+  --fragment-rotation: 9deg;
+  --fragment-x: -1.5rem;
+  --fragment-y: 1.7rem;
+}
+
 .hero-card {
   position: absolute;
+  z-index: 1;
   display: flex;
   width: clamp(10rem, 16vw, 13.5rem);
   aspect-ratio: 0.76;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: clamp(1rem, 2vw, 1.35rem);
   border: 0.0625rem solid rgba(9, 10, 13, 0.12);
   border-radius: 0.25rem;
   box-shadow: var(--shadow-card);
   color: var(--color-ink);
-}
-
-.hero-card span {
-  font-family: var(--font-mono);
-  font-size: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
 }
 
 .hero-card strong {
@@ -192,13 +347,6 @@
   left: 18%;
   background: #14d7b5;
   animation: drift 6s ease-in-out infinite;
-}
-
-.hero__code {
-  position: absolute;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  color: rgba(244, 240, 232, 0.7);
 }
 
 .signal-bar {

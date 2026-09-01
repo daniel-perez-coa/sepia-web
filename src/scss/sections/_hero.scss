@@ -133,48 +133,64 @@
   content: '';
 }
 
-.hero__mark {
-  width: clamp(9rem, 17vw, 14rem);
-  filter: drop-shadow(0 1rem 2.25rem rgba(9, 10, 13, 0.24));
+.hero__visual::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255, 98, 64, 0.42), transparent 27%),
+    radial-gradient(circle at 88% 82%, rgba(20, 215, 181, 0.34), transparent 30%),
+    linear-gradient(135deg, rgba(243, 240, 234, 0.09), transparent 45% 62%, rgba(255, 98, 64, 0.12));
+  content: '';
 }
 
-.poster {
+.hero-card {
   position: absolute;
   display: flex;
-  width: clamp(9.5rem, 16vw, 13rem);
-  aspect-ratio: 0.72;
+  width: clamp(10rem, 16vw, 13.5rem);
+  aspect-ratio: 0.76;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border: 0.0625rem solid rgba(9, 10, 13, 0.12);
+  border-radius: 0.25rem;
   box-shadow: var(--shadow-card);
   color: var(--color-ink);
 }
 
-.poster span {
+.hero-card span {
   font-family: var(--font-mono);
   font-size: 0.5rem;
   font-weight: 600;
   letter-spacing: 0.05em;
 }
 
-.poster strong {
+.hero-card strong {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.6vw, 2.15rem);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
   letter-spacing: -0.055em;
-  line-height: 0.83;
+  line-height: 0.9;
 }
 
-.poster--foam {
-  top: 10%;
-  right: 8%;
-  transform: rotate(6deg);
-  background: var(--color-bg);
-}
-
-.poster--mint {
-  bottom: 8%;
+.hero-card--coral {
+  top: 7%;
   left: 7%;
-  background: var(--color-fresh);
+  transform: rotate(-6deg);
+  background: #ff6240;
+  color: var(--color-bg);
+}
+
+.hero-card--foam {
+  top: 31%;
+  right: 6%;
+  transform: rotate(5deg);
+  background: #f3f0ea;
+}
+
+.hero-card--mint {
+  bottom: 5%;
+  left: 18%;
+  background: #14d7b5;
   animation: drift 6s ease-in-out infinite;
 }
 
@@ -210,8 +226,8 @@
     grid-template-columns: minmax(0, 1fr) minmax(21rem, 0.85fr);
   }
 
-  .poster--foam {
-    right: 3%;
+  .hero-card--foam {
+    right: 2%;
   }
 }
 
@@ -244,15 +260,22 @@
     min-height: 29rem;
   }
 
-  .hero__mark {
-    width: 8.5rem;
-  }
-
-  .poster {
+  .hero-card {
     width: 8.75rem;
   }
 
-  .poster--foam {
-    top: 6%;
+  .hero-card--coral {
+    top: 5%;
+    left: 4%;
+  }
+
+  .hero-card--foam {
+    top: 29%;
+    right: 3%;
+  }
+
+  .hero-card--mint {
+    bottom: 4%;
+    left: 16%;
   }
 }

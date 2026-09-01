@@ -36,17 +36,10 @@
   gap: 0.65rem;
 }
 
-.brand__mark {
-  width: 1.85rem;
-  height: 2rem;
+.brand__wordmark {
+  width: 5.75rem;
+  height: auto;
   object-fit: contain;
-}
-
-.brand__name {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.28em;
 }
 
 .site-nav {

@@ -1,0 +1,33 @@
+.button {
+  display: inline-flex;
+  min-height: 2.875rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0.8rem 1.1rem;
+  border: 0.0625rem solid transparent;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  transition:
+    transform var(--transition),
+    background-color var(--transition),
+    border-color var(--transition);
+}
+
+.button:hover {
+  transform: translateY(-0.125rem);
+}
+
+.button--fresh {
+  background: var(--color-fresh);
+  color: var(--color-ink);
+}
+
+.button--fresh:hover {
+  background: #5ae9c8;
+}

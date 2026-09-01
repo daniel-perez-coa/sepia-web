@@ -1,0 +1,80 @@
+.capabilities {
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(9, 10, 13, 0.72), rgba(9, 10, 13, 0.92)),
+    url('/assets/pattern-abyss.jpg') center / cover;
+  color: var(--color-bg);
+}
+
+.capabilities__header {
+  display: flex;
+  margin-bottom: clamp(3rem, 7vw, 6rem);
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.capabilities__header h2 {
+  max-width: 9ch;
+}
+
+.capability-list {
+  border-top: 0.0625rem solid rgba(244, 240, 232, 0.2);
+}
+
+.capability-row {
+  display: grid;
+  min-height: 8.5rem;
+  grid-template-columns: 4rem minmax(14rem, 1.1fr) minmax(18rem, 1fr) auto;
+  gap: 1.5rem;
+  align-items: center;
+  border-bottom: 0.0625rem solid rgba(244, 240, 232, 0.2);
+  transition:
+    padding-inline var(--transition),
+    background-color var(--transition);
+}
+
+.capability-row:hover {
+  padding-inline: 1rem;
+  background: rgba(47, 224, 183, 0.08);
+}
+
+.capability-row h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.7rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.capability-row p {
+  color: rgba(244, 240, 232, 0.64);
+}
+
+.capability-row__number,
+.capability-row__status {
+  color: var(--color-fresh);
+}
+
+@media (max-width: 55rem) {
+  .capability-row {
+    min-height: auto;
+    grid-template-columns: 2.5rem 1fr;
+    padding-block: 2rem;
+  }
+
+  .capability-row p,
+  .capability-row__status {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 35rem) {
+  .capabilities__header {
+    display: block;
+  }
+
+  .capabilities__header .eyebrow {
+    margin-bottom: 0.75rem;
+  }
+}

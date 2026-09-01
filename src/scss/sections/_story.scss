@@ -1,0 +1,11 @@
+.brand-story {
+  position: relative;
+  background:
+    radial-gradient(circle at 90% 12%, rgba(52, 81, 255, 0.1), transparent 24rem),
+    var(--color-bg);
+}
+
+.brand-story .section-heading__copy {
+  display: grid;
+  gap: 1rem;
+}

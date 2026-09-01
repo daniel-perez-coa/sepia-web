@@ -1,0 +1,110 @@
+.contact {
+  background:
+    linear-gradient(rgba(52, 81, 255, 0.9), rgba(52, 81, 255, 0.96)),
+    url('/assets/pattern-cobalt.jpg') center / cover;
+  color: var(--color-bg);
+}
+
+.contact__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(24rem, 0.95fr);
+  gap: clamp(3rem, 9vw, 9rem);
+  align-items: end;
+}
+
+.contact__intro h2 {
+  margin-top: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 9vw, 8rem);
+  font-weight: 800;
+  letter-spacing: -0.075em;
+  line-height: 0.8;
+}
+
+.contact__intro > p:not(.eyebrow) {
+  max-width: 34rem;
+  margin-top: 2rem;
+  color: rgba(244, 240, 232, 0.8);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.contact__email {
+  display: inline-flex;
+  min-height: 3.25rem;
+  margin-top: 2rem;
+  align-items: center;
+  padding: 0.75rem 1.15rem;
+  border: 0.0625rem solid rgba(244, 240, 232, 0.7);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+}
+
+.contact__email:hover {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.social-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.social-list > a,
+.social-list__location {
+  display: grid;
+  min-height: 9.25rem;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  gap: 0.75rem 1rem;
+  align-items: end;
+  padding: 1.5rem;
+  border: 0.0625rem solid rgba(244, 240, 232, 0.16);
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+  transition:
+    transform var(--transition),
+    background-color var(--transition);
+}
+
+.social-list > a:hover {
+  transform: translateX(0.25rem);
+  background: #16171c;
+}
+
+.social-list .meta {
+  grid-column: 1 / -1;
+  color: var(--color-fresh);
+}
+
+.social-list strong {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.social-list > a > span:last-child,
+.social-list__location > span:last-child {
+  color: rgba(244, 240, 232, 0.58);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 60rem) {
+  .contact__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 35rem) {
+  .social-list > a,
+  .social-list__location {
+    grid-template-columns: 1fr;
+  }
+}

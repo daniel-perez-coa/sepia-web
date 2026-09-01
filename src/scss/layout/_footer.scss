@@ -1,0 +1,35 @@
+.site-footer {
+  background:
+    linear-gradient(rgba(9, 10, 13, 0.72), rgba(9, 10, 13, 0.9)),
+    url('/assets/pattern-band.jpg') center / cover;
+  color: var(--color-bg);
+}
+
+.site-footer__inner {
+  display: grid;
+  min-height: 9rem;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.site-footer__inner > p {
+  color: rgba(244, 240, 232, 0.54);
+}
+
+.site-footer__inner > p:last-child {
+  text-align: right;
+}
+
+@media (max-width: 47.99rem) {
+  .site-footer__inner {
+    min-height: 13rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-content: center;
+  }
+
+  .site-footer__inner > p:last-child {
+    text-align: left;
+  }
+}

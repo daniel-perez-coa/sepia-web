@@ -1,0 +1,151 @@
+<!doctype html>
+<html class="explore-document" lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explora la colección completa de figuras, cápsulas y piezas SEPIA." />
+    <meta name="theme-color" content="#090a0d" />
+    <link rel="icon" type="image/png" href="/assets/sepia-mark-dark.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/scss/main.scss" />
+    <title>Todas las figuras | SEPIA</title>
+  </head>
+  <body class="explore-page">
+    <a class="skip-link" href="#explore-content">Saltar al contenido</a>
+
+    <header class="site-header site-header--product explore-header" data-explore-header>
+      <div class="container site-header__inner">
+        <a class="brand" href="/#inicio" aria-label="SEPIA, ir al inicio">
+          <img class="brand__wordmark" src="/assets/sepia-wordmark-light.png" alt="" />
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="explore-navigation"
+          aria-label="Abrir menú"
+          data-menu-toggle
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="site-nav" id="explore-navigation" aria-label="Navegación principal" data-navigation>
+          <a href="/#inicio">Inicio</a>
+          <a href="/#catalogo">Catálogo</a>
+          <a class="is-current" href="/explorar" aria-current="page">Explorar</a>
+          <a href="/#contacto">Contacto</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="explore" id="explore-content" data-explore>
+      <div class="container explore__inner">
+        <nav class="explore__breadcrumb meta" aria-label="Ruta actual">
+          <a href="/#inicio">INICIO</a>
+          <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          <a href="/#catalogo">FIGURAS</a>
+          <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          <strong>TODAS</strong>
+        </nav>
+
+        <section class="explore__intro" aria-labelledby="explore-title">
+          <div>
+            <p class="eyebrow eyebrow--primary">02 / TODAS LAS FIGURAS</p>
+            <h1 id="explore-title">TODAS LAS FIGURAS</h1>
+            <p>Explora la colección completa de toys, cápsulas y piezas impresas en 3D con identidad propia.</p>
+          </div>
+          <div class="explore__summary">
+            <p class="meta" data-explore-count>0 PRODUCTOS</p>
+            <label for="explore-sort">Ordenar por:</label>
+            <select id="explore-sort" data-explore-sort>
+              <option value="featured">Destacados</option>
+              <option value="newest">Nuevos primero</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+              <option value="name">Nombre</option>
+            </select>
+          </div>
+        </section>
+
+        <div class="explore-tabs" role="tablist" aria-label="Filtrar por colección" data-explore-tabs>
+          <button class="is-active" type="button" role="tab" aria-selected="true" data-category="*">TODOS</button>
+          <button type="button" role="tab" aria-selected="false" data-category="SHIFT CREW">SHIFT CREW</button>
+          <button type="button" role="tab" aria-selected="false" data-category="GHOST">GHOST</button>
+          <button type="button" role="tab" aria-selected="false" data-category="ZOO">ZOO</button>
+          <button type="button" role="tab" aria-selected="false" data-category="CÁPSULAS">CÁPSULAS</button>
+          <button type="button" role="tab" aria-selected="false" data-category="NEW">NUEVOS</button>
+          <button type="button" role="tab" aria-selected="false" data-category="DROP_01">DROP_01</button>
+        </div>
+
+        <form class="explore-filters" aria-label="Filtros del catálogo" data-explore-filters>
+          <label>
+            <span>Color</span>
+            <select name="color">
+              <option value="*">Color</option>
+              <option value="azul">Azul</option>
+              <option value="blanco">Blanco</option>
+              <option value="negro">Negro</option>
+              <option value="verde">Verde</option>
+              <option value="concreto">Concreto</option>
+            </select>
+          </label>
+          <label>
+            <span>Serie</span>
+            <select name="series">
+              <option value="*">Serie</option>
+              <option value="NEW">Nuevos</option>
+              <option value="SERIES">Series</option>
+              <option value="DROP_01">Drop 01</option>
+              <option value="DROP_02">Drop 02</option>
+              <option value="LIMITED">Edición limitada</option>
+              <option value="CAPSULE">Cápsulas</option>
+            </select>
+          </label>
+          <label>
+            <span>Disponibilidad</span>
+            <select name="availability">
+              <option value="*">Disponibilidad</option>
+              <option value="available">Disponible</option>
+              <option value="low">Últimas piezas</option>
+              <option value="sold-out">Agotado</option>
+            </select>
+          </label>
+          <label>
+            <span>Precio</span>
+            <select name="price">
+              <option value="*">Precio</option>
+              <option value="under-600">Menos de $600</option>
+              <option value="600-999">$600 a $999</option>
+              <option value="over-1000">$1,000 o más</option>
+            </select>
+          </label>
+          <button type="reset">LIMPIAR FILTROS</button>
+        </form>
+
+        <section class="explore-results" aria-label="Productos">
+          <div class="explore-grid" data-explore-grid></div>
+          <p class="explore-empty" data-explore-empty hidden>No encontramos piezas con esta combinación de filtros.</p>
+          <button class="explore-load" type="button" data-explore-load>
+            <span>CARGAR MÁS PRODUCTOS</span>
+            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <p class="explore-status meta" role="status" aria-live="polite" data-explore-status></p>
+          <div class="explore-sentinel" aria-hidden="true" data-explore-sentinel></div>
+        </section>
+      </div>
+    </main>
+
+    <a class="explore-return" href="#explore-content" aria-label="Volver al inicio de la página" data-explore-return>
+      <i class="bi bi-arrow-up-circle-fill" aria-hidden="true"></i>
+    </a>
+
+    <script type="module" src="/src/js/explore.js"></script>
+  </body>
+</html>

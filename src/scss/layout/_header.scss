@@ -19,7 +19,7 @@
 }
 
 .site-header.is-section-view {
-  height: var(--header-height);
+  height: 4.75rem;
   border-bottom: 0;
   background: var(--color-fresh);
   color: var(--color-ink);
@@ -90,6 +90,7 @@
 }
 
 .site-header__inner {
+  position: relative;
   display: flex;
   height: 100%;
   align-items: center;
@@ -106,15 +107,16 @@
 }
 
 .brand__wordmark {
-  width: 7rem;
+  width: 8rem;
   height: auto;
   object-fit: contain;
 }
 
 .site-nav {
   display: flex;
+  margin-left: auto;
   align-items: center;
-  gap: clamp(1.25rem, 3vw, 3rem);
+  gap: clamp(1.5rem, 3.5vw, 3.5rem);
 }
 
 .site-nav a {
@@ -123,10 +125,16 @@
   min-height: 2.75rem;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+}
+
+.site-header .brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .site-nav a::after {

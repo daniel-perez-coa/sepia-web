@@ -33,13 +33,17 @@
 }
 
 .site-header.is-section-view .site-header__signal {
+  position: absolute;
+  top: 0;
+  left: 50%;
   display: flex;
-  width: 100%;
+  width: 100vw;
   height: 100%;
   align-items: center;
   overflow: hidden;
+  transform: translateX(-50%);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -50,7 +54,7 @@
   display: flex;
   width: max-content;
   gap: clamp(3rem, 8vw, 8rem);
-  animation: signal-marquee 34s linear infinite;
+  animation: signal-marquee 42s linear infinite;
 }
 
 .site-header__signal-track span {
@@ -59,11 +63,11 @@
 
 @keyframes signal-marquee {
   from {
-    transform: translateX(0);
+    transform: translateX(100vw);
   }
 
   to {
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - 100vw));
   }
 }
 

@@ -1,3 +1,21 @@
+@keyframes button-bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  45% {
+    transform: translateY(-0.3rem);
+  }
+
+  72% {
+    transform: translateY(-0.08rem);
+  }
+
+  100% {
+    transform: translateY(-0.125rem);
+  }
+}
+
 .button {
   display: inline-flex;
   min-height: 2.875rem;
@@ -20,7 +38,7 @@
 }
 
 .button:hover {
-  transform: translateY(-0.125rem);
+  animation: button-bounce 360ms var(--ease-out) both;
 }
 
 .button--fresh {

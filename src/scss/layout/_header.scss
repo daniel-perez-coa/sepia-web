@@ -37,19 +37,34 @@
   width: 100%;
   height: 100%;
   align-items: center;
-  justify-content: space-between;
-  gap: 4rem;
   overflow: hidden;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.site-header.is-section-view .site-header__signal span {
+.site-header__signal-track {
+  display: flex;
+  width: max-content;
+  gap: clamp(3rem, 8vw, 8rem);
+  animation: signal-marquee 34s linear infinite;
+}
+
+.site-header__signal-track span {
   flex: 0 0 auto;
+}
+
+@keyframes signal-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .site-header.is-hidden {

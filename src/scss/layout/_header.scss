@@ -67,6 +67,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .site-header__signal-track {
+    animation: none;
+  }
+}
+
 .site-header.is-hidden {
   visibility: hidden;
   opacity: 0;

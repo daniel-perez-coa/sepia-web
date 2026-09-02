@@ -399,12 +399,21 @@
   position: absolute;
   right: 1rem;
   bottom: 1rem;
-  display: grid;
-  width: 2rem;
-  height: 2rem;
+  display: inline-flex;
+  min-width: 5.75rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.85rem;
   border: 1px solid color-mix(in srgb, var(--color-fresh), transparent 25%);
-  border-radius: 50%;
-  place-items: center;
+  border-radius: 999px;
+  color: var(--color-fresh);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
 }
 
 .catalog-pagination {

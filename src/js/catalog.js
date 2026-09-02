@@ -109,8 +109,8 @@ const createProductCard = (product, index) => {
 
   const link = document.createElement('a');
   link.href = product.link;
-  link.textContent = '+';
-  link.setAttribute('aria-label', `Ver ${product.title}`);
+  link.append(document.createTextNode('INFO'), createIcon('arrow-up-right'));
+  link.setAttribute('aria-label', `Información de ${product.title}`);
 
   card.append(label, image, title, collection, description, link);
   return card;

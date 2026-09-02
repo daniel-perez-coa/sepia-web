@@ -2,6 +2,7 @@
 
 .contact {
   position: relative;
+  z-index: 1;
   overflow: hidden;
   min-height: calc(100svh - 9rem);
   scroll-snap-align: start;

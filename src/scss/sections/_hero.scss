@@ -528,16 +528,16 @@
   top: 7%;
   left: 7%;
   transform: rotate(-5deg);
-  background: linear-gradient(145deg, #ff4a24, #ff6240 70%);
+  background: linear-gradient(145deg, #ff4825, #ff5c3e 70%);
   color: var(--color-bg);
 }
 
 .hero-card--coral .hero-card__art--strategy {
   position: absolute;
-  top: 3.15rem;
+  top: 3.3rem;
   right: var(--card-pad);
   left: var(--card-pad);
-  height: 6.15rem;
+  height: 5.85rem;
   min-height: 0;
   margin: 0;
 }
@@ -547,8 +547,47 @@
   height: 100%;
 }
 
+// The strategy card uses the same measured grid as the reference artwork:
+// six fine rules aligned to a five-by-six dot matrix.
+.hero-card--coral .hero-card__art--strategy span:first-child {
+  width: 64%;
+  background: repeating-linear-gradient(
+    to bottom,
+    currentColor 0 0.0625rem,
+    transparent 0.0625rem 0.72rem
+  );
+  opacity: 0.48;
+}
+
+.hero-card--coral .hero-card__art--strategy span:last-child {
+  width: 26%;
+  background: radial-gradient(circle, currentColor 0 0.095rem, transparent 0.12rem);
+  background-size: 0.72rem 0.72rem;
+  opacity: 0.92;
+}
+
 .hero-card--coral strong {
   margin-top: auto;
+}
+
+.hero-card--coral .hero-card__footer {
+  padding-right: 1.35rem;
+}
+
+.hero-card--coral .hero-card__footer::before {
+  right: 1.65rem;
+}
+
+.hero-card--coral .hero-card__footer::after {
+  position: absolute;
+  top: -0.31rem;
+  right: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-top: 0.075rem solid currentColor;
+  border-right: 0.075rem solid currentColor;
+  content: '';
+  transform: rotate(45deg);
 }
 
 .hero-card--foam {

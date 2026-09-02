@@ -265,7 +265,7 @@
 
 .catalog-toolbar {
   display: flex;
-  min-height: 3.5rem;
+  min-height: 3.25rem;
   margin-top: 0.75rem;
   padding-inline: 1.25rem;
   border: 1px solid var(--color-line);
@@ -300,7 +300,7 @@
 .catalog-tabs button {
   position: relative;
   align-self: center;
-  padding: 0.45rem 0.25rem 0.6rem;
+  padding: 0.35rem 0.25rem 0.3rem;
 }
 
 .catalog-tabs button::after {

@@ -19,7 +19,7 @@
 }
 
 .site-header.is-section-view {
-  height: 2.25rem;
+  height: var(--header-height);
   border-bottom: 0;
   background: var(--color-fresh);
   color: var(--color-ink);

@@ -13,13 +13,14 @@
 
 .catalog__intro {
   display: grid;
-  grid-template-columns: minmax(18rem, 0.68fr) minmax(0, 1.32fr);
-  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 0.55fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
   align-items: stretch;
 }
 
 .catalog__copy {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   justify-content: center;
 }
@@ -27,10 +28,11 @@
 .catalog__copy h2 {
   margin-top: 1rem;
   font-family: var(--font-display);
-  font-size: clamp(4rem, 7.2vw, 7.25rem);
+  font-size: clamp(4rem, 6vw, 6.25rem);
   font-weight: 800;
   letter-spacing: -0.07em;
   line-height: 0.78;
+  max-width: 100%;
 }
 
 .catalog__category {

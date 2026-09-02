@@ -2,6 +2,7 @@
 
 .site-footer {
   position: relative;
+  z-index: 2;
   overflow: hidden;
   min-height: 9rem;
   background: var(--color-ink);

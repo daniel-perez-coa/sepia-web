@@ -1,3 +1,5 @@
+import { initProductDetail } from './product-detail.js';
+
 const ITEMS_PER_PAGE = 5;
 
 const createIcon = (name) => {
@@ -84,7 +86,7 @@ const applyAdjustments = (element, adjustments = {}) => {
   element.classList.add(`is-rounded-${rounded}`);
 };
 
-const createProductCard = (product, index) => {
+const createProductCard = (product, index, openProductDetail) => {
   const card = document.createElement('article');
   card.className = `product-card${index % 2 === 1 ? ' product-card--dark' : ''}`;
 
@@ -108,9 +110,13 @@ const createProductCard = (product, index) => {
   description.textContent = product.desc;
 
   const link = document.createElement('a');
-  link.href = product.link;
+  link.href = `#producto-${encodeURIComponent(product.id || product.title)}`;
   link.append(document.createTextNode('INFORMACIÓN'));
   link.setAttribute('aria-label', `Información de ${product.title}`);
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    openProductDetail(product);
+  });
 
   card.append(label, image, title, collection, description, link);
   return card;
@@ -140,6 +146,7 @@ export const initCatalog = async () => {
     const slides = Array.isArray(toyData.destacados) ? toyData.destacados : [];
     const tabs = Array.isArray(tabData.tabs) ? tabData.tabs : [];
     const products = Array.isArray(productData.products) ? productData.products : [];
+    const productDetail = initProductDetail(products);
     const autoplayMs = Math.max(3000, Number(toyData.autoplayMs) || 6500);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let featuredIndex = 0;
@@ -226,7 +233,9 @@ export const initCatalog = async () => {
 
       productGrid.classList.toggle('is-changing', animate && !prefersReducedMotion);
       window.setTimeout(() => {
-        productGrid.replaceChildren(...visibleProducts.map(createProductCard));
+        productGrid.replaceChildren(...visibleProducts.map((product, index) => (
+          createProductCard(product, index, productDetail?.openProduct ?? (() => {}))
+        )));
         productGrid.classList.remove('is-changing');
       }, animate && !prefersReducedMotion ? 120 : 0);
 

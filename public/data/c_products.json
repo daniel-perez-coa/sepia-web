@@ -1,99 +1,499 @@
 {
   "products": [
     {
+      "id": "ORBIT_01",
       "label": "NEW",
       "photo": "/resources/series-zoo-scene.png",
+      "gallery": [
+        { "src": "/resources/series-zoo-scene.png", "alt": "ORBIT_01 en una escena natural con su cápsula" },
+        { "src": "/resources/series-zoo-studio.png", "alt": "ORBIT_01 y piezas de la colección en estudio" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "Detalle de cápsulas y figuras impresas en 3D" },
+        { "src": "/resources/drop-ghost-night.png", "alt": "Piezas SEPIA en una escena nocturna" }
+      ],
       "title": "ORBIT_01",
       "Collection": "SHIFT CREW",
       "desc": "Figura modular azul de edición inicial.",
+      "longDescription": "Figura modular azul de edición inicial. ORBIT_01 representa el equilibrio entre movimiento y calma, diseñada e impresa en 3D con acabado raw foam.",
+      "price": "$550 MXN",
+      "stock": 5,
+      "edition": { "label": "EDICIÓN LIMITADA", "current": 120, "total": 300 },
+      "badges": ["HECHO EN PUEBLA", "IMPRESIÓN 3D", "EDICIÓN LIMITADA"],
+      "options": [
+        { "label": "Acabado", "values": ["Raw Foam Azul", "Raw Foam Gris", "Raw Foam Negro"], "selected": 0 },
+        { "label": "Cápsula", "values": ["Translúcida", "Mate Verde"], "selected": 0 }
+      ],
+      "story": {
+        "eyebrow": "LA HISTORIA",
+        "title": "PEQUEÑOS SERES. GRANDES HISTORIAS.",
+        "text": "SHIFT CREW es una familia de figuras modulares que habitan entre lo físico y lo imaginario. Cada pieza está diseñada para acompañarte, inspirar y conectar."
+      },
+      "includes": [
+        { "icon": "box", "text": "1 figura ORBIT_01 en Raw Foam Azul" },
+        { "icon": "circle", "text": "1 cápsula translúcida de protección y exhibición" },
+        { "icon": "patch-check", "text": "Tarjeta de autenticidad con número de edición" },
+        { "icon": "archive", "text": "Empaque coleccionable diseñado por SEPIA" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-zoo-studio.png",
+      "dimensionsMaterialsAlt": "Referencia visual de dimensiones y materiales de ORBIT_01",
+      "details": [
+        { "label": "Concepto", "value": "Figura modular coleccionable de la serie SHIFT CREW." },
+        { "label": "Producción", "value": "Impresión 3D por capas y acabado manual." },
+        { "label": "Origen", "value": "Diseñada y producida en Puebla, México." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "4.5 cm aprox." },
+        { "label": "Ancho", "value": "4.2 cm aprox." },
+        { "label": "Material", "value": "Resina 3D con acabado Raw Foam." },
+        { "label": "Peso", "value": "25 g aprox." }
+      ],
+      "relatedProducts": ["DINO_MATE", "KUMA_BLACK", "BOO_12", "CAPSULE_01"],
       "link": "#contacto"
     },
     {
+      "id": "KUMA_BLACK",
       "label": "DROP_01",
       "photo": "/resources/drop-ghost-night.png",
+      "gallery": [
+        { "src": "/resources/drop-ghost-night.png", "alt": "KUMA_BLACK en la escena nocturna Ghost" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "Colección Ghost en fondo de estudio" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "KUMA_BLACK junto a piezas de la colección SEPIA" }
+      ],
       "title": "KUMA_BLACK",
       "Collection": "GHOST",
       "desc": "Pieza nocturna con acabado mate profundo.",
+      "longDescription": "Una aparición compacta inspirada en las noches de octubre. KUMA_BLACK combina una silueta amable con un acabado negro mate de tacto mineral.",
+      "price": "$590 MXN",
+      "stock": 3,
+      "edition": { "label": "DROP NUMERADO", "current": 38, "total": 120 },
+      "badges": ["HECHO EN PUEBLA", "IMPRESIÓN 3D", "DROP_01"],
+      "options": [
+        { "label": "Acabado", "values": ["Negro Mate", "Humo", "Raw Foam"], "selected": 0 },
+        { "label": "Cápsula", "values": ["Cristal", "Sin cápsula"], "selected": 0 }
+      ],
+      "story": {
+        "eyebrow": "ARCHIVO GHOST",
+        "title": "UNA SOMBRA QUE DECIDIÓ QUEDARSE.",
+        "text": "KUMA_BLACK nació para observar desde un rincón y cambiar de carácter con la luz. Es una pieza pequeña, silenciosa y deliberadamente extraña."
+      },
+      "includes": [
+        { "icon": "box", "text": "1 figura KUMA_BLACK en acabado negro mate" },
+        { "icon": "circle", "text": "1 cápsula de exhibición transparente" },
+        { "icon": "patch-check", "text": "Tarjeta de autenticidad DROP_01" }
+      ],
+      "dimensionsMaterialsImage": "/resources/drop-ghost-night.png",
+      "dimensionsMaterialsAlt": "Referencia visual de dimensiones y acabado de KUMA_BLACK",
+      "details": [
+        { "label": "Concepto", "value": "Figura nocturna de la colección GHOST." },
+        { "label": "Acabado", "value": "Mate profundo aplicado y revisado a mano." },
+        { "label": "Origen", "value": "Producida en Puebla, México." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "5 cm aprox." },
+        { "label": "Material", "value": "Resina 3D de alta definición." },
+        { "label": "Color", "value": "Negro carbón mate." }
+      ],
+      "relatedProducts": ["PHANTOM_03", "SPECTER_CAT", "CAPSULE_01", "ORBIT_01"],
       "link": "#contacto"
     },
     {
+      "id": "DINO_MATE",
       "label": "NEW",
       "photo": "/resources/series-ghost-studio.png",
+      "gallery": [
+        { "src": "/resources/series-ghost-studio.png", "alt": "DINO_MATE y cápsulas sobre fondo blanco" },
+        { "src": "/resources/series-zoo-studio.png", "alt": "DINO_MATE junto a la familia Zoo" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "DINO_MATE en una composición natural" }
+      ],
       "title": "DINO_MATE",
       "Collection": "CÁPSULAS",
       "desc": "Compañero compacto para cápsulas de escritorio.",
+      "longDescription": "DINO_MATE cabe en espacios pequeños pero conserva toda la personalidad de una pieza SEPIA. Su cápsula lo protege y lo convierte en un objeto de escritorio.",
+      "price": "$550 MXN",
+      "stock": 8,
+      "badges": ["HECHO EN PUEBLA", "IMPRESIÓN 3D", "NUEVO"],
+      "options": [
+        { "label": "Figura", "values": ["Blanco Mineral", "Azul Shift", "Negro"], "selected": 0 },
+        { "label": "Cápsula", "values": ["Verde", "Transparente"], "selected": 0 }
+      ],
+      "story": {
+        "eyebrow": "OBJETO DE COMPAÑÍA",
+        "title": "UN PEQUEÑO TESTIGO PARA TU ESCRITORIO.",
+        "text": "DINO_MATE fue diseñado como un compañero cotidiano: simple, compacto y preparado para vivir dentro o fuera de su cápsula."
+      },
+      "includes": [
+        { "icon": "box", "text": "1 figura DINO_MATE" },
+        { "icon": "circle", "text": "1 cápsula con base intercambiable" },
+        { "icon": "archive", "text": "Caja protectora SEPIA" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-ghost-studio.png",
+      "dimensionsMaterialsAlt": "DINO_MATE y sus materiales en estudio",
+      "details": [
+        { "label": "Uso", "value": "Pieza de escritorio y colección." },
+        { "label": "Sistema", "value": "Compatible con cápsulas SEPIA." },
+        { "label": "Origen", "value": "Puebla, México." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "4 cm aprox." },
+        { "label": "Material", "value": "Resina 3D y cápsula de polímero translúcido." },
+        { "label": "Presentación", "value": "Figura, base y domo." }
+      ],
+      "relatedProducts": ["CAPSULE_01", "CLEAR_DOME", "ORBIT_01", "BOO_12"],
       "link": "#contacto"
     },
     {
+      "id": "BOO_12",
       "label": "SERIES",
       "photo": "/resources/series-zoo-studio.png",
+      "gallery": [
+        { "src": "/resources/series-zoo-studio.png", "alt": "BOO_12 con la familia Zoo en estudio" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "BOO_12 en una escena natural" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "BOO_12 junto a cápsulas SEPIA" }
+      ],
       "title": "BOO_12",
       "Collection": "ZOO",
       "desc": "Criatura articulada de la familia Zoo.",
+      "longDescription": "BOO_12 es una criatura articulada de perfil bajo y mirada curiosa. Sus módulos permiten variar ligeramente su postura dentro de la colección Zoo.",
+      "price": "$580 MXN",
+      "stock": 6,
+      "badges": ["SERIE ZOO", "ARTICULADA", "IMPRESIÓN 3D"],
+      "options": [
+        { "label": "Color", "values": ["Azul Shift", "Verde Foam", "Concreto"], "selected": 0 },
+        { "label": "Formato", "values": ["Individual", "Trío"], "selected": 0 }
+      ],
+      "story": {
+        "eyebrow": "FAMILIA ZOO",
+        "title": "UNA CRIATURA QUE NUNCA SE QUEDA QUIETA.",
+        "text": "La familia Zoo explora formas animales sin copiar ninguna especie. BOO_12 se mueve entre lo familiar, lo modular y lo inesperado."
+      },
+      "includes": [
+        { "icon": "box", "text": "1 figura articulada BOO_12" },
+        { "icon": "tools", "text": "Módulos ensamblados y revisados" },
+        { "icon": "patch-check", "text": "Tarjeta de serie Zoo" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-zoo-studio.png",
+      "dimensionsMaterialsAlt": "BOO_12 y la escala de la familia Zoo",
+      "details": [
+        { "label": "Concepto", "value": "Criatura modular de la familia Zoo." },
+        { "label": "Movimiento", "value": "Articulaciones de ajuste manual." },
+        { "label": "Origen", "value": "Diseñada y producida en Puebla." }
+      ],
+      "specifications": [
+        { "label": "Largo", "value": "8 cm aprox." },
+        { "label": "Altura", "value": "3.5 cm aprox." },
+        { "label": "Material", "value": "Resina 3D pigmentada." }
+      ],
+      "relatedProducts": ["MOSS_02", "ZOO_TRIO", "ORBIT_01", "SHIFT_BLUE"],
       "link": "#contacto"
     },
     {
+      "id": "CAPSULE_01",
       "label": "DROP_01",
       "photo": "/resources/series-ghost-studio.png",
+      "gallery": [
+        { "src": "/resources/series-ghost-studio.png", "alt": "CAPSULE_01 con dos figuras Ghost" },
+        { "src": "/resources/drop-ghost-night.png", "alt": "CAPSULE_01 iluminada en una escena nocturna" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "CAPSULE_01 en una escena natural" }
+      ],
       "title": "CAPSULE_01",
       "Collection": "CÁPSULAS",
       "desc": "Dúo Ghost con cápsula translúcida.",
+      "longDescription": "Un sistema compacto para exhibir dos personajes Ghost. CAPSULE_01 reúne figura, base y domo translúcido en una sola pieza coleccionable.",
+      "price": "$650 MXN",
+      "stock": 4,
+      "edition": { "label": "DROP_01", "current": 72, "total": 180 },
+      "badges": ["DÚO GHOST", "CÁPSULA INCLUIDA", "DROP_01"],
+      "options": [
+        { "label": "Dúo", "values": ["Blanco", "Blanco + Negro", "Azul Shift"], "selected": 0 },
+        { "label": "Base", "values": ["Verde Foam", "Concreto"], "selected": 0 }
+      ],
+      "story": {
+        "eyebrow": "SISTEMA CÁPSULA",
+        "title": "DOS APARICIONES BAJO UN MISMO DOMO.",
+        "text": "CAPSULE_01 convierte a los personajes Ghost en una pequeña escena protegida y lista para cambiar de lugar."
+      },
+      "includes": [
+        { "icon": "box", "text": "2 figuras Ghost" },
+        { "icon": "circle", "text": "1 cápsula translúcida y base" },
+        { "icon": "archive", "text": "Empaque DROP_01" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-ghost-studio.png",
+      "dimensionsMaterialsAlt": "Componentes y materiales de CAPSULE_01",
+      "details": [
+        { "label": "Sistema", "value": "Domo removible y base intercambiable." },
+        { "label": "Contenido", "value": "Dos personajes de la familia Ghost." },
+        { "label": "Origen", "value": "Puebla, México." }
+      ],
+      "specifications": [
+        { "label": "Diámetro", "value": "7 cm aprox." },
+        { "label": "Altura total", "value": "6.5 cm aprox." },
+        { "label": "Materiales", "value": "Resina 3D y polímero translúcido." }
+      ],
+      "relatedProducts": ["DINO_MATE", "CLEAR_DOME", "KUMA_BLACK", "SPECTER_CAT"],
       "link": "#contacto"
     },
     {
+      "id": "MOSS_02",
       "label": "NEW",
       "photo": "/resources/series-zoo-studio.png",
+      "gallery": [
+        { "src": "/resources/series-zoo-studio.png", "alt": "MOSS_02 en estudio" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "MOSS_02 en una escena orgánica" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "MOSS_02 junto a piezas de cápsula" }
+      ],
       "title": "MOSS_02",
       "Collection": "ZOO",
       "desc": "Figura azul con silueta orgánica y compacta.",
+      "longDescription": "MOSS_02 combina una silueta vegetal con el lenguaje modular de Zoo. Una figura compacta creada para acompañar a BOO_12.",
+      "price": "$520 MXN",
+      "stock": 9,
+      "badges": ["SERIE ZOO", "NUEVO", "HECHO EN PUEBLA"],
+      "options": [
+        { "label": "Color", "values": ["Azul Shift", "Verde Musgo", "Concreto"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "FAMILIA ZOO", "title": "UNA FORMA ORGÁNICA EN CONSTANTE CAMBIO.", "text": "MOSS_02 nació de mezclar perfiles vegetales, animales y objetos encontrados hasta encontrar una presencia propia." },
+      "includes": [
+        { "icon": "box", "text": "1 figura MOSS_02" },
+        { "icon": "patch-check", "text": "Tarjeta de la serie Zoo" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-zoo-studio.png",
+      "dimensionsMaterialsAlt": "MOSS_02 en estudio para referencia de escala",
+      "details": [
+        { "label": "Serie", "value": "Zoo / módulo 02." },
+        { "label": "Producción", "value": "Impresión 3D y acabado manual." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "4.8 cm aprox." },
+        { "label": "Material", "value": "Resina 3D pigmentada." }
+      ],
+      "relatedProducts": ["BOO_12", "ZOO_TRIO", "SHIFT_BLUE", "ORBIT_02"],
       "link": "#contacto"
     },
     {
+      "id": "PHANTOM_03",
       "label": "LIMITED",
       "photo": "/resources/drop-ghost-night.png",
+      "gallery": [
+        { "src": "/resources/drop-ghost-night.png", "alt": "PHANTOM_03 en escena nocturna" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "PHANTOM_03 en estudio" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "PHANTOM_03 en una composición SEPIA" }
+      ],
       "title": "PHANTOM_03",
       "Collection": "GHOST",
       "desc": "Edición limitada inspirada en noches de octubre.",
+      "longDescription": "PHANTOM_03 transforma la silueta clásica de Ghost con una presencia más alargada y un acabado que responde a la luz baja.",
+      "price": "$620 MXN",
+      "stock": 2,
+      "edition": { "label": "EDICIÓN LIMITADA", "current": 31, "total": 80 },
+      "badges": ["GHOST", "LIMITED", "NUMERADA"],
+      "options": [
+        { "label": "Acabado", "values": ["Humo Mate", "Blanco Mineral"], "selected": 0 },
+        { "label": "Cápsula", "values": ["Transparente", "Sin cápsula"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "ARCHIVO GHOST", "title": "UNA PRESENCIA HECHA PARA LA NOCHE.", "text": "Esta edición reduce el color para que la forma, las sombras y la textura lleven toda la historia." },
+      "includes": [
+        { "icon": "box", "text": "1 figura PHANTOM_03" },
+        { "icon": "patch-check", "text": "Certificado numerado" },
+        { "icon": "archive", "text": "Empaque de edición limitada" }
+      ],
+      "dimensionsMaterialsImage": "/resources/drop-ghost-night.png",
+      "dimensionsMaterialsAlt": "PHANTOM_03 bajo iluminación nocturna",
+      "details": [
+        { "label": "Edición", "value": "80 piezas numeradas." },
+        { "label": "Acabado", "value": "Humo mate de aplicación manual." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "6 cm aprox." },
+        { "label": "Material", "value": "Resina 3D de alta definición." }
+      ],
+      "relatedProducts": ["KUMA_BLACK", "SPECTER_CAT", "CAPSULE_01", "CLEAR_DOME"],
       "link": "#contacto"
     },
     {
+      "id": "SHIFT_BLUE",
       "label": "SERIES",
       "photo": "/resources/series-zoo-scene.png",
+      "gallery": [
+        { "src": "/resources/series-zoo-scene.png", "alt": "SHIFT_BLUE en escena natural" },
+        { "src": "/resources/series-zoo-studio.png", "alt": "SHIFT_BLUE en estudio" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "SHIFT_BLUE junto al sistema de cápsulas" }
+      ],
       "title": "SHIFT_BLUE",
       "Collection": "SHIFT CREW",
       "desc": "Personaje central de la tripulación Shift.",
+      "longDescription": "SHIFT_BLUE es el personaje que define la identidad cromática de la tripulación: compacto, azul eléctrico y construido por módulos.",
+      "price": "$560 MXN",
+      "stock": 7,
+      "badges": ["SHIFT CREW", "SERIES", "RAW FOAM"],
+      "options": [
+        { "label": "Acabado", "values": ["Azul Shift", "Azul Mate"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "SHIFT CREW", "title": "EL PRIMER COLOR DE LA TRIPULACIÓN.", "text": "SHIFT_BLUE reúne las formas y el color que dieron origen a toda la familia modular Shift." },
+      "includes": [
+        { "icon": "box", "text": "1 figura SHIFT_BLUE" },
+        { "icon": "patch-check", "text": "Tarjeta de serie" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-zoo-scene.png",
+      "dimensionsMaterialsAlt": "SHIFT_BLUE en contexto para referencia de escala",
+      "details": [
+        { "label": "Serie", "value": "Personaje central de SHIFT CREW." },
+        { "label": "Origen", "value": "Puebla, México." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "5 cm aprox." },
+        { "label": "Material", "value": "Resina 3D con pigmento azul." }
+      ],
+      "relatedProducts": ["ORBIT_01", "ORBIT_02", "BOO_12", "MOSS_02"],
       "link": "#contacto"
     },
     {
+      "id": "SPECTER_CAT",
       "label": "DROP_02",
       "photo": "/resources/series-ghost-studio.png",
+      "gallery": [
+        { "src": "/resources/series-ghost-studio.png", "alt": "SPECTER_CAT en estudio" },
+        { "src": "/resources/drop-ghost-night.png", "alt": "SPECTER_CAT en escena nocturna" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "SPECTER_CAT en una escena natural" }
+      ],
       "title": "SPECTER_CAT",
       "Collection": "GHOST",
       "desc": "Gato fantasma con acabado blanco mineral.",
+      "longDescription": "SPECTER_CAT toma gestos felinos y los reduce a una figura Ghost de curvas suaves, orejas altas y acabado blanco mineral.",
+      "price": "$540 MXN",
+      "stock": 6,
+      "badges": ["DROP_02", "GHOST", "BLANCO MINERAL"],
+      "options": [
+        { "label": "Acabado", "values": ["Blanco Mineral", "Humo", "Negro Mate"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "ARCHIVO GHOST", "title": "UN GATO QUE ATRAVIESA LAS PAREDES.", "text": "Una silueta felina traducida al universo Ghost: quieta por fuera, inquieta por dentro." },
+      "includes": [
+        { "icon": "box", "text": "1 figura SPECTER_CAT" },
+        { "icon": "patch-check", "text": "Tarjeta DROP_02" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-ghost-studio.png",
+      "dimensionsMaterialsAlt": "SPECTER_CAT y piezas Ghost en estudio",
+      "details": [
+        { "label": "Colección", "value": "Ghost / DROP_02." },
+        { "label": "Acabado", "value": "Blanco mineral mate." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "5.2 cm aprox." },
+        { "label": "Material", "value": "Resina 3D." }
+      ],
+      "relatedProducts": ["KUMA_BLACK", "PHANTOM_03", "CAPSULE_01", "CLEAR_DOME"],
       "link": "#contacto"
     },
     {
+      "id": "ZOO_TRIO",
       "label": "NEW",
       "photo": "/resources/series-zoo-studio.png",
+      "gallery": [
+        { "src": "/resources/series-zoo-studio.png", "alt": "ZOO_TRIO completo en estudio" },
+        { "src": "/resources/series-zoo-scene.png", "alt": "ZOO_TRIO en una escena natural" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "ZOO_TRIO junto a cápsulas" }
+      ],
       "title": "ZOO_TRIO",
       "Collection": "ZOO",
       "desc": "Set de tres criaturas para armar una familia.",
+      "longDescription": "Tres perfiles distintos de la familia Zoo reunidos en un set. ZOO_TRIO está pensado para crear una pequeña escena modular.",
+      "price": "$1,350 MXN",
+      "stock": 4,
+      "badges": ["SET DE 3", "ZOO", "PRECIO DE SERIE"],
+      "options": [
+        { "label": "Paleta", "values": ["Azul Shift", "Mixta", "Concreto"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "FAMILIA ZOO", "title": "TRES CRIATURAS, UNA MISMA ESCENA.", "text": "ZOO_TRIO mezcla escalas y perfiles para que la colección funcione como una pequeña comunidad." },
+      "includes": [
+        { "icon": "boxes", "text": "3 figuras de la familia Zoo" },
+        { "icon": "patch-check", "text": "Tarjeta de set" },
+        { "icon": "archive", "text": "Empaque múltiple SEPIA" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-zoo-studio.png",
+      "dimensionsMaterialsAlt": "ZOO_TRIO completo y proporciones relativas",
+      "details": [
+        { "label": "Set", "value": "Tres criaturas compatibles entre sí." },
+        { "label": "Producción", "value": "Impresión y acabado por pieza." }
+      ],
+      "specifications": [
+        { "label": "Cantidad", "value": "3 figuras." },
+        { "label": "Alturas", "value": "Entre 3.5 y 5 cm aprox." },
+        { "label": "Material", "value": "Resina 3D pigmentada." }
+      ],
+      "relatedProducts": ["BOO_12", "MOSS_02", "ORBIT_01", "SHIFT_BLUE"],
       "link": "#contacto"
     },
     {
+      "id": "CLEAR_DOME",
       "label": "CAPSULE",
       "photo": "/resources/series-ghost-studio.png",
+      "gallery": [
+        { "src": "/resources/series-ghost-studio.png", "alt": "CLEAR_DOME con figuras Ghost" },
+        { "src": "/resources/drop-ghost-night.png", "alt": "CLEAR_DOME iluminado de noche" },
+        { "src": "/resources/series-zoo-studio.png", "alt": "CLEAR_DOME junto a figuras Zoo" }
+      ],
       "title": "CLEAR_DOME",
       "Collection": "CÁPSULAS",
       "desc": "Domo transparente con base intercambiable.",
+      "longDescription": "CLEAR_DOME es la cápsula base del sistema SEPIA. Protege figuras compactas y permite cambiar la base para adaptar color y colección.",
+      "price": "$280 MXN",
+      "stock": 12,
+      "badges": ["CÁPSULA", "MODULAR", "BASE INTERCAMBIABLE"],
+      "options": [
+        { "label": "Base", "values": ["Verde Foam", "Concreto", "Negro"], "selected": 0 },
+        { "label": "Tamaño", "values": ["S", "M"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "SISTEMA CÁPSULA", "title": "UN PEQUEÑO ESPACIO PARA CADA FIGURA.", "text": "El domo convierte cada personaje en una escena protegida sin ocultar su material ni su textura." },
+      "includes": [
+        { "icon": "circle", "text": "1 domo transparente" },
+        { "icon": "disc", "text": "1 base intercambiable" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-ghost-studio.png",
+      "dimensionsMaterialsAlt": "CLEAR_DOME con figuras para referencia de escala",
+      "details": [
+        { "label": "Compatibilidad", "value": "Figuras compactas SEPIA." },
+        { "label": "Sistema", "value": "Domo removible y base intercambiable." }
+      ],
+      "specifications": [
+        { "label": "Diámetro", "value": "7 cm aprox. en tamaño S." },
+        { "label": "Material", "value": "Polímero transparente y base de resina 3D." }
+      ],
+      "relatedProducts": ["DINO_MATE", "CAPSULE_01", "SPECTER_CAT", "KUMA_BLACK"],
       "link": "#contacto"
     },
     {
+      "id": "ORBIT_02",
       "label": "SERIES",
       "photo": "/resources/series-zoo-scene.png",
+      "gallery": [
+        { "src": "/resources/series-zoo-scene.png", "alt": "ORBIT_02 en escena natural" },
+        { "src": "/resources/series-zoo-studio.png", "alt": "ORBIT_02 en estudio" },
+        { "src": "/resources/series-ghost-studio.png", "alt": "ORBIT_02 junto al sistema de cápsulas" }
+      ],
       "title": "ORBIT_02",
       "Collection": "SHIFT CREW",
       "desc": "Segunda variación de la serie modular Orbit.",
+      "longDescription": "ORBIT_02 cambia la postura y el balance del módulo original para crear una segunda presencia dentro de SHIFT CREW.",
+      "price": "$570 MXN",
+      "stock": 5,
+      "badges": ["SHIFT CREW", "SERIES", "ORBIT"],
+      "options": [
+        { "label": "Acabado", "values": ["Azul Shift", "Verde Foam", "Concreto"], "selected": 0 }
+      ],
+      "story": { "eyebrow": "SHIFT CREW", "title": "LA MISMA ÓRBITA, UNA NUEVA POSICIÓN.", "text": "La segunda variación Orbit explora cómo pequeños cambios de volumen transforman el carácter de una figura." },
+      "includes": [
+        { "icon": "box", "text": "1 figura ORBIT_02" },
+        { "icon": "patch-check", "text": "Tarjeta de serie SHIFT CREW" }
+      ],
+      "dimensionsMaterialsImage": "/resources/series-zoo-scene.png",
+      "dimensionsMaterialsAlt": "ORBIT_02 en contexto para referencia de escala",
+      "details": [
+        { "label": "Serie", "value": "Variación 02 de ORBIT." },
+        { "label": "Producción", "value": "Impresión 3D y acabado manual." }
+      ],
+      "specifications": [
+        { "label": "Altura", "value": "4.7 cm aprox." },
+        { "label": "Material", "value": "Resina 3D pigmentada." }
+      ],
+      "relatedProducts": ["ORBIT_01", "SHIFT_BLUE", "MOSS_02", "BOO_12"],
       "link": "#contacto"
     }
   ]

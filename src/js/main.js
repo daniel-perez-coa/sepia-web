@@ -95,7 +95,11 @@ const navigateToView = (index) => {
 };
 
 const handleWheelNavigation = (event) => {
-  if (!fullPageNavigation.matches || document.body.classList.contains('menu-open')) return;
+  if (
+    !fullPageNavigation.matches
+    || document.body.classList.contains('menu-open')
+    || document.body.classList.contains('product-detail-open')
+  ) return;
   if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
 
   event.preventDefault();
@@ -126,7 +130,11 @@ window.addEventListener('wheel', handleWheelNavigation, { passive: false });
 window.addEventListener('resize', () => syncViewState(getClosestViewIndex()), { passive: true });
 
 document.addEventListener('keydown', (event) => {
-  if (!fullPageNavigation.matches || navigationLocked) return;
+  if (
+    !fullPageNavigation.matches
+    || navigationLocked
+    || document.body.classList.contains('product-detail-open')
+  ) return;
   if (event.target.closest('input, textarea, select, button, [contenteditable="true"]')) return;
 
   const forward = event.key === 'PageDown' || event.key === 'ArrowDown' || event.key === ' ';

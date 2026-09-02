@@ -113,10 +113,16 @@
 }
 
 .site-nav {
+  position: absolute;
+  right: 0;
+  left: 0;
   display: flex;
-  margin-left: auto;
   align-items: center;
   gap: clamp(1.5rem, 3.5vw, 3.5rem);
+}
+
+.site-nav a:last-child {
+  margin-left: auto;
 }
 
 .site-nav a {
@@ -125,7 +131,7 @@
   min-height: 2.75rem;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -167,6 +173,10 @@
 }
 
 @media (max-width: 51.99rem) {
+  .site-nav a:last-child {
+    margin-left: 0;
+  }
+
   .menu-toggle {
     display: grid;
     place-content: center;

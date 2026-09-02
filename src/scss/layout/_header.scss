@@ -106,7 +106,7 @@
 }
 
 .brand__wordmark {
-  width: 5.75rem;
+  width: 7rem;
   height: auto;
   object-fit: contain;
 }
@@ -114,7 +114,7 @@
 .site-nav {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2.5vw, 2.25rem);
+  gap: clamp(1.25rem, 3vw, 3rem);
 }
 
 .site-nav a {
@@ -123,8 +123,8 @@
   min-height: 2.75rem;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }

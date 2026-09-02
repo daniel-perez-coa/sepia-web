@@ -5,9 +5,9 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
   background-color: #f7f3eb;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='240' viewBox='0 0 640 240'%3E%3Cg fill='none' stroke='%23090a0d' stroke-opacity='.075' stroke-width='1'%3E%3Cpath d='M-80 38C20-22 100 98 200 38S380-22 480 38s180 60 280 0'/%3E%3Cpath d='M-80 78C20 18 100 138 200 78S380 18 480 78s180 60 280 0'/%3E%3Cpath d='M-80 118C20 58 100 178 200 118S380 58 480 118s180 60 280 0'/%3E%3Cpath d='M-80 158C20 98 100 218 200 158S380 98 480 158s180 60 280 0'/%3E%3Cpath d='M-80 198C20 138 100 258 200 198S380 138 480 198s180 60 280 0'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 40rem 15rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000' viewBox='0 0 1600 1000'%3E%3Cg fill='none' stroke='%23090a0d' stroke-opacity='.08' stroke-width='1.15'%3E%3Cpath d='M-80 74C90 14 168 132 332 78S570 14 744 86s260 66 418 4 254-38 518 42'/%3E%3Cpath d='M-80 118C72 82 198 162 346 130s222-94 380-18 274 90 430 16 258-102 524-22'/%3E%3Cpath d='M-80 205C92 146 218 248 390 208s224-62 374 16 286 102 446 20 258-78 470-8'/%3E%3Cpath d='M-80 246C82 220 174 282 328 264s236-68 404 6 280 60 434-18 272-42 514 22'/%3E%3Cpath d='M-80 386C100 294 206 424 366 370s240-112 408-20 254 132 440 38 278-88 466 12'/%3E%3Cpath d='M-80 428C78 384 188 464 342 434s242-78 394-4 292 88 458 0 264-56 486 20'/%3E%3Cpath d='M-80 590C82 520 174 624 342 570s270-126 428-34 272 130 432 34 260-102 478-20'/%3E%3Cpath d='M-80 642C92 594 216 682 364 648s224-74 390-8 278 106 436 18 282-76 490 2'/%3E%3Cpath d='M-80 790C78 726 186 824 346 770s238-106 404-30 270 140 438 42 282-74 492 18'/%3E%3Cpath d='M-80 842C104 812 198 876 356 850s232-74 394-12 276 84 430-4 270-52 498 20'/%3E%3Cpath d='M-80 958C86 900 214 1008 370 944s236-90 398-8 278 80 438-8 266-38 474 34'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .catalog__intro {
@@ -656,7 +656,7 @@
 
 @media (max-width: 47.99rem) {
   .catalog {
-    background-size: 28rem 12rem;
+    background-size: auto 100%;
   }
 
   .catalog__copy h2 {

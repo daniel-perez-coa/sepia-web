@@ -194,9 +194,9 @@ if (emailLink) {
 document.querySelectorAll('[data-social]').forEach((link) => {
   const social = siteConfig.socials[link.dataset.social];
   if (!social) return;
-  link.href = social.url;
+  link.href = link.dataset.socialUrl || social.url;
   const label = link.querySelector('[data-social-label]');
-  if (label) label.textContent = `${social.label} ↗`;
+  if (label) label.textContent = `${link.dataset.socialHandle || social.label} ↗`;
 });
 
 document.querySelectorAll('[data-current-year]').forEach((element) => {

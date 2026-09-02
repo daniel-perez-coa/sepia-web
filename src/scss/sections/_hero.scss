@@ -537,7 +537,9 @@
   top: 3.3rem;
   right: var(--card-pad);
   left: var(--card-pad);
-  height: 5.85rem;
+  // Keep the graphic field separate from the headline; it must finish above
+  // the wordmark instead of running behind it.
+  height: 4.7rem;
   min-height: 0;
   margin: 0;
 }

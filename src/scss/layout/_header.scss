@@ -43,7 +43,7 @@
   overflow: hidden;
   transform: translateX(-50%);
   font-family: var(--font-mono);
-  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -54,7 +54,7 @@
   display: flex;
   width: max-content;
   gap: clamp(3rem, 8vw, 8rem);
-  animation: signal-marquee 42s linear infinite;
+  animation: signal-marquee 60s linear infinite;
 }
 
 .site-header__signal-track span {
@@ -63,11 +63,11 @@
 
 @keyframes signal-marquee {
   from {
-    transform: translateX(100vw);
+    transform: translateX(0);
   }
 
   to {
-    transform: translateX(calc(-50% - 100vw));
+    transform: translateX(-50%);
   }
 }
 

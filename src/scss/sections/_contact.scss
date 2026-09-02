@@ -13,10 +13,10 @@
 .contact::before {
   position: absolute;
   z-index: -1;
-  top: 50%;
-  right: clamp(-38rem, -30vw, -16rem);
+  top: 60%;
+  right: clamp(-45rem, -90vw, -16rem);
   width: min(128vw, 128rem);
-  height: 148%;
+  height: 300%;
   transform: translateY(-50%);
   content: '';
   background: rgba(244, 240, 232, 0.09);

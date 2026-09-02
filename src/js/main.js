@@ -1,3 +1,4 @@
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import { initCatalog } from './catalog.js';
 import { siteConfig } from './site-config.js';
 
@@ -6,6 +7,13 @@ document.documentElement.classList.add('js');
 initCatalog();
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const createIcon = (name) => {
+  const icon = document.createElement('i');
+  icon.className = `bi bi-${name}`;
+  icon.setAttribute('aria-hidden', 'true');
+  return icon;
+};
 
 const menuButton = document.querySelector('[data-menu-toggle]');
 const navigation = document.querySelector('[data-navigation]');
@@ -196,7 +204,8 @@ if (emailLink) {
   }
 
   if (!passedLabel) {
-    emailLink.textContent = `${siteConfig.contact.email} ↗`;
+    emailLink.textContent = siteConfig.contact.email;
+    emailLink.append(createIcon('arrow-up-right'));
   }
 }
 
@@ -205,7 +214,10 @@ document.querySelectorAll('[data-social]').forEach((link) => {
   if (!social) return;
   link.href = link.dataset.socialUrl || social.url;
   const label = link.querySelector('[data-social-label]');
-  if (label) label.textContent = `${link.dataset.socialHandle || social.label} ↗`;
+  if (label) {
+    label.textContent = link.dataset.socialHandle || social.label;
+    label.append(createIcon('arrow-up-right'));
+  }
 });
 
 document.querySelectorAll('[data-current-year]').forEach((element) => {

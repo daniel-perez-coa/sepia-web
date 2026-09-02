@@ -1,4 +1,12 @@
 const ITEMS_PER_PAGE = 5;
+
+const createIcon = (name) => {
+  const icon = document.createElement('i');
+  icon.className = `bi bi-${name}`;
+  icon.setAttribute('aria-hidden', 'true');
+  return icon;
+};
+
 const DATA_URLS = [
   '/data/c_toys.json',
   '/data/c_tabs.json',
@@ -225,7 +233,7 @@ export const initCatalog = async () => {
       pagination.replaceChildren();
       const previous = document.createElement('button');
       previous.type = 'button';
-      previous.textContent = '←';
+      previous.append(createIcon('arrow-left'));
       previous.disabled = activePage === 0;
       previous.setAttribute('aria-label', 'Página anterior');
       previous.addEventListener('click', () => {
@@ -249,7 +257,7 @@ export const initCatalog = async () => {
 
       const next = document.createElement('button');
       next.type = 'button';
-      next.textContent = '→';
+      next.append(createIcon('arrow-right'));
       next.disabled = activePage >= pageCount - 1;
       next.setAttribute('aria-label', 'Página siguiente');
       next.addEventListener('click', () => {

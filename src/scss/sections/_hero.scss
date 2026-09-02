@@ -39,7 +39,7 @@
 
 .hero__grid {
   display: grid;
-  min-height: calc(100svh - var(--header-height) - 2.5rem);
+  min-height: calc(100svh - var(--header-height));
   grid-template-columns: minmax(0, 1.02fr) minmax(24rem, 0.98fr);
   align-items: stretch;
 }
@@ -121,7 +121,7 @@
   display: grid;
   overflow: hidden;
   min-height: 0;
-  height: calc(100svh - var(--header-height) - 2.5rem);
+  height: calc(100svh - var(--header-height));
   place-items: center;
   background-color: var(--color-primary);
   isolation: isolate;

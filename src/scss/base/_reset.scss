@@ -10,6 +10,12 @@ html {
   scroll-snap-type: y proximity;
 }
 
+@media (min-width: 60.01rem) and (min-height: 36rem) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+}
+
 body,
 h1,
 h2,

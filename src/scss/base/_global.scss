@@ -8,6 +8,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.page-view {
+  min-height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
 body.menu-open {
   overflow: hidden;
 }

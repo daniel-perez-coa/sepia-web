@@ -36,53 +36,108 @@ window.matchMedia('(min-width: 52rem)').addEventListener('change', (event) => {
   if (event.matches) setMenuState(false);
 });
 
-let activeViewIndex = 0;
-let isAutoSnapping = false;
-let autoSnapTimer;
+const returnTopLinks = [...document.querySelectorAll('[data-return-top]')];
+// Every data-page-view section automatically joins the full-page navigation flow.
+const fullPageNavigation = window.matchMedia('(min-width: 60.01rem) and (min-height: 36rem)');
 
-const getViewIndex = () => {
-  const viewportMarker = window.scrollY + window.innerHeight * 0.5;
-  return pageViews.reduce(
-    (activeIndex, view, index) => (view.offsetTop <= viewportMarker ? index : activeIndex),
-    0,
-  );
+let activeViewIndex = 0;
+let navigationLocked = false;
+let wheelDelta = 0;
+let wheelResetTimer;
+let navigationUnlockTimer;
+
+const getClosestViewIndex = () => pageViews.reduce((closestIndex, view, index) => {
+  const currentDistance = Math.abs(pageViews[closestIndex].getBoundingClientRect().top);
+  const nextDistance = Math.abs(view.getBoundingClientRect().top);
+  return nextDistance < currentDistance ? index : closestIndex;
+}, 0);
+
+const syncViewState = (index) => {
+  const activeView = pageViews[index];
+  if (!activeView) return;
+
+  activeViewIndex = index;
+  const headerMode = activeView.dataset.headerMode ?? 'default';
+  document.body.dataset.activeView = activeView.id || `view-${index + 1}`;
+  header?.classList.toggle('is-scrolled', headerMode === 'default' && window.scrollY > 24);
+  header?.classList.toggle('is-section-view', headerMode === 'signal');
+  header?.classList.toggle('is-hidden', headerMode === 'hidden');
+  returnTopLinks.forEach((link) => {
+    link.classList.toggle('is-visible', link.dataset.returnView === activeView.id);
+  });
 };
 
-const syncHeader = () => {
-  const nextViewIndex = getViewIndex();
-  const activeView = pageViews[nextViewIndex];
-  document.body.dataset.activeView = activeView?.id ?? 'inicio';
-  header?.classList.toggle('is-scrolled', window.scrollY > 24 && nextViewIndex === 0);
-  header?.classList.toggle('is-section-view', nextViewIndex === 1);
-  header?.classList.toggle('is-hidden', nextViewIndex === 2);
+const navigateToView = (index) => {
+  const nextIndex = Math.max(0, Math.min(index, pageViews.length - 1));
+  const nextView = pageViews[nextIndex];
+  if (!nextView || nextIndex === activeViewIndex && Math.abs(nextView.getBoundingClientRect().top) < 2) return;
 
-  if (isAutoSnapping || nextViewIndex === activeViewIndex) return;
-
-  activeViewIndex = nextViewIndex;
-  isAutoSnapping = true;
-  pageViews[activeViewIndex]?.scrollIntoView({
+  navigationLocked = true;
+  wheelDelta = 0;
+  syncViewState(nextIndex);
+  nextView.scrollIntoView({
     behavior: prefersReducedMotion ? 'auto' : 'smooth',
     block: 'start',
   });
-  window.clearTimeout(autoSnapTimer);
-  autoSnapTimer = window.setTimeout(() => {
-    isAutoSnapping = false;
-  }, prefersReducedMotion ? 80 : 850);
+
+  window.clearTimeout(navigationUnlockTimer);
+  navigationUnlockTimer = window.setTimeout(() => {
+    navigationLocked = false;
+  }, prefersReducedMotion ? 80 : 900);
 };
 
-activeViewIndex = getViewIndex();
-syncHeader();
-window.addEventListener('scroll', syncHeader, { passive: true });
-window.addEventListener('resize', syncHeader, { passive: true });
+const handleWheelNavigation = (event) => {
+  if (!fullPageNavigation.matches || document.body.classList.contains('menu-open')) return;
+  if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
 
-document.querySelectorAll('[data-return-top]').forEach((link) => {
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-    });
-  });
+  event.preventDefault();
+  if (navigationLocked) return;
+
+  wheelDelta += event.deltaY;
+  window.clearTimeout(wheelResetTimer);
+  wheelResetTimer = window.setTimeout(() => {
+    wheelDelta = 0;
+  }, 140);
+
+  if (Math.abs(wheelDelta) < 48) return;
+  navigateToView(activeViewIndex + Math.sign(wheelDelta));
+};
+
+const viewObserver = new IntersectionObserver((entries) => {
+  if (navigationLocked) return;
+  const visibleEntry = entries
+    .filter((entry) => entry.isIntersecting)
+    .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
+  if (!visibleEntry) return;
+  syncViewState(pageViews.indexOf(visibleEntry.target));
+}, { threshold: [0.35, 0.5, 0.65, 0.8] });
+
+pageViews.forEach((view) => viewObserver.observe(view));
+syncViewState(getClosestViewIndex());
+window.addEventListener('wheel', handleWheelNavigation, { passive: false });
+window.addEventListener('resize', () => syncViewState(getClosestViewIndex()), { passive: true });
+
+document.addEventListener('keydown', (event) => {
+  if (!fullPageNavigation.matches || navigationLocked) return;
+  if (event.target.closest('input, textarea, select, button, [contenteditable="true"]')) return;
+
+  const forward = event.key === 'PageDown' || event.key === 'ArrowDown' || event.key === ' ';
+  const backward = event.key === 'PageUp' || event.key === 'ArrowUp' || event.key === 'Home';
+  if (!forward && !backward) return;
+
+  event.preventDefault();
+  navigateToView(event.key === 'Home' ? 0 : activeViewIndex + (forward ? 1 : -1));
+});
+
+document.addEventListener('click', (event) => {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link) return;
+  const target = document.querySelector(link.getAttribute('href'));
+  const targetIndex = pageViews.indexOf(target);
+  if (targetIndex < 0) return;
+
+  event.preventDefault();
+  navigateToView(targetIndex);
 });
 
 const typewriter = document.querySelector('[data-typewriter]');

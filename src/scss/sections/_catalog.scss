@@ -299,7 +299,8 @@
 
 .catalog-tabs button {
   position: relative;
-  padding-inline: 0.25rem;
+  align-self: center;
+  padding: 0.45rem 0.25rem 0.6rem;
 }
 
 .catalog-tabs button::after {

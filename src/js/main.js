@@ -187,8 +187,17 @@ if (typewriter && !prefersReducedMotion) {
 
 const emailLink = document.querySelector('[data-contact-email]');
 if (emailLink) {
-  emailLink.href = `mailto:${siteConfig.contact.email}`;
-  emailLink.textContent = `${siteConfig.contact.email} ↗`;
+  const passedHref = emailLink.getAttribute('href') || '';
+  const passedLabel = emailLink.textContent.trim();
+  const hasPassedEmail = passedHref.startsWith('mailto:');
+
+  if (!hasPassedEmail) {
+    emailLink.href = `mailto:${siteConfig.contact.email}`;
+  }
+
+  if (!passedLabel) {
+    emailLink.textContent = `${siteConfig.contact.email} ↗`;
+  }
 }
 
 document.querySelectorAll('[data-social]').forEach((link) => {

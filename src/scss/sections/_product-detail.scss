@@ -374,6 +374,13 @@
   border-bottom: 1px solid var(--color-line);
   grid-template-columns: 1.1fr 0.75fr 1.35fr;
   gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.product-detail__story,
+.product-detail__includes,
+.product-detail__dimensions {
+  margin: 0;
 }
 
 .product-detail__story h2,

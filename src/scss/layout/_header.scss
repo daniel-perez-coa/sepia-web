@@ -44,7 +44,7 @@
   transform: translateX(-50%);
   font-family: var(--font-mono);
   font-size: clamp(0.95rem, 1.35vw, 1.15rem);
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -53,8 +53,8 @@
 .site-header__signal-track {
   display: flex;
   width: max-content;
-  gap: clamp(3rem, 8vw, 8rem);
-  animation: signal-marquee 60s linear infinite;
+  gap: clamp(2rem, 5vw, 5rem);
+  animation: signal-marquee 70s linear infinite;
 }
 
 .site-header__signal-track span {

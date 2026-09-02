@@ -434,6 +434,39 @@
   opacity: 0.55;
 }
 
+.return-top {
+  position: fixed;
+  z-index: 15;
+  right: clamp(1.25rem, 4vw, 4rem);
+  bottom: clamp(1.25rem, 4vw, 3rem);
+  display: grid;
+  width: clamp(4.75rem, 8vw, 6.25rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-fresh);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: clamp(2.6rem, 4vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1;
+  place-items: center;
+  transform: translateY(1rem) scale(0.82);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+body[data-active-view='catalogo'] .return-top--catalog,
+body[data-active-view='contacto'] .return-top--contact {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.return-top:hover {
+  transform: translateY(-0.25rem) scale(1.04);
+}
+
 .product-grid.is-changing {
   opacity: 0.35;
   transform: translateY(0.5rem);

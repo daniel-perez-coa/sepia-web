@@ -52,6 +52,12 @@
   flex: 0 0 auto;
 }
 
+.site-header.is-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .site-header.is-scrolled {
   border-color: rgba(244, 240, 232, 0.1);
   background: rgba(9, 10, 13, 0.88);

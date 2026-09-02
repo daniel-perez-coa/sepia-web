@@ -50,8 +50,11 @@ const getViewIndex = () => {
 
 const syncHeader = () => {
   const nextViewIndex = getViewIndex();
+  const activeView = pageViews[nextViewIndex];
+  document.body.dataset.activeView = activeView?.id ?? 'inicio';
   header?.classList.toggle('is-scrolled', window.scrollY > 24 && nextViewIndex === 0);
-  header?.classList.toggle('is-section-view', nextViewIndex > 0);
+  header?.classList.toggle('is-section-view', nextViewIndex === 1);
+  header?.classList.toggle('is-hidden', nextViewIndex === 2);
 
   if (isAutoSnapping || nextViewIndex === activeViewIndex) return;
 
@@ -71,6 +74,16 @@ activeViewIndex = getViewIndex();
 syncHeader();
 window.addEventListener('scroll', syncHeader, { passive: true });
 window.addEventListener('resize', syncHeader, { passive: true });
+
+document.querySelectorAll('[data-return-top]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+  });
+});
 
 const typewriter = document.querySelector('[data-typewriter]');
 

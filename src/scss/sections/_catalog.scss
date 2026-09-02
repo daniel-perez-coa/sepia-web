@@ -443,11 +443,10 @@
   right: clamp(1.25rem, 4vw, 4rem);
   bottom: clamp(1.25rem, 4vw, 3rem);
   display: grid;
-  width: clamp(4.75rem, 8vw, 6.25rem);
+  width: clamp(4rem, 6.5vw, 5.25rem);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--color-fresh);
-  color: var(--color-ink);
+  color: var(--color-fresh);
   font-family: var(--font-body);
   font-size: clamp(2.6rem, 4vw, 3.8rem);
   font-weight: 500;
@@ -457,6 +456,29 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--transition), transform var(--transition);
+}
+
+.return-top__circle,
+.return-top__arrow {
+  position: absolute;
+}
+
+.return-top__circle {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 100%;
+}
+
+.return-top__arrow {
+  top: 50%;
+  left: 50%;
+  color: var(--color-ink);
+  font-size: 52%;
+  font-weight: 800;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  -webkit-text-stroke: 0.04em currentColor;
 }
 
 .return-top.is-visible {

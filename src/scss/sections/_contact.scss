@@ -14,9 +14,9 @@
   position: absolute;
   z-index: -1;
   top: 50%;
-  right: clamp(-19rem, -12vw, -8rem);
-  width: min(76vw, 78rem);
-  height: 92%;
+  right: clamp(-38rem, -30vw, -16rem);
+  width: min(128vw, 128rem);
+  height: 148%;
   transform: translateY(-50%);
   content: '';
   background: rgba(244, 240, 232, 0.09);
@@ -126,9 +126,9 @@
 
 @media (max-width: 60rem) {
   .contact::before {
-    right: -48vw;
-    width: 135vw;
-    height: 78%;
+    right: -70vw;
+    width: 185vw;
+    height: 140%;
     background: rgba(244, 240, 232, 0.075);
   }
 

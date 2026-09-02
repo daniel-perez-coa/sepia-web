@@ -89,6 +89,11 @@
   backdrop-filter: blur(1rem);
 }
 
+.site-header--product {
+  border-color: rgba(244, 240, 232, 0.14);
+  background: var(--color-ink);
+}
+
 .site-header__inner {
   position: relative;
   display: flex;

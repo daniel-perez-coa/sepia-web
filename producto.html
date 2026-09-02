@@ -1,0 +1,156 @@
+<!doctype html>
+<html class="product-document" lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Conoce los detalles de una pieza coleccionable SEPIA." />
+    <meta name="theme-color" content="#090a0d" />
+    <link rel="icon" type="image/png" href="/assets/sepia-mark-dark.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/scss/main.scss" />
+    <title>Producto | SEPIA</title>
+  </head>
+  <body class="product-page">
+    <a class="skip-link" href="#product-content">Saltar al contenido</a>
+
+    <header class="site-header site-header--product" data-header>
+      <div class="container site-header__inner">
+        <a class="brand" href="/#inicio" aria-label="SEPIA, ir al inicio">
+          <img class="brand__wordmark" src="/assets/sepia-wordmark-light.png" alt="" />
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="product-navigation"
+          aria-label="Abrir menú"
+          data-menu-toggle
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="site-nav" id="product-navigation" aria-label="Navegación principal" data-navigation>
+          <a href="/#inicio">Inicio</a>
+          <a href="/#catalogo">Catálogo</a>
+          <a href="/#contacto">Contacto</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="product-detail" id="product-content" data-product-page>
+      <div class="product-detail__shell">
+        <header class="product-detail__header">
+          <nav class="product-detail__breadcrumb meta" aria-label="Ruta del producto">
+            <a href="/#inicio">INICIO</a>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            <a href="/#catalogo">FIGURAS</a>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            <span data-detail-collection></span>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            <strong data-detail-breadcrumb></strong>
+          </nav>
+          <a class="product-detail__back" href="/#catalogo">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            VOLVER AL CATÁLOGO
+          </a>
+        </header>
+
+        <div class="product-detail__hero" data-product-content hidden>
+          <section class="product-detail__media" aria-label="Galería del producto">
+            <div class="product-detail__stage">
+              <div class="product-detail__edition meta" data-detail-edition hidden></div>
+              <img src="/resources/series-zoo-scene.png" alt="Vista del producto" data-detail-main-image />
+              <button class="product-detail__gallery-control product-detail__gallery-control--previous" type="button" aria-label="Foto anterior" data-detail-previous>
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+              </button>
+              <button class="product-detail__gallery-control product-detail__gallery-control--next" type="button" aria-label="Foto siguiente" data-detail-next>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="product-detail__thumbnails" data-detail-thumbnails></div>
+          </section>
+
+          <section class="product-detail__purchase" aria-labelledby="product-detail-title">
+            <div class="product-detail__title-row">
+              <div>
+                <p class="eyebrow" data-detail-collection></p>
+                <h1 id="product-detail-title" data-detail-title></h1>
+              </div>
+              <p class="product-detail__price" data-detail-price></p>
+            </div>
+            <p class="product-detail__description" data-detail-description></p>
+            <div class="product-detail__badges" data-detail-badges></div>
+            <div class="product-detail__options" data-detail-options></div>
+
+            <div class="product-detail__quantity-row">
+              <div>
+                <p class="meta">CANTIDAD</p>
+                <div class="product-detail__quantity" aria-label="Elegir cantidad">
+                  <button type="button" aria-label="Restar uno" data-detail-decrease>−</button>
+                  <output data-detail-quantity>1</output>
+                  <button type="button" aria-label="Sumar uno" data-detail-increase>+</button>
+                </div>
+              </div>
+              <p class="product-detail__stock meta" data-detail-stock></p>
+            </div>
+
+            <a class="product-detail__primary-action" href="/#contacto">
+              SOLICITAR ESTA PIEZA
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+            <a class="product-detail__secondary-action" href="mailto:hola@sepia.mx" data-detail-email>
+              <i class="bi bi-envelope" aria-hidden="true"></i>
+              PREGUNTAR POR CORREO
+            </a>
+            <div class="product-detail__assurances">
+              <span><i class="bi bi-box-seam" aria-hidden="true"></i> Empaque seguro</span>
+              <span><i class="bi bi-geo-alt" aria-hidden="true"></i> Hecho en Puebla</span>
+              <span><i class="bi bi-stars" aria-hidden="true"></i> Pieza coleccionable</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="product-detail__story-grid" data-product-content hidden>
+          <article class="product-detail__story">
+            <p class="eyebrow" data-detail-story-eyebrow></p>
+            <h2 data-detail-story-title></h2>
+            <p data-detail-story-text></p>
+          </article>
+          <article class="product-detail__includes">
+            <p class="eyebrow">¿QUÉ INCLUYE?</p>
+            <ul data-detail-includes></ul>
+          </article>
+          <figure class="product-detail__dimensions">
+            <figcaption class="eyebrow">DIMENSIONES &amp; MATERIALES</figcaption>
+            <img src="/resources/series-zoo-studio.png" alt="Dimensiones y materiales del producto" data-detail-dimensions-image />
+          </figure>
+        </div>
+
+        <section class="product-detail__facts" aria-label="Información técnica" data-detail-facts data-product-content hidden></section>
+
+        <section class="product-detail__related" aria-labelledby="product-related-title" data-product-content hidden>
+          <div class="product-detail__section-heading">
+            <p class="eyebrow">COMBÍNALOS CON</p>
+            <h2 id="product-related-title">OTRAS PIEZAS DE LA COLECCIÓN</h2>
+          </div>
+          <div class="product-detail__related-grid" data-detail-related></div>
+        </section>
+
+        <section class="product-detail__missing" role="status" data-product-missing hidden>
+          <p class="eyebrow">PRODUCTO NO ENCONTRADO</p>
+          <h1>ESTA PIEZA NO ESTÁ DISPONIBLE.</h1>
+          <a class="button button--fresh" href="/#catalogo">VOLVER AL CATÁLOGO</a>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="/src/js/product-page.js"></script>
+  </body>
+</html>

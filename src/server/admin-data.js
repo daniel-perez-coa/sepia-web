@@ -100,8 +100,9 @@ const prepareSave = async (db, resource, payload, actor, id) => {
       tab_label: textValue(payload.tabLabel ?? '', 'Etiqueta de navegación', 200), show_in_nav: bool(payload.showInNav ?? true, 'Navegación'),
       sort_order: integerValue(payload.sortOrder ?? 0, 'Orden'), active: bool(payload.active, 'Activo') };
     if (resource === 'subcategories') { await relation(tables.categories, payload.categoryId, before?.category_id); fields.category_id = payload.categoryId; }
-  } else if (resource === 'settings' && before?.key === 'catalog') {
-    fields = { value_json: JSON.stringify(validateSettings(payload.value)), active: bool(payload.active, 'Activo') };
+  } else if (resource === 'settings') {
+    if (before && before.key !== 'catalog') fail('Configuración protegida.');
+    fields = { ...(before ? {} : { key: 'catalog' }), value_json: JSON.stringify(validateSettings(payload.value)), active: bool(payload.active, 'Activo') };
   } else fail('Operación no permitida.');
   const action = before && fields.active !== before.active ? (fields.active ? 'reactivate' : 'deactivate') : before ? 'update' : 'create';
   return writeStatements(db, resource, before, fields, actor, action, guards.join(' AND ') || '1=1', guardArgs);

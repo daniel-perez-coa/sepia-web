@@ -245,8 +245,5 @@ try{
   await refresh();workspace.hidden=false;root.querySelector('[data-admin-health]').textContent='Catálogo conectado';root.querySelector('[data-admin-actor]').textContent=snapshot.actor.email??snapshot.actor.id;
 }catch(e){
   const auth=root.querySelector('[data-admin-auth]');auth.hidden=false;auth.querySelector('h2').textContent=e.message;
-  const login=auth.querySelector('a');
-  login.hidden=false;
-  login.textContent=e.status===403?'Cambiar o volver a autenticar':'Iniciar sesión';
   root.querySelector('[data-admin-health]').textContent='Acceso pendiente';
 }finally{root.querySelector('[data-admin-loading]').hidden=true;}

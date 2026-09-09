@@ -3,12 +3,24 @@ import { saveRecord, setRecordActive, assignLegacyFeatured } from './admin-data.
 import { FEATURED_FIELDS, FEATURED_TEMPLATES, object } from '../shared/product-config.js';
 import { FEATURED_ADJUSTMENT_FIELDS } from '../shared/featured-config.js';
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+const decodeAccessPayload = token => {
+  try {
+    const part = token.split('.')[1];
+    if (!part) return null;
+    const base64 = part.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - part.length % 4) % 4);
+    return JSON.parse(atob(base64));
+  } catch { return null; }
+};
 export const getAdminActor = (request, env) => {
-  const id = request.headers.get('oai-authenticated-user-id');
-  if (!id) throw new Response('Inicia sesión para administrar el catálogo.', { status: 401 });
-  const allowed = String(env.ADMIN_USER_IDS ?? '').split(',').map(x => x.trim()).filter(Boolean);
-  if (!allowed.includes(id)) throw new Response('Tu cuenta no tiene permiso de administración.', { status: 403 });
-  return { id, email: request.headers.get('oai-authenticated-user-email') };
+  const legacyId = request.headers.get('oai-authenticated-user-id');
+  const accessPayload = decodeAccessPayload(request.headers.get('Cf-Access-Jwt-Assertion') ?? '');
+  const id = legacyId ?? accessPayload?.sub;
+  const email = request.headers.get('oai-authenticated-user-email') ?? accessPayload?.email;
+  if (!id || !accessPayload && !legacyId) throw new Response('Autenticación requerida por Cloudflare Access.', { status: 401 });
+  const allowedIds = String(env.ADMIN_USER_IDS ?? '').split(',').map(x => x.trim()).filter(Boolean);
+  const allowedEmails = String(env.ADMIN_USER_EMAILS ?? '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
+  if (!(allowedIds.includes(id) || email && allowedEmails.includes(String(email).toLowerCase()))) throw new Response('Tu cuenta no tiene permiso de administración.', { status: 403 });
+  return { id, email };
 };
 const payloadFor = async request => {
   if (!request.headers.get('content-type')?.startsWith('application/json')) throw new Response('Se requiere JSON.', { status: 415 });

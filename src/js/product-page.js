@@ -1,3 +1,4 @@
+import '../scss/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const createIcon = (name) => {
@@ -64,6 +65,13 @@ const renderProduct = (root, product, products) => {
   root.querySelector('[data-detail-breadcrumb]').textContent = product.title;
   root.querySelector('[data-detail-title]').textContent = product.title;
   root.querySelector('[data-detail-price]').textContent = product.price || 'PRECIO BAJO PEDIDO';
+  if (product.promotionActive && product.effectivePriceMinor < product.priceMinor) {
+    const original = document.createElement('del');
+    original.className = 'product-original-price';
+    original.textContent = product.regularPrice;
+    original.setAttribute('aria-label', `Precio anterior: ${product.regularPrice}`);
+    root.querySelector('[data-detail-price]').append(document.createTextNode(' '), original);
+  }
   root.querySelector('[data-detail-description]').textContent = product.longDescription || product.desc;
   root.querySelector('[data-detail-stock]').textContent = `${product.stock ?? 1} DISPONIBLES`;
   root.querySelector('[data-detail-story-eyebrow]').textContent = product.story?.eyebrow || 'LA HISTORIA';
@@ -211,7 +219,7 @@ const initProductPage = async () => {
   if (!root) return;
 
   try {
-    const response = await fetch('/data/c_products.json');
+    const response = await fetch('/api/products');
     if (!response.ok) throw new Error('No se pudo cargar el catálogo');
     const data = await response.json();
     const products = Array.isArray(data.products) ? data.products : [];

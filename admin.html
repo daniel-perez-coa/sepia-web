@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Administración | SEPIA</title>
+    <link rel="icon" type="image/png" href="/assets/sepia-mark-dark.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="admin-page">
+    <a class="skip-link" href="#admin-content">Ir al contenido</a>
+    <div class="admin-shell" data-admin>
+      <aside class="admin-sidebar" aria-label="Administración del catálogo">
+        <a class="admin-brand" href="/" aria-label="SEPIA, volver al sitio"><img src="/assets/sepia-wordmark-light.png" alt="SEPIA" /><span>ADMIN</span></a>
+        <nav class="admin-nav" data-admin-nav aria-label="Secciones"></nav>
+        <a class="admin-sidebar__site-link" href="/" target="_blank" rel="noopener">Ver sitio ↗</a>
+      </aside>
+      <main class="admin-main" id="admin-content">
+        <header class="admin-topbar">
+          <div><p class="meta">CATÁLOGO</p><h1 data-admin-title>Productos</h1></div>
+          <div class="admin-topbar__session"><span class="admin-health" data-admin-health>Cargando</span><small data-admin-actor></small></div>
+        </header>
+        <section class="admin-auth" data-admin-auth hidden>
+          <p class="eyebrow eyebrow--primary">ACCESO REQUERIDO</p><h2>Inicia sesión para administrar el catálogo.</h2>
+          <p>Solo las cuentas autorizadas pueden modificar productos y catálogos.</p>
+          <a class="button button--fresh" href="/signin-with-chatgpt?return_to=/admin">Iniciar sesión</a>
+        </section>
+        <section class="admin-loading" data-admin-loading><span></span><p>Preparando el catálogo…</p></section>
+        <div class="admin-workspace" data-admin-workspace hidden></div>
+      </main>
+    </div>
+    <dialog class="admin-dialog" data-admin-dialog aria-labelledby="admin-editor-title">
+      <form class="admin-dialog__panel" data-admin-form>
+        <header><div><p class="meta" data-dialog-eyebrow>EDITAR</p><h2 id="admin-editor-title" data-dialog-title></h2></div>
+          <button class="admin-icon-button" type="button" data-dialog-close aria-label="Cerrar">×</button></header>
+        <div class="admin-dialog__fields" data-dialog-fields></div>
+        <p class="admin-form-error" data-form-error role="alert" hidden></p>
+        <footer><button class="admin-secondary-action" type="button" data-dialog-close>Cancelar</button><button class="admin-primary-action" type="submit" data-dialog-submit>Guardar cambios</button></footer>
+      </form>
+    </dialog>
+    <p class="admin-toast" data-admin-toast role="status" aria-live="polite"></p>
+    <script type="module" src="/src/js/admin.js"></script>
+  </body>
+</html>

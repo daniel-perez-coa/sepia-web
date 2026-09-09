@@ -6,5 +6,13 @@
   "assets": {
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sepia-catalog",
+      "database_id": "b6babd5e-95f4-40bb-a5f5-db34c8cfa37f",
+      "migrations_dir": "drizzle"
+    }
+  ]
 }

@@ -1,3 +1,4 @@
+import '../scss/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const PAGE_SIZE = 6;
@@ -7,7 +8,9 @@ const normalizeText = (value = '') => String(value)
   .replace(/[\u0300-\u036f]/g, '')
   .toLowerCase();
 
-const getPrice = (product) => Number(String(product.price || '').replace(/[^\d]/g, '')) || 0;
+const getPrice = (product) => Number.isFinite(Number(product.effectivePriceMinor ?? product.priceMinor))
+  ? Number(product.effectivePriceMinor ?? product.priceMinor) / 100
+  : Number(String(product.price || '').replace(/[^\d]/g, '')) || 0;
 
 const createCard = (product, index) => {
   const card = document.createElement('article');
@@ -21,7 +24,7 @@ const createCard = (product, index) => {
   card.className = `explore-card${index % 4 === 1 ? ' explore-card--dark' : ''}`;
   card.style.setProperty('--card-order', String(index % PAGE_SIZE));
   label.className = 'explore-card__label meta';
-  label.textContent = product.label;
+  label.textContent = product.promotionActive ? product.promotionLabel : product.label;
   image.src = product.photo;
   image.alt = `${product.title}: ${product.desc}`;
   image.loading = 'lazy';
@@ -73,15 +76,23 @@ const initExplore = async () => {
   let products = [];
   let visibleProducts = [];
   let renderedCount = 0;
-  let activeCategory = '*';
+  let activeFilterType = 'all';
+  let activeFilterValue = '*';
   let isLoading = false;
   let userHasScrolled = false;
   let lastScrollY = window.scrollY;
 
   const productMatchesCategory = (product) => {
-    if (activeCategory === '*') return true;
-    if (['NEW', 'DROP_01'].includes(activeCategory)) return product.label === activeCategory;
-    return product.Collection === activeCategory;
+    if (activeFilterType === 'all') return true;
+    if (activeFilterType === 'collection') {
+      return product.collections?.some((collection) => collection.slug === activeFilterValue);
+    }
+    if (activeFilterType === 'category') {
+      return product.categories?.some((category) => category.slug === activeFilterValue);
+    }
+    if (activeFilterType === 'subcategory') return product.subcategorySlug === activeFilterValue;
+    if (activeFilterType === 'label') return product.label === activeFilterValue;
+    return true;
   };
 
   const productMatchesFilters = (product) => {
@@ -113,6 +124,8 @@ const initExplore = async () => {
       sorted.sort((first, second) => getPrice(second) - getPrice(first));
     } else if (sort.value === 'name') {
       sorted.sort((first, second) => first.title.localeCompare(second.title, 'es'));
+    } else if (sort.value === 'featured') {
+      sorted.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.featuredOrder - b.featuredOrder);
     }
     return sorted;
   };
@@ -154,9 +167,10 @@ const initExplore = async () => {
   };
 
   tabs.addEventListener('click', (event) => {
-    const selected = event.target.closest('button[data-category]');
+    const selected = event.target.closest('button[data-filter-value]');
     if (!selected) return;
-    activeCategory = selected.dataset.category;
+    activeFilterType = selected.dataset.filterType;
+    activeFilterValue = selected.dataset.filterValue;
     [...tabs.children].forEach((button) => {
       const isActive = button === selected;
       button.classList.toggle('is-active', isActive);
@@ -169,7 +183,7 @@ const initExplore = async () => {
   tabs.addEventListener('keydown', (event) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
-    const buttons = [...tabs.querySelectorAll('button[data-category]')];
+    const buttons = [...tabs.querySelectorAll('button[data-filter-value]')];
     const currentIndex = buttons.findIndex((button) => button.classList.contains('is-active'));
     const nextIndex = event.key === 'Home'
       ? 0
@@ -210,10 +224,25 @@ const initExplore = async () => {
   }, { passive: true });
 
   try {
-    const response = await fetch('/data/c_products.json');
+    const response = await fetch('/api/catalog');
     if (!response.ok) throw new Error('No se pudo cargar el catálogo');
     const data = await response.json();
     products = Array.isArray(data.products) ? data.products : [];
+    const catalogTabs = Array.isArray(data.tabs) ? data.tabs : [];
+    tabs.replaceChildren(...catalogTabs.map((tab, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.role = 'tab';
+      button.textContent = tab.label;
+      button.dataset.filterType = tab.filterType;
+      button.dataset.filterValue = tab.filterValue;
+      button.classList.toggle('is-active', index === 0);
+      button.setAttribute('aria-selected', String(index === 0));
+      button.tabIndex = index === 0 ? 0 : -1;
+      return button;
+    }));
+    activeFilterType = catalogTabs[0]?.filterType ?? 'all';
+    activeFilterValue = catalogTabs[0]?.filterValue ?? '*';
     applyFilters();
   } catch (error) {
     count.textContent = '0 PRODUCTOS';

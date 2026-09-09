@@ -12,7 +12,6 @@
       href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/src/scss/main.scss" />
     <title>Todas las figuras | SEPIA</title>
   </head>
   <body class="explore-page">
@@ -75,13 +74,11 @@
         </section>
 
         <div class="explore-tabs" role="tablist" aria-label="Filtrar por colección" data-explore-tabs>
-          <button class="is-active" type="button" role="tab" aria-selected="true" data-category="*">TODOS</button>
-          <button type="button" role="tab" aria-selected="false" data-category="SHIFT CREW">SHIFT CREW</button>
-          <button type="button" role="tab" aria-selected="false" data-category="GHOST">GHOST</button>
-          <button type="button" role="tab" aria-selected="false" data-category="ZOO">ZOO</button>
-          <button type="button" role="tab" aria-selected="false" data-category="CÁPSULAS">CÁPSULAS</button>
-          <button type="button" role="tab" aria-selected="false" data-category="NEW">NUEVOS</button>
-          <button type="button" role="tab" aria-selected="false" data-category="DROP_01">DROP_01</button>
+          <button class="is-active" type="button" role="tab" aria-selected="true" data-filter-type="all" data-filter-value="*">TODOS</button>
+          <button type="button" role="tab" aria-selected="false" data-filter-type="collection" data-filter-value="shift-crew">SHIFT CREW</button>
+          <button type="button" role="tab" aria-selected="false" data-filter-type="collection" data-filter-value="ghost">GHOST</button>
+          <button type="button" role="tab" aria-selected="false" data-filter-type="collection" data-filter-value="zoo">ZOO</button>
+          <button type="button" role="tab" aria-selected="false" data-filter-type="collection" data-filter-value="capsulas">CÁPSULAS</button>
         </div>
 
         <form class="explore-filters" aria-label="Filtros del catálogo" data-explore-filters>

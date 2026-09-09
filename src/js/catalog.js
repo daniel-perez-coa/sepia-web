@@ -1,3 +1,5 @@
+import { normalizeFeaturedAdjustments } from '../shared/featured-config.js';
+
 const ITEMS_PER_PAGE = 5;
 
 const createIcon = (name) => {
@@ -6,17 +8,6 @@ const createIcon = (name) => {
   icon.setAttribute('aria-hidden', 'true');
   return icon;
 };
-
-const DATA_URLS = [
-  '/data/c_toys.json',
-  '/data/c_tabs.json',
-  '/data/c_products.json',
-];
-
-const allowedPosition = new Set(['left', 'center', 'right']);
-const allowedVertical = new Set(['top', 'center', 'bottom']);
-const allowedJustify = new Set(['start', 'center', 'end']);
-const allowedRounded = new Set(['none', 'soft', 'pill']);
 
 const fetchJson = async (url) => {
   const response = await fetch(url);
@@ -69,19 +60,35 @@ const renderRichText = (element, value) => {
 };
 
 const applyAdjustments = (element, adjustments = {}) => {
-  const horizontal = allowedPosition.has(adjustments.horizontal) ? adjustments.horizontal : 'left';
-  const vertical = allowedVertical.has(adjustments.vertical) ? adjustments.vertical : 'center';
-  const textAlign = allowedPosition.has(adjustments.textAlign) ? adjustments.textAlign : horizontal;
-  const justify = allowedJustify.has(adjustments.justify) ? adjustments.justify : 'start';
-  const rounded = allowedRounded.has(adjustments.rounded) ? adjustments.rounded : 'none';
+  const normalized = normalizeFeaturedAdjustments(adjustments);
+  const { horizontal, vertical, textAlign, justify, rounded, boxed } = normalized;
 
   element.dataset.horizontal = horizontal;
   element.dataset.vertical = vertical;
   element.dataset.textAlign = textAlign;
   element.dataset.justify = justify;
-  element.classList.toggle('is-boxed', adjustments.boxed === true);
+  element.classList.toggle('is-boxed', boxed);
   element.classList.remove('is-rounded-none', 'is-rounded-soft', 'is-rounded-pill');
   element.classList.add(`is-rounded-${rounded}`);
+};
+
+// Shared by the public carousel and the administration preview.
+export const paintFeatured = (card, slide) => {
+  const photo = card.querySelector('.featured-card__photo') || card.querySelector(':scope > img');
+  const label = card.querySelector('.featured-card__label');
+  const title = card.querySelector('h3');
+  const content = card.querySelector('.featured-card__content');
+  photo.src = slide.Photo; photo.alt = slide.imageAlt || '';
+  renderRichText(label, slide.Titulo1); renderRichText(title, slide.Titulo2);
+  applyAdjustments(label, slide.Titulo1adj); applyAdjustments(title, slide.Titulo2adj);
+  content.dataset.vertical = normalizeFeaturedAdjustments(slide.Titulo2adj).vertical;
+  content.querySelector('p').textContent = slide.text;
+  const link = content.querySelector('a'); link.textContent = slide.LinkText; link.href = slide.LinkUrl;
+  link.classList.toggle('has-line', slide.Line === 'yes');
+  card.dataset.template = slide.template || 'editorial-left';
+  card.style.setProperty('--featured-overlay', slide.overlayColor || '#142fd3');
+  card.style.setProperty('--featured-text', slide.textColor || '#ffffff');
+  card.style.setProperty('--featured-opacity', String(slide.overlayOpacity ?? 0.9));
 };
 
 const createProductCard = (product, index) => {
@@ -90,7 +97,7 @@ const createProductCard = (product, index) => {
 
   const label = document.createElement('span');
   label.className = 'product-card__label meta';
-  label.textContent = product.label;
+  label.textContent = product.promotionActive ? product.promotionLabel : product.label;
 
   const image = document.createElement('img');
   image.src = product.photo;
@@ -134,18 +141,23 @@ export const initCatalog = async () => {
   const productGrid = catalog.querySelector('[data-product-grid]');
   const pagination = catalog.querySelector('[data-catalog-pagination]');
   const status = catalog.querySelector('[data-catalog-status]');
+  // Never leave hard-coded products/banners visible after deactivation or an API failure.
+  featured.hidden = true;
+  productGrid.replaceChildren();
 
   try {
-    const [toyData, tabData, productData] = await Promise.all(DATA_URLS.map(fetchJson));
-    const slides = Array.isArray(toyData.destacados) ? toyData.destacados : [];
-    const tabs = Array.isArray(tabData.tabs) ? tabData.tabs : [];
-    const products = Array.isArray(productData.products) ? productData.products : [];
-    const autoplayMs = Math.max(3000, Number(toyData.autoplayMs) || 6500);
+    const catalogData = await fetchJson('/api/catalog');
+    const slides = Array.isArray(catalogData.destacados) ? catalogData.destacados : [];
+    featured.hidden = slides.length === 0;
+    catalog.classList.toggle('catalog--without-featured', slides.length === 0);
+    const tabs = Array.isArray(catalogData.tabs) ? catalogData.tabs : [];
+    const products = Array.isArray(catalogData.products) ? catalogData.products : [];
+    const autoplayMs = Math.max(3000, Number(catalogData.autoplayMs) || 6500);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let featuredIndex = 0;
     let featuredTimer;
     let swapTimer;
-    let activeCollection = tabs[0]?.Collection ?? '*';
+    let activeTab = tabs[0] ?? { id: 'todos', label: 'TODOS', filterType: 'all', filterValue: '*' };
     let activePage = 0;
 
     const renderFeatured = (index, animate = true) => {
@@ -156,15 +168,14 @@ export const initCatalog = async () => {
       window.clearTimeout(swapTimer);
       featured.classList.toggle('is-changing', animate && !prefersReducedMotion);
       swapTimer = window.setTimeout(() => {
+        paintFeatured(featured, slide);
         featuredPhoto.src = slide.Photo;
-        featuredPhoto.alt = `${slide.Titulo2.replace(/\[[^\]]+\]/g, '').replace(/\n/g, ' ')}, colección destacada`;
+        featuredPhoto.alt = slide.imageAlt || `${slide.Titulo2.replace(/\[[^\]]+\]/g, '').replace(/\n/g, ' ')}, colección destacada`;
         renderRichText(featuredTitle1, slide.Titulo1);
         renderRichText(featuredTitle2, slide.Titulo2);
         applyAdjustments(featuredTitle1, slide.Titulo1adj);
         applyAdjustments(featuredTitle2, slide.Titulo2adj);
-        featuredContent.dataset.vertical = allowedVertical.has(slide.Titulo2adj?.vertical)
-          ? slide.Titulo2adj.vertical
-          : 'center';
+        featuredContent.dataset.vertical = normalizeFeaturedAdjustments(slide.Titulo2adj).vertical;
         featuredText.textContent = slide.text;
         featuredLink.textContent = slide.LinkText;
         featuredLink.href = slide.LinkUrl;
@@ -211,11 +222,17 @@ export const initCatalog = async () => {
       else startFeaturedTimer();
     });
 
-    const getFilteredProducts = () => (
-      activeCollection === '*'
-        ? products
-        : products.filter((product) => product.Collection === activeCollection)
-    );
+    const getFilteredProducts = () => products.filter((product) => {
+      if (activeTab.filterType === 'all') return true;
+      if (activeTab.filterType === 'collection') {
+        return product.collections?.some((collection) => collection.slug === activeTab.filterValue);
+      }
+      if (activeTab.filterType === 'category') {
+        return product.categories?.some((category) => category.slug === activeTab.filterValue);
+      }
+      if (activeTab.filterType === 'subcategory') return product.subcategorySlug === activeTab.filterValue;
+      return true;
+    });
 
     const renderProducts = (animate = true) => {
       const filtered = getFilteredProducts();
@@ -266,14 +283,13 @@ export const initCatalog = async () => {
       });
       pagination.append(next);
 
-      const activeTab = tabs.find((tab) => tab.Collection === activeCollection);
       status.textContent = filtered.length
         ? `${start + 1}-${Math.min(start + ITEMS_PER_PAGE, filtered.length)} de ${filtered.length} / ${activeTab?.label ?? 'TODOS'}`
         : `Sin productos / ${activeTab?.label ?? ''}`;
     };
 
     const selectTab = (tab, focus = false) => {
-      activeCollection = tab.Collection;
+      activeTab = tab;
       activePage = 0;
       [...tabList.children].forEach((button) => {
         const isActive = button.dataset.tabId === tab.id;
@@ -302,7 +318,7 @@ export const initCatalog = async () => {
     tabList.addEventListener('keydown', (event) => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
-      const currentIndex = tabs.findIndex((tab) => tab.Collection === activeCollection);
+      const currentIndex = tabs.findIndex((tab) => tab.id === activeTab.id);
       const targetIndex = event.key === 'Home'
         ? 0
         : event.key === 'End'
@@ -315,7 +331,7 @@ export const initCatalog = async () => {
     renderProducts(false);
     startFeaturedTimer();
   } catch (error) {
-    status.textContent = 'El catálogo no pudo actualizarse. Mostrando la selección disponible.';
+    status.textContent = 'No se pudo cargar el catálogo. Intenta recargar la página.';
     console.error(error);
   }
 };

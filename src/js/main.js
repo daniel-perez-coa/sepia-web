@@ -1,3 +1,4 @@
+import '../scss/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { initCatalog } from './catalog.js';
 import { siteConfig } from './site-config.js';

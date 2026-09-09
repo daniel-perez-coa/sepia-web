@@ -44,7 +44,7 @@ export const listTaxonomy = async (db, resource, includeInactive = false) => {
 };
 export const getSettings = async db => {
   const row = await db.prepare("SELECT * FROM site_settings WHERE key = 'catalog'").first();
-  return row ? { ...camelRow(row), active: Boolean(row.active), value: JSON.parse(row.value_json) } : { id: null, version: 0, active: true, value: { ...DEFAULT_SETTINGS } };
+  return row ? { ...camelRow(row), active: Boolean(row.active), value: { ...DEFAULT_SETTINGS, ...JSON.parse(row.value_json) } } : { id: null, version: 0, active: true, value: { ...DEFAULT_SETTINGS } };
 };
 export const listCatalogTabs = async db => {
   const settings = await getSettings(db);
@@ -64,7 +64,7 @@ export const listFeaturedItems = async db => {
 };
 export const getPublicCatalog = async db => {
   const [products, tabs, settings] = await Promise.all([listProducts(db), listCatalogTabs(db), getSettings(db)]);
-  return { products, tabs, destacados: settings.active && settings.value.featuredEnabled ? products.filter(p => p.isFeatured).sort((a,b) => a.featuredOrder - b.featuredOrder || a.databaseId - b.databaseId).map(featuredFromProduct) : [], autoplayMs: settings.value.autoplayMs };
+  return { products, tabs, destacados: settings.active && settings.value.featuredEnabled ? products.filter(p => p.isFeatured).sort((a,b) => a.featuredOrder - b.featuredOrder || a.databaseId - b.databaseId).map(featuredFromProduct) : [], autoplayMs: settings.value.autoplayMs, signalText: settings.value.signalText, signalIcon: settings.value.signalIcon };
 };
 export const getAdminSnapshot = async db => {
   const [products, categories, collections, subcategories, settings, pending, audit] = await Promise.all([

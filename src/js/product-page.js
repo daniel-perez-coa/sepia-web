@@ -73,7 +73,7 @@ const renderProduct = (root, product, products) => {
     root.querySelector('[data-detail-price]').append(document.createTextNode(' '), original);
   }
   root.querySelector('[data-detail-description]').textContent = product.longDescription || product.desc;
-  root.querySelector('[data-detail-stock]').textContent = `${product.stock ?? 1} DISPONIBLES`;
+  root.querySelector('[data-detail-stock]').textContent = product.stock === null ? 'PRODUCCIÓN CONTINUA' : `${product.stock} DISPONIBLES`;
   root.querySelector('[data-detail-story-eyebrow]').textContent = product.story?.eyebrow || 'LA HISTORIA';
   root.querySelector('[data-detail-story-title]').textContent = product.story?.title || product.title;
   root.querySelector('[data-detail-story-text]').textContent = product.story?.text || product.desc;

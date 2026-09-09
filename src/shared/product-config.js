@@ -62,21 +62,27 @@ export const validateContent = (v = {}) => {
   const list = (key, fn) => {
     if (v[key] === undefined) return;
     if (!Array.isArray(v[key]) || v[key].length > 100) fail(`${key}: máximo 100 elementos.`);
-    v[key].forEach(fn);
+    v[key].forEach((item, index) => fn(item, `${key}[${index}]`));
   };
-  list('gallery', r => { if (!object(r)) fail('Imagen inválida.'); safeUrl(r.src); textValue(r.alt ?? '', 'Texto alternativo'); });
-  for (const key of ['details', 'specifications']) list(key, r => {
-    if (!object(r)) fail('Especificación inválida.'); textValue(r.label, 'Nombre'); textValue(r.value, 'Valor');
+  const position = path => Number(path.match(/\[(\d+)\]/)?.[1] ?? 0) + 1;
+  list('gallery', (r, path) => { if (!object(r)) fail(`En Galería, la imagen ${position(path)} no es válida.`); safeUrl(r.src); textValue(r.alt ?? '', `Galería, imagen ${position(path)}: texto alternativo`); });
+  for (const key of ['details', 'specifications']) list(key, (r, path) => {
+    const section = key === 'details' ? 'Detalles' : 'Especificaciones';
+    if (!object(r)) fail(`En ${section}, el registro ${position(path)} no es válido.`); textValue(r.label, `En ${section}, registro ${position(path)}: nombre`); textValue(r.value, `En ${section}, registro ${position(path)}: valor`);
   });
   for (const key of ['badges', 'relatedProducts']) list(key, r => textValue(r, key, 200));
-  list('includes', r => {
-    if (!object(r)) fail('Contenido incluido inválido.'); textValue(r.text, 'Texto');
-    if (!/^[a-z0-9-]+$/.test(r.icon)) fail('Nombre de icono inválido.');
+  list('includes', (r, path) => {
+    if (!object(r)) fail(`En “Qué incluye”, el elemento ${position(path)} no es válido.`); textValue(r.text, `En “Qué incluye”, elemento ${position(path)}: texto`);
+    if (!/^[a-z0-9-]+$/.test(r.icon)) fail(`En “Qué incluye”, elemento ${position(path)}: usa un nombre de icono válido, por ejemplo “box” o “circle”.`);
   });
-  list('options', r => {
-    if (!object(r) || !Array.isArray(r.values) || !r.values.length || r.values.length > 50) fail('Opciones inválidas.');
-    textValue(r.label, 'Nombre de opción'); r.values.forEach(x => textValue(x, 'Opción', 200));
-    integerValue(r.selected ?? 0, 'Opción seleccionada', 0, r.values.length - 1);
+  list('options', (r, path) => {
+    const option = `En “Opciones del producto”, opción ${position(path)}`;
+    if (!object(r)) fail(`${option}: este bloque no es válido.`);
+    if (!Array.isArray(r.values)) fail(`${option}: los valores deben ser una lista.`);
+    if (!r.values.length) fail(`${option}: escribe al menos un valor en el campo “Un valor por línea”, o elimina esta opción.`);
+    if (r.values.length > 50) fail(`${option}: agrega como máximo 50 valores.`);
+    textValue(r.label, `${option}: nombre de la opción`); r.values.forEach((x, i) => textValue(x, `${option}: valor ${i + 1}`, 200));
+    integerValue(r.selected ?? 0, `${option}: selección inicial`, 0, r.values.length - 1);
   });
   if (v.story != null) {
     if (!object(v.story)) fail('Historia inválida.');
@@ -91,13 +97,16 @@ export const validateContent = (v = {}) => {
   if (v.link != null && v.link !== '#contacto') safeUrl(v.link);
   return v;
 };
-export const DEFAULT_SETTINGS = Object.freeze({ tabMode: 'collections', autoplayMs: 6500, featuredEnabled: true });
+export const DEFAULT_SETTINGS = Object.freeze({ tabMode: 'collections', autoplayMs: 6500, featuredEnabled: true, signalText: 'MAKE / PRODUCE / MOVE / SHIFT', signalIcon: '' });
 export const validateSettings = v => {
   if (!object(v) || Object.keys(v).some(k => !Object.hasOwn(DEFAULT_SETTINGS, k))) fail('Configuración desconocida.');
   const out = { ...DEFAULT_SETTINGS, ...v };
   if (!['collections', 'categories'].includes(out.tabMode)) fail('Agrupación inválida.');
   integerValue(out.autoplayMs, 'Duración', 3000, 60000);
   if (typeof out.featuredEnabled !== 'boolean') fail('Estado de destacados inválido.');
+  textValue(out.signalText, 'Texto del cintillo', 160);
+  if (typeof out.signalIcon !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(out.signalIcon) && out.signalIcon !== '') fail('Ícono del cintillo: usa únicamente el nombre de un ícono Bootstrap, por ejemplo “star-fill”.');
+  if (!out.signalText && !out.signalIcon) fail('Escribe texto o indica un ícono Bootstrap para el cintillo.');
   return out;
 };
 

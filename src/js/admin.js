@@ -110,7 +110,7 @@ const editProduct = (p = null) => {
     input('sortOrder','Orden',p?.sortOrder ?? 0,'number',[],{ min:0,step:1 }), input('active','Activo / visible si sus catálogos están activos',p?.active ?? false,'boolean'),
   ];
   const sale = [input('price','Precio normal (MXN)', (p?.priceMinor ?? 0)/100,'number',[],{ required:'', min:0,step:0.01 }),
-    input('stock','Existencias',p?.stock ?? 0,'number',[],{ min:0,step:1,required:'' }), input('isPromotion','En promoción',p?.isPromotion ?? false,'boolean'),
+    input('stock','Existencias',p?.stock ?? '','number',[],{ min:0,step:1 }), input('isPromotion','En promoción',p?.isPromotion ?? false,'boolean'),
     input('promotionLabel','Etiqueta promocional',p?.promotionLabel ?? 'PROMOCIÓN'), input('promotionPrice','Precio promocional opcional (MXN)',p?.promotionPriceMinor == null ? '' : p.promotionPriceMinor/100,'number',[],{ min:0,step:0.01 }),
     input('promotionStartsAt','Inicio de promoción (hora local)',localDate(p?.promotionStartsAt),'datetime-local'), input('promotionEndsAt','Fin de promoción (hora local)',localDate(p?.promotionEndsAt),'datetime-local')];
   const story = [input('storyEyebrow','Historia: etiqueta',content.story?.eyebrow), input('storyTitle','Historia: título',content.story?.title), input('storyText','Historia: texto',content.story?.text,'textarea'),
@@ -124,7 +124,7 @@ const editProduct = (p = null) => {
     heading('Destacado',[input('isFeatured','Mostrar este producto como destacado',p?.isFeatured ?? false,'boolean'),input('featuredOrder','Orden en destacados',p?.featuredOrder ?? 0,'number',[],{min:0,step:1}),thumbs,...featureControls,...adjustmentSections,previews]),
   ], () => ({ code:val('code'),slug:val('slug'),title:val('title'),label:val('label'),shortDescription:val('shortDescription'),longDescription:val('longDescription'),
     primaryImageUrl:val('primaryImageUrl'),primaryImageAlt:val('primaryImageAlt'),collectionId:num('collectionId'),categoryId:num('categoryId'),subcategoryId:val('subcategoryId') ? num('subcategoryId') : null,
-    sortOrder:num('sortOrder'),active:checked('active'),priceMinor:cents('price'),currency:'MXN',stock:num('stock'),isPromotion:checked('isPromotion'),promotionLabel:val('promotionLabel'),
+    sortOrder:num('sortOrder'),active:checked('active'),priceMinor:cents('price'),currency:'MXN',stock:val('stock') === '' ? null : num('stock'),isPromotion:checked('isPromotion'),promotionLabel:val('promotionLabel'),
     promotionPriceMinor:val('promotionPrice') === '' ? null : cents('promotionPrice'),promotionStartsAt:isoDate('promotionStartsAt'),promotionEndsAt:isoDate('promotionEndsAt'),
     isFeatured:checked('isFeatured'),featuredOrder:num('featuredOrder'),featuredConfig:readFeature(),
     content:validateContent({ ...content, gallery:gallery.read(),details:details.read(),specifications:specs.read(),includes:includes.read(),
@@ -163,7 +163,8 @@ const editSettings=()=>{
     input('tabMode','Agrupar tabs por',s.value.tabMode,'select',[{value:'collections',label:'Colecciones'},{value:'categories',label:'Categorías'}]),
     input('autoplayMs','Cambio de banner (milisegundos)',s.value.autoplayMs,'number',[],{min:3000,max:60000,step:500}),
     input('featuredEnabled','Mostrar carrusel de destacados',s.value.featuredEnabled,'boolean'),input('active','Configuración activa',s.active,'boolean'),
-  ],()=>({value:validateSettings({tabMode:val('tabMode'),autoplayMs:num('autoplayMs'),featuredEnabled:checked('featuredEnabled')}),active:checked('active')}));
+    input('signalText','Texto del cintillo superior',s.value.signalText),input('signalIcon','Ícono Bootstrap opcional',s.value.signalIcon,'text',[],{placeholder:'Ejemplo: star-fill'}),
+  ],()=>({value:validateSettings({tabMode:val('tabMode'),autoplayMs:num('autoplayMs'),featuredEnabled:checked('featuredEnabled'),signalText:val('signalText'),signalIcon:val('signalIcon')}),active:checked('active')}));
 };
 const setActive=async(resource,item)=>{
   if (!window.confirm(`${item.active?'Desactivar':'Reactivar'} ${item.title??item.name??'configuración'}? No se elimina información.`)) return;

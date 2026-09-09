@@ -147,6 +147,16 @@ export const initCatalog = async () => {
 
   try {
     const catalogData = await fetchJson('/api/catalog');
+    const signalTrack = document.querySelector('[data-site-signal-track]');
+    if (signalTrack) {
+      const count = 12, text = catalogData.signalText ?? 'MAKE / PRODUCE / MOVE / SHIFT', icon = catalogData.signalIcon ?? '';
+      signalTrack.replaceChildren(...Array.from({ length: count }, () => {
+        const item = document.createElement('span');
+        if (text) item.append(document.createTextNode(text));
+        if (icon) { const glyph = document.createElement('i'); glyph.className = `bi bi-${icon}`; glyph.setAttribute('aria-hidden', 'true'); item.append(text ? document.createTextNode(' ') : '', glyph); }
+        return item;
+      }));
+    }
     const slides = Array.isArray(catalogData.destacados) ? catalogData.destacados : [];
     featured.hidden = slides.length === 0;
     catalog.classList.toggle('catalog--without-featured', slides.length === 0);

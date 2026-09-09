@@ -10,6 +10,7 @@ const date = v => {
   return new Date(v).toISOString();
 };
 const required = (v, label, max = 200) => { const t = textValue(v, label, max); if (!t) fail(`${label} es obligatorio.`); return t; };
+const optionalStock = v => { if (v === null || v === undefined || v === '') return null; return integerValue(v, 'Existencias'); };
 export const getRecord = async (db, resource, id) => {
   if (!Object.hasOwn(tables, resource)) fail('Recurso inválido.');
   const row = await db.prepare(`SELECT * FROM ${tables[resource]} WHERE id = ?`).bind(id).first();
@@ -85,7 +86,7 @@ const prepareSave = async (db, resource, payload, actor, id) => {
     }
     fields = { code, slug: slug(payload.slug), title: required(payload.title, 'Nombre'), label: textValue(payload.label ?? '', 'Etiqueta', 200),
       short_description: textValue(payload.shortDescription ?? '', 'Descripción corta'), long_description: textValue(payload.longDescription ?? '', 'Descripción'),
-      price_minor: price, currency: 'MXN', stock: integerValue(payload.stock, 'Existencias'),
+      price_minor: price, currency: 'MXN', stock: optionalStock(payload.stock),
       primary_image_url: safeUrl(payload.primaryImageUrl), primary_image_alt: textValue(payload.primaryImageAlt ?? '', 'Texto alternativo'),
       content_json: JSON.stringify(content), collection_id: payload.collectionId, category_id: payload.categoryId, subcategory_id: subId,
       is_promotion: bool(payload.isPromotion ?? false, 'Promoción'), promotion_label: required(payload.promotionLabel ?? 'PROMOCIÓN', 'Etiqueta promocional'),

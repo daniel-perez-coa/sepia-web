@@ -105,9 +105,9 @@ const initExplore = async () => {
 
     if (color !== '*' && !searchable.includes(normalizeText(color))) return false;
     if (series !== '*' && product.label !== series) return false;
-    if (availability === 'available' && product.stock <= 0) return false;
+    if (availability === 'available' && product.stock !== null && product.stock <= 0) return false;
     if (availability === 'low' && !(product.stock > 0 && product.stock <= 5)) return false;
-    if (availability === 'sold-out' && product.stock > 0) return false;
+    if (availability === 'sold-out' && product.stock !== null && product.stock > 0) return false;
     if (price === 'under-600' && numericPrice >= 600) return false;
     if (price === '600-999' && !(numericPrice >= 600 && numericPrice < 1000)) return false;
     if (price === 'over-1000' && numericPrice < 1000) return false;

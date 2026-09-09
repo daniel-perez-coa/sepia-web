@@ -15,7 +15,10 @@ export const getAdminActor = (request, env) => {
   const legacyId = request.headers.get('oai-authenticated-user-id');
   const accessPayload = decodeAccessPayload(request.headers.get('Cf-Access-Jwt-Assertion') ?? '');
   const id = legacyId ?? accessPayload?.sub;
-  const email = request.headers.get('oai-authenticated-user-email') ?? accessPayload?.email;
+  const email = request.headers.get('oai-authenticated-user-email')
+    ?? accessPayload?.email
+    ?? accessPayload?.preferred_username
+    ?? request.headers.get('Cf-Access-Authenticated-User-Email');
   if (!id || !accessPayload && !legacyId) throw new Response('Autenticación requerida por Cloudflare Access.', { status: 401 });
   const allowedIds = String(env.ADMIN_USER_IDS ?? '').split(',').map(x => x.trim()).filter(Boolean);
   const allowedEmails = String(env.ADMIN_USER_EMAILS ?? '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);

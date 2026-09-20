@@ -187,6 +187,13 @@ test('API denies anonymous and non-admin identities; fails closed without allowl
   assert.equal((await handleApiRequest(req(actor.id),{DB:s.db})).status,403);
   assert.equal((await handleApiRequest(req(actor.id),{DB:s.db,ADMIN_USER_IDS:actor.id})).status,200);
 }));
+test('Cloudflare Access and local development authentication stay isolated',withDb(async s=>{
+  const token=`header.${Buffer.from(JSON.stringify({sub:'access-user',email:'admin@example.com'})).toString('base64url')}.signature`;
+  const accessRequest=new Request('http://test/api/admin/bootstrap',{headers:{'Cf-Access-Jwt-Assertion':token}});
+  assert.equal((await handleApiRequest(accessRequest,{DB:s.db,ADMIN_USER_EMAILS:'admin@example.com'})).status,200);
+  assert.equal((await handleApiRequest(accessRequest,{DB:s.db,ADMIN_USER_EMAILS:'other@example.com'})).status,403);
+  assert.equal((await handleApiRequest(new Request('http://test/api/admin/bootstrap'),{DB:s.db,LOCAL_DEV_AUTH:'true'})).status,200);
+}));
 test('API returns detail by code and slug; handles async validation errors and cross-origin writes',withDb(async s=>{
   const env={DB:s.db,ADMIN_USER_IDS:actor.id};
   for(const id of ['KUMA_BLACK','kuma-black'])assert.equal((await handleApiRequest(new Request(`http://test/api/products/${id}`),env)).status,200);

@@ -161,14 +161,21 @@ Su futura retirada requeriría una decisión independiente y un archivo verifica
 
 ## Administración y seguridad
 
-Abrir `/admin` e iniciar sesión. Localmente Sites simula a `local_seedy`;
-`.dev.vars` autoriza únicamente ese ID. No se acepta a cualquier visitante autenticado.
+Abrir `/admin` e iniciar sesión. El modo local y el de producción son distintos:
 
-`ADMIN_USER_IDS` es una lista de IDs estables separados por comas. Si falta, el
-acceso administrativo se deniega. Antes de publicar hay que configurar los IDs
-reales y utilizar el dispatcher de confianza que proporciona los encabezados de
-identidad; no exponer este Worker detrás de un proxy que acepte encabezados falsificados.
-La identidad local no es una autenticación real de producción.
+- En local, `.dev.vars` contiene `LOCAL_DEV_AUTH=true`. Esa identidad simulada
+  solo existe en el proceso de Vite/Workers local y nunca se despliega.
+- En producción, `LOCAL_DEV_AUTH=false`. Cloudflare Access entrega la identidad
+  y el Worker permite únicamente los correos de `ADMIN_USER_EMAILS`.
+  `ADMIN_USER_IDS` es opcional para permitir también sujetos estables de Access.
+
+`ADMIN_USER_EMAILS` y `LOCAL_DEV_AUTH` son secretos requeridos por
+`wrangler.jsonc`: un despliegue falla si faltan. En Cloudflare,
+`LOCAL_DEV_AUTH` debe tener exactamente el valor `false`. Se administran en
+**Workers & Pages →
+sepia-chroma-street-2026 → Settings → Variables and Secrets**; no se guarda en
+Git ni en `.dev.vars` de producción. La identidad local no es una autenticación
+real de producción.
 
 `site_settings` también conserva el marcador `migration_v2`. No es un catálogo
 editable libremente: desde el administrador solo se modifica la clave `catalog`.
@@ -200,6 +207,26 @@ Esa prueba cambia temporalmente promoción, destacado y actividad de `ORBIT_01`;
 restaura su contenido al terminar y conserva el historial de prueba. La validación
 puede materializar valores predeterminados de la configuración visual.
 Las pruebas de `npm test` usan SQLite en memoria y no modifican el catálogo local.
+
+## Publicar sin desfasar D1
+
+Antes de cada despliegue a producción, comprobar el esquema remoto:
+
+```sh
+npm run db:status:remote
+```
+
+Si aparecen migraciones pendientes, aplicar únicamente las migraciones versionadas
+después de revisar el respaldo y el cambio:
+
+```sh
+npm run db:migrate:remote
+```
+
+Después se despliega el Worker. El código no aplica migraciones automáticamente:
+esto evita modificar la base de producción como efecto secundario de un despliegue,
+pero requiere seguir este orden. El comando remoto opera sobre D1; no ejecutar la
+migración sin autorización para cambiar producción.
 
 Verificaciones realizadas: compilación, pruebas automatizadas, API local, autenticación
 simulada, escritura real con historial, promoción/destacado, desactivación/reactivación,

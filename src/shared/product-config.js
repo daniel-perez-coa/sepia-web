@@ -131,9 +131,10 @@ export const validateSettings = v => {
 
 export const featuredFromProduct = product => {
   const c = normalizeFeaturedConfig(product.featuredConfig);
+  const catalogTag = product.tags?.find(tag => tag.active)?.name ?? '';
   return {
     id: product.id, databaseId: product.databaseId, productId: product.databaseId,
-    Titulo1: c.title1 || product.label, Titulo2: c.title2 || product.title, Titulo1adj: c.title1Adj, Titulo2adj: c.title2Adj,
+    Titulo1: c.title1 || catalogTag, Titulo2: c.title2 || product.title, Titulo1adj: c.title1Adj, Titulo2adj: c.title2Adj,
     Photo: c.imageUrl || product.photo, imageAlt: c.imageAlt || product.photoAlt,
     text: c.text || product.desc, LinkText: c.linkLabel || 'VER PRODUCTO →',
     LinkUrl: `/producto?id=${encodeURIComponent(product.id)}`, Line: c.showLine ? 'yes' : 'no',

@@ -91,6 +91,11 @@ const prepareSave = async (db, resource, payload, actor, id) => {
       required(payload.longDescription ?? '', 'Descripción completa', 10000);
       if (!safeUrl(payload.primaryImageUrl) || !content.specifications?.length) fail('Un producto activo necesita imagen principal y al menos una especificación.');
     }
+    const featuredConfig = validateFeaturedConfig(payload.featuredConfig ?? {});
+    if (payload.isFeatured && featuredConfig.title1) {
+      const featuredTag = await db.prepare('SELECT id FROM catalog_tags WHERE name = ? AND active = 1').bind(featuredConfig.title1).first();
+      if (!featuredTag) fail('Selecciona una etiqueta activa del catálogo para el banner destacado.');
+    }
     fields = { code, slug: slug(payload.slug), title: required(payload.title, 'Nombre'), label: textValue(payload.label ?? '', 'Etiqueta', 200),
       short_description: textValue(payload.shortDescription ?? '', 'Descripción corta'), long_description: textValue(payload.longDescription ?? '', 'Descripción'),
       price_minor: price, currency: 'MXN', stock: optionalStock(payload.stock),
@@ -99,7 +104,7 @@ const prepareSave = async (db, resource, payload, actor, id) => {
       is_promotion: bool(payload.isPromotion ?? false, 'Promoción'), promotion_label: required(payload.promotionLabel ?? 'PROMOCIÓN', 'Etiqueta promocional'),
       promotion_price_minor: promo, promotion_starts_at: start, promotion_ends_at: end,
       is_featured: bool(payload.isFeatured ?? false, 'Destacado'), featured_order: integerValue(payload.featuredOrder ?? 0, 'Orden destacado'),
-      featured_config_json: JSON.stringify(validateFeaturedConfig(payload.featuredConfig ?? {})),
+      featured_config_json: JSON.stringify(featuredConfig),
       sort_order: integerValue(payload.sortOrder ?? 0, 'Orden'), active: bool(payload.active, 'Activo') };
   } else if (resource === 'tags') {
     fields = { name: required(payload.name, 'Nombre'), slug: slug(payload.slug), sort_order: integerValue(payload.sortOrder ?? 0, 'Orden'), active: bool(payload.active, 'Activo') };

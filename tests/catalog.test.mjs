@@ -58,6 +58,14 @@ test('product tags are selected from the managed catalog and saved atomically',w
   assert.deepEqual((await listProducts(s.db,{identifier:'ORBIT_01'}))[0].tagIds,[selected[0]]);
   await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),tagId:99999},actor,1));
 }));
+test('featured labels are selected from catalog tags and fall back to the product tag',withDb(async s=>{
+  const tags=(await getAdminSnapshot(s.db)).tags;
+  await saveRecord(s.db,'products',{...payload(raw(s)),tagId:tags[0].id,isFeatured:true,featuredConfig:{...payload(raw(s)).featuredConfig,title1:tags[1].name}},actor,1);
+  assert.equal((await listFeaturedItems(s.db))[0].Titulo1,tags[1].name);
+  await saveRecord(s.db,'products',{...payload(raw(s)),tagId:tags[0].id,isFeatured:true,featuredConfig:{...payload(raw(s)).featuredConfig,title1:''}},actor,1);
+  assert.equal((await listFeaturedItems(s.db))[0].Titulo1,tags[0].name);
+  await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),isFeatured:true,featuredConfig:{...payload(raw(s)).featuredConfig,title1:'NO EXISTE'}},actor,1),/etiqueta activa del catálogo/i);
+}));
 test('one product supplies details, card and featured; overrides do not copy price or link',withDb(async s=>{
   const data=payload(raw(s));Object.assign(data,{title:'Nombre único',shortDescription:'Descripción compartida',priceMinor:60000,isFeatured:true});
   await saveRecord(s.db,'products',data,actor,1);

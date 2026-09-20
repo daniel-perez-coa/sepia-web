@@ -84,6 +84,8 @@
   background: linear-gradient(var(--featured-angle, 90deg), var(--featured-overlay, #142fd3) 0%, transparent 100%);
   opacity: var(--featured-opacity, 0.9);
 }
+
+.featured-card > img[hidden] { display: none; }
 .catalog--without-featured .catalog__intro { grid-template-columns: 1fr; }
 .featured-card[hidden] { display: none; }
 
@@ -174,9 +176,9 @@
 
 .featured-card h3 {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 8cqw, 5.25rem);
-  letter-spacing: -0.055em;
-  line-height: 0.84;
+  font-size: clamp(1.75rem, 4.4cqw, 3.15rem);
+  letter-spacing: -0.045em;
+  line-height: 0.94;
   transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
 }
 
@@ -612,7 +614,7 @@
   }
 
   .featured-card h3 {
-    font-size: clamp(2.6rem, min(4.2vw, 7vh), 4.5rem);
+    font-size: clamp(1.8rem, min(2.75vw, 4.6vh), 3rem);
   }
 
   .featured-card__content > p:not(.featured-card__label) {
@@ -771,7 +773,7 @@
   }
 
   .featured-card h3 {
-    font-size: clamp(2rem, 9cqw, 4.5rem);
+    font-size: clamp(1.65rem, 6cqw, 2.65rem);
     overflow-wrap: anywhere;
   }
 

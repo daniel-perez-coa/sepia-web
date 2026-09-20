@@ -36,7 +36,19 @@
       <form class="admin-dialog__panel" data-admin-form>
         <header><div><p class="meta" data-dialog-eyebrow>EDITAR</p><h2 id="admin-editor-title" data-dialog-title></h2></div>
           <button class="admin-icon-button" type="button" data-dialog-close aria-label="Cerrar">×</button></header>
-        <div class="admin-dialog__fields" data-dialog-fields></div>
+        <div class="admin-dialog__body">
+          <div class="admin-dialog__fields" data-dialog-fields></div>
+          <aside class="admin-preview-pane" data-featured-preview-pane aria-labelledby="featured-preview-title" hidden>
+            <div class="admin-preview-pane__heading">
+              <div>
+                <p class="meta">PRODUCTO DESTACADO</p>
+                <h3 id="featured-preview-title">Vista previa destacado</h3>
+              </div>
+              <span class="admin-preview-pane__status">En vivo</span>
+            </div>
+            <div class="admin-preview-pane__content" data-featured-preview-content></div>
+          </aside>
+        </div>
         <p class="admin-form-error" data-form-error role="alert" hidden></p>
         <footer><button class="admin-secondary-action" type="button" data-dialog-close>Cancelar</button><button class="admin-primary-action" type="submit" data-dialog-submit>Guardar cambios</button></footer>
       </form>

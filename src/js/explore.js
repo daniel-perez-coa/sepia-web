@@ -1,5 +1,9 @@
+import { initSiteNavigation } from './site-navigation.js';
 import '../scss/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { syncCartCount } from './cart-store.js';
+
+syncCartCount();
 
 const PAGE_SIZE = 6;
 
@@ -24,7 +28,9 @@ const createCard = (product, index) => {
   card.className = `explore-card${index % 4 === 1 ? ' explore-card--dark' : ''}`;
   card.style.setProperty('--card-order', String(index % PAGE_SIZE));
   label.className = 'explore-card__label meta';
-  label.textContent = product.promotionActive ? product.promotionLabel : product.label;
+  const labelText = product.promotionActive ? product.promotionLabel : product.label;
+  label.textContent = labelText || '';
+  label.hidden = !labelText;
   image.src = product.photo;
   image.alt = `${product.title}: ${product.desc}`;
   image.loading = 'lazy';
@@ -40,23 +46,7 @@ const createCard = (product, index) => {
   return card;
 };
 
-const initMenu = () => {
-  const button = document.querySelector('[data-menu-toggle]');
-  const navigation = document.querySelector('[data-navigation]');
 
-  const setOpen = (isOpen) => {
-    button?.setAttribute('aria-expanded', String(isOpen));
-    button?.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
-    navigation?.classList.toggle('is-open', isOpen);
-    document.body.classList.toggle('menu-open', isOpen);
-  };
-
-  button?.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
-  navigation?.addEventListener('click', () => setOpen(false));
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setOpen(false);
-  });
-};
 
 const initExplore = async () => {
   const root = document.querySelector('[data-explore]');
@@ -255,5 +245,5 @@ const initExplore = async () => {
 };
 
 document.documentElement.classList.add('js');
-initMenu();
-initExplore();
+initSiteNavigation();
+initExplore().finally(() => document.body.classList.add('is-ready'));

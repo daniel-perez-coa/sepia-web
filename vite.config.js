@@ -13,6 +13,7 @@ export default defineConfig({
             main: resolve(import.meta.dirname, 'index.html'),
             explore: resolve(import.meta.dirname, 'explorar.html'),
             product: resolve(import.meta.dirname, 'producto.html'),
+            cart: resolve(import.meta.dirname, 'carrito.html'),
             admin: resolve(import.meta.dirname, 'admin.html'),
           },
         },

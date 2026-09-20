@@ -1,6 +1,7 @@
 <!doctype html>
-<html lang="es">
+<html class="js" lang="es">
   <head>
+    <style>html.js body:not(.is-ready) { visibility: hidden; background: #e9e5dd; }</style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
@@ -38,6 +39,17 @@
         <div class="admin-dialog__fields" data-dialog-fields></div>
         <p class="admin-form-error" data-form-error role="alert" hidden></p>
         <footer><button class="admin-secondary-action" type="button" data-dialog-close>Cancelar</button><button class="admin-primary-action" type="submit" data-dialog-submit>Guardar cambios</button></footer>
+      </form>
+      <div class="admin-field-tooltip" data-field-tooltip role="tooltip" hidden></div>
+    </dialog>
+    <dialog class="admin-confirm-dialog" data-confirm-dialog aria-labelledby="confirm-title">
+      <form class="admin-confirm-dialog__panel" method="dialog">
+        <header class="admin-confirm-dialog__header">
+          <span class="admin-confirm-dialog__mark" aria-hidden="true">!</span>
+          <div><p class="meta">CONFIRMAR ACCIÓN</p><h2 id="confirm-title" data-confirm-title></h2></div>
+        </header>
+        <p class="admin-confirm-dialog__message" data-confirm-message></p>
+        <footer><button class="admin-secondary-action" value="cancel">Cancelar</button><button class="admin-primary-action" value="confirm" data-confirm-submit>Confirmar</button></footer>
       </form>
     </dialog>
     <p class="admin-toast" data-admin-toast role="status" aria-live="polite"></p>

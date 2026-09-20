@@ -57,7 +57,7 @@ export const validateFeaturedConfig = (v = {}) => {
 };
 export const validateContent = (v = {}) => {
   if (!object(v)) fail('Contenido inválido.');
-  const known = ['gallery', 'edition', 'badges', 'options', 'story', 'includes', 'dimensionsMaterialsImage', 'dimensionsMaterialsAlt', 'details', 'specifications', 'relatedProducts', 'link'];
+  const known = ['gallery', 'options', 'variantLabel', 'variants', 'includes', 'excludes', 'dimensionsMaterialsImage', 'dimensions', 'specifications', 'link'];
   if (Object.keys(v).some(k => !known.includes(k))) fail('Campo de contenido desconocido.');
   const list = (key, fn) => {
     if (v[key] === undefined) return;
@@ -66,14 +66,22 @@ export const validateContent = (v = {}) => {
   };
   const position = path => Number(path.match(/\[(\d+)\]/)?.[1] ?? 0) + 1;
   list('gallery', (r, path) => { if (!object(r)) fail(`En Galería, la imagen ${position(path)} no es válida.`); safeUrl(r.src); textValue(r.alt ?? '', `Galería, imagen ${position(path)}: texto alternativo`); });
-  for (const key of ['details', 'specifications']) list(key, (r, path) => {
-    const section = key === 'details' ? 'Detalles' : 'Especificaciones';
-    if (!object(r)) fail(`En ${section}, el registro ${position(path)} no es válido.`); textValue(r.label, `En ${section}, registro ${position(path)}: nombre`); textValue(r.value, `En ${section}, registro ${position(path)}: valor`);
+  list('specifications', (r, path) => {
+    if (!object(r)) fail(`En Especificaciones, el registro ${position(path)} no es válido.`); textValue(r.label, `En Especificaciones, registro ${position(path)}: nombre`); textValue(r.value, `En Especificaciones, registro ${position(path)}: valor`);
   });
-  for (const key of ['badges', 'relatedProducts']) list(key, r => textValue(r, key, 200));
   list('includes', (r, path) => {
     if (!object(r)) fail(`En “Qué incluye”, el elemento ${position(path)} no es válido.`); textValue(r.text, `En “Qué incluye”, elemento ${position(path)}: texto`);
     if (!/^[a-z0-9-]+$/.test(r.icon)) fail(`En “Qué incluye”, elemento ${position(path)}: usa un nombre de icono válido, por ejemplo “box” o “circle”.`);
+  });
+  list('excludes', (r, path) => {
+    if (!object(r)) fail(`En “Qué no incluye”, el elemento ${position(path)} no es válido.`); textValue(r.text, `En “Qué no incluye”, elemento ${position(path)}: texto`);
+    if (!/^[a-z0-9-]+$/.test(r.icon)) fail(`En “Qué no incluye”, elemento ${position(path)}: usa un nombre de icono válido.`);
+  });
+  list('dimensions', (r, path) => {
+    if (!object(r)) fail(`En Dimensiones, el registro ${position(path)} no es válido.`);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.icon)) fail(`En Dimensiones, registro ${position(path)}: usa un nombre de icono válido.`);
+    textValue(r.title, `En Dimensiones, registro ${position(path)}: título`, 200);
+    textValue(r.value, `En Dimensiones, registro ${position(path)}: valor`, 200);
   });
   list('options', (r, path) => {
     const option = `En “Opciones del producto”, opción ${position(path)}`;
@@ -84,16 +92,27 @@ export const validateContent = (v = {}) => {
     textValue(r.label, `${option}: nombre de la opción`); r.values.forEach((x, i) => textValue(x, `${option}: valor ${i + 1}`, 200));
     integerValue(r.selected ?? 0, `${option}: selección inicial`, 0, r.values.length - 1);
   });
-  if (v.story != null) {
-    if (!object(v.story)) fail('Historia inválida.');
-    for (const k of ['eyebrow', 'title', 'text']) textValue(v.story[k] ?? '', 'Historia');
-  }
-  if (v.edition != null) {
-    if (!object(v.edition)) fail('Edición inválida.');
-    textValue(v.edition.label, 'Edición'); integerValue(v.edition.total, 'Total de edición', 1);
-    integerValue(v.edition.current, 'Número de edición', 0, v.edition.total);
-  }
-  safeUrl(v.dimensionsMaterialsImage ?? ''); textValue(v.dimensionsMaterialsAlt ?? '', 'Texto alternativo');
+  if (v.variantLabel !== undefined) textValue(v.variantLabel, 'Nombre de las variantes', 100);
+  list('variants', (r, path) => {
+    const variant = `En Variantes, registro ${position(path)}`;
+    if (!object(r)) fail(`${variant}: este registro no es válido.`);
+    textValue(r.value, `${variant}: nombre`, 200);
+    integerValue(r.priceMinor, `${variant}: precio`);
+    if (r.stock !== null && r.stock !== undefined) integerValue(r.stock, `${variant}: existencias`);
+    if (typeof r.isPromotion !== 'boolean') fail(`${variant}: el estado de promoción no es válido.`);
+    textValue(r.promotionLabel ?? 'PROMOCIÓN', `${variant}: etiqueta promocional`, 100);
+    if (r.promotionPriceMinor !== null && r.promotionPriceMinor !== undefined) {
+      integerValue(r.promotionPriceMinor, `${variant}: precio promocional`);
+      if (r.promotionPriceMinor >= r.priceMinor) fail(`${variant}: el precio promocional debe ser menor al precio normal.`);
+    }
+    for (const [key, label] of [['promotionStartsAt', 'inicio'], ['promotionEndsAt', 'fin']]) {
+      const date = r[key];
+      if (date !== null && date !== undefined && (typeof date !== 'string' || !Number.isFinite(Date.parse(date)))) fail(`${variant}: fecha de ${label} inválida.`);
+    }
+    if (r.promotionStartsAt && r.promotionEndsAt && Date.parse(r.promotionStartsAt) >= Date.parse(r.promotionEndsAt)) fail(`${variant}: el fin de la promoción debe ser posterior al inicio.`);
+  });
+
+  safeUrl(v.dimensionsMaterialsImage ?? '');
   if (v.link != null && v.link !== '#contacto') safeUrl(v.link);
   return v;
 };

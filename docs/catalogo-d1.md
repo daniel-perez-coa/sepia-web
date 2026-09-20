@@ -119,7 +119,7 @@ El historial es de solo anexado: no hay endpoints para editarlo o desactivarlo.
 ## Producto único y presentación
 
 - La ficha y las tarjetas usan el mismo registro.
-- Galería, especificaciones, opciones, historia, edición y contenido incluido se
+- Galería, especificaciones, dimensiones, opciones y contenido incluido se
   guardan en `content_json`, validado y editado con formularios (no JSON manual).
 - Promoción y destacado son indicadores independientes. El precio promocional es
   opcional, debe ser menor al normal y solo se muestra durante su vigencia.

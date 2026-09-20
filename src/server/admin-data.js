@@ -1,7 +1,7 @@
-import { taxonomyTables } from './catalog-data.js';
+import { taxonomyTables, rows } from './catalog-data.js';
 import { fail, integerValue, textValue, safeUrl, validateContent, validateFeaturedConfig, validateSettings, normalizeFeaturedConfig } from '../shared/product-config.js';
 
-const tables = { ...taxonomyTables, products: 'catalog_products', settings: 'site_settings' };
+const tables = { ...taxonomyTables, tags: 'catalog_tags', products: 'catalog_products', settings: 'site_settings' };
 const bool = (v, label) => { if (typeof v !== 'boolean') fail(`${label}: estado inválido.`); return Number(v); };
 const slug = v => { const s = textValue(v, 'Slug', 160); if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s)) fail('Slug: usa minúsculas, números y guiones.'); return s; };
 const date = v => {
@@ -58,6 +58,7 @@ const prepareSave = async (db, resource, payload, actor, id) => {
     return row;
   };
   let fields;
+  let productTagIds = null;
   if (resource === 'products') {
     const code = required(payload.code, 'Código', 100);
     if (!/^[A-Za-z0-9_-]+$/.test(code)) fail('Código inválido.');
@@ -68,6 +69,15 @@ const prepareSave = async (db, resource, payload, actor, id) => {
     if (subId !== null) {
       const sub = await relation(tables.subcategories, subId, before?.subcategory_id);
       if (sub.category_id !== payload.categoryId) fail('La subcategoría no pertenece a la categoría seleccionada.');
+    }
+    if (payload.tagId !== null && payload.tagId !== undefined && payload.tagId !== '') integerValue(payload.tagId, 'Etiqueta', 1);
+    productTagIds = payload.tagId === null || payload.tagId === undefined || payload.tagId === '' ? [] : [Number(payload.tagId)];
+    const existingTagIds = before
+      ? rows(await db.prepare('SELECT tag_id FROM product_tags WHERE product_id = ?').bind(before.id).all()).map(row => row.tag_id)
+      : [];
+    for (const tagId of productTagIds) {
+      const tag = await db.prepare('SELECT * FROM catalog_tags WHERE id = ?').bind(tagId).first();
+      if (!tag || (!tag.active && !existingTagIds.includes(tagId))) fail('Selecciona únicamente etiquetas existentes y activas.');
     }
     const price = integerValue(payload.priceMinor, 'Precio en centavos');
     const promo = payload.promotionPriceMinor ?? null;
@@ -81,9 +91,6 @@ const prepareSave = async (db, resource, payload, actor, id) => {
       required(payload.longDescription ?? '', 'Descripción completa', 10000);
       if (!safeUrl(payload.primaryImageUrl) || !content.specifications?.length) fail('Un producto activo necesita imagen principal y al menos una especificación.');
     }
-    for (const related of content.relatedProducts ?? []) {
-      if (related === code || !await db.prepare('SELECT id FROM catalog_products WHERE code = ?').bind(related).first()) fail('Producto relacionado inválido.');
-    }
     fields = { code, slug: slug(payload.slug), title: required(payload.title, 'Nombre'), label: textValue(payload.label ?? '', 'Etiqueta', 200),
       short_description: textValue(payload.shortDescription ?? '', 'Descripción corta'), long_description: textValue(payload.longDescription ?? '', 'Descripción'),
       price_minor: price, currency: 'MXN', stock: optionalStock(payload.stock),
@@ -94,6 +101,8 @@ const prepareSave = async (db, resource, payload, actor, id) => {
       is_featured: bool(payload.isFeatured ?? false, 'Destacado'), featured_order: integerValue(payload.featuredOrder ?? 0, 'Orden destacado'),
       featured_config_json: JSON.stringify(validateFeaturedConfig(payload.featuredConfig ?? {})),
       sort_order: integerValue(payload.sortOrder ?? 0, 'Orden'), active: bool(payload.active, 'Activo') };
+  } else if (resource === 'tags') {
+    fields = { name: required(payload.name, 'Nombre'), slug: slug(payload.slug), sort_order: integerValue(payload.sortOrder ?? 0, 'Orden'), active: bool(payload.active, 'Activo') };
   } else if (Object.hasOwn(taxonomyTables, resource)) {
     fields = { name: required(payload.name, 'Nombre'), slug: slug(payload.slug), description: textValue(payload.description ?? '', 'Descripción'),
       image_url: safeUrl(payload.imageUrl), image_alt: textValue(payload.imageAlt ?? '', 'Texto alternativo'),
@@ -105,7 +114,13 @@ const prepareSave = async (db, resource, payload, actor, id) => {
     fields = { ...(before ? {} : { key: 'catalog' }), value_json: JSON.stringify(validateSettings(payload.value)), active: bool(payload.active, 'Activo') };
   } else fail('Operación no permitida.');
   const action = before && fields.active !== before.active ? (fields.active ? 'reactivate' : 'deactivate') : before ? 'update' : 'create';
-  return writeStatements(db, resource, before, fields, actor, action, guards.join(' AND ') || '1=1', guardArgs);
+  const statements = writeStatements(db, resource, before, fields, actor, action, guards.join(' AND ') || '1=1', guardArgs);
+  if (resource === 'products') {
+    statements.push(db.prepare('DELETE FROM product_tags WHERE product_id = (SELECT id FROM catalog_products WHERE code = ?)').bind(fields.code));
+    productTagIds.forEach(tagId => statements.push(db.prepare(`INSERT INTO product_tags (product_id, tag_id)
+      SELECT p.id, t.id FROM catalog_products p JOIN catalog_tags t ON t.id = ? WHERE p.code = ?`).bind(tagId, fields.code)));
+  }
+  return statements;
 };
 export const saveRecord = async (db, resource, payload, actor, id = null) => {
   const result = await db.batch(await prepareSave(db, resource, payload, actor, id));
@@ -114,7 +129,15 @@ export const saveRecord = async (db, resource, payload, actor, id = null) => {
 export const setRecordActive = async (db, resource, id, payload, actor, active) => {
   const before = await getRecord(db, resource, id); checkVersion(before, payload.version);
   if (resource === 'settings' && before.key !== 'catalog') fail('Configuración protegida.');
-  if (active && resource === 'products' && (!before.primary_image_url || !before.short_description || !before.long_description || !JSON.parse(before.content_json).specifications?.length)) fail('Completa imagen, descripciones y especificaciones antes de activar el producto.');
+  if (active && resource === 'products') {
+    const content = JSON.parse(before.content_json);
+    const missing = [];
+    if (!before.short_description) missing.push('descripción corta');
+    if (!before.long_description) missing.push('descripción completa');
+    if (!before.primary_image_url) missing.push('imagen principal');
+    if (!content.specifications?.length) missing.push('al menos una especificación');
+    if (missing.length) fail(`Para publicar el producto completa: ${missing.join(', ')}.`);
+  }
   await db.batch(writeStatements(db, resource, before, { active: Number(active) }, actor, active ? 'reactivate' : 'deactivate'));
   return { id };
 };

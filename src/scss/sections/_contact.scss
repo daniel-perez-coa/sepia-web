@@ -1,7 +1,7 @@
 .contact {
   position: relative;
   z-index: 1;
-  overflow: visible;
+  overflow: clip;
   min-height: calc(100svh - 9rem);
   scroll-snap-align: start;
   scroll-snap-stop: always;
@@ -50,6 +50,8 @@
 }
 
 .contact__email {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   display: inline-flex;
   min-height: 3.25rem;
   margin-top: 2rem;
@@ -98,7 +100,7 @@
   background: #16171c;
 }
 
-@media (min-width: 60.01rem) {
+@media (min-width: 64.01rem) and (min-height: 44rem) {
   .contact {
     height: calc(100svh - 9rem);
     min-height: calc(100svh - 9rem);
@@ -124,7 +126,7 @@
   font-size: 0.85rem;
 }
 
-@media (max-width: 60rem) {
+@media (max-width: 64rem) {
   .contact::before {
     right: -70vw;
     width: 185vw;
@@ -133,7 +135,29 @@
   }
 
   .contact__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 51.99rem) {
+  .contact {
+    min-height: 0;
+  }
+
+  .contact__intro h2 {
+    font-size: clamp(2.6rem, 12vw, 5rem);
+    line-height: 0.95;
+  }
+
+  .contact__grid > *,
+  .social-list > a > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .contact__email {
+    font-size: 0.6875rem;
+    gap: 0.5rem;
   }
 }
 

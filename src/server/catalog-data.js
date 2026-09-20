@@ -3,6 +3,8 @@ export const rows = result => result?.results ?? [];
 export const camelRow = row => Object.fromEntries(Object.entries(row).map(([k, v]) => [k.replace(/_([a-z])/g, (_, x) => x.toUpperCase()), v]));
 export const formatPrice = (minor, currency = 'MXN') => `${new Intl.NumberFormat('es-MX', { style: 'currency', currency }).format(minor / 100)} ${currency}`;
 const visibility = `p.active = 1 AND c.active = 1 AND cat.active = 1 AND (p.subcategory_id IS NULL OR sub.active = 1)`;
+export const listTags = async (db, includeInactive = false) => rows(await db.prepare(`SELECT * FROM catalog_tags ${includeInactive ? '' : 'WHERE active = 1'} ORDER BY sort_order, name`).all())
+  .map(tag => ({ ...camelRow(tag), active: Boolean(tag.active) }));
 export const listProducts = async (db, { includeInactive = false, identifier } = {}) => {
   const statement = db.prepare(`SELECT p.*, c.name AS collection_name, c.slug AS collection_slug,
     cat.name AS category_name, cat.slug AS category_slug, sub.name AS subcategory_name, sub.slug AS subcategory_slug,
@@ -11,9 +13,17 @@ export const listProducts = async (db, { includeInactive = false, identifier } =
     LEFT JOIN catalog_subcategories sub ON sub.id = p.subcategory_id AND sub.category_id = p.category_id
     WHERE ${includeInactive ? '1=1' : visibility} ${identifier === undefined ? '' : 'AND (p.code = ? OR p.slug = ?)'} ORDER BY p.sort_order, p.id`);
   const result = await (identifier === undefined ? statement : statement.bind(identifier, identifier)).all();
+  const tagRows = rows(await db.prepare(`SELECT pt.product_id, t.* FROM product_tags pt JOIN catalog_tags t ON t.id = pt.tag_id ORDER BY t.sort_order, t.name`).all());
+  const tagsByProduct = new Map();
+  tagRows.forEach(tag => {
+    const productTags = tagsByProduct.get(tag.product_id) ?? [];
+    productTags.push({ ...camelRow(tag), active: Boolean(tag.active) });
+    tagsByProduct.set(tag.product_id, productTags);
+  });
   const now = Date.now();
   return rows(result).map(row => {
     const content = JSON.parse(row.content_json);
+    const tags = tagsByProduct.get(row.id) ?? [];
     const promotionActive = Boolean(row.is_promotion) && (!row.promotion_starts_at || Date.parse(row.promotion_starts_at) <= now) && (!row.promotion_ends_at || Date.parse(row.promotion_ends_at) > now);
     const effectivePriceMinor = promotionActive && row.promotion_price_minor !== null ? row.promotion_price_minor : row.price_minor;
     const product = {
@@ -24,7 +34,8 @@ export const listProducts = async (db, { includeInactive = false, identifier } =
       categories: [{ id: row.category_id, name: row.category_name, slug: row.category_slug }],
       active: Boolean(row.active), visible: Boolean(row.visible), isPromotion: Boolean(row.is_promotion),
       promotionActive, effectivePriceMinor, price: formatPrice(effectivePriceMinor, row.currency), regularPrice: formatPrice(row.price_minor, row.currency),
-      badges: [...(content.badges ?? []), ...(promotionActive ? [row.promotion_label] : [])],
+      tags, tagIds: tags.map(tag => tag.id),
+      badges: [...tags.filter(tag => tag.active).map(tag => tag.name), ...(promotionActive ? [row.promotion_label] : [])],
       isFeatured: Boolean(row.is_featured), featuredConfig: normalizeFeaturedConfig(JSON.parse(row.featured_config_json)),
     };
     if (!includeInactive) {
@@ -67,9 +78,10 @@ export const getPublicCatalog = async db => {
   return { products, tabs, destacados: settings.active && settings.value.featuredEnabled ? products.filter(p => p.isFeatured).sort((a,b) => a.featuredOrder - b.featuredOrder || a.databaseId - b.databaseId).map(featuredFromProduct) : [], autoplayMs: settings.value.autoplayMs, signalText: settings.value.signalText, signalIcon: settings.value.signalIcon };
 };
 export const getAdminSnapshot = async db => {
-  const [products, categories, collections, subcategories, settings, pending, audit] = await Promise.all([
-    listProducts(db, { includeInactive: true }), listTaxonomy(db, 'categories', true), listTaxonomy(db, 'collections', true), listTaxonomy(db, 'subcategories', true), getSettings(db),
+  const [products, categories, collections, subcategories, tags, settings, pending, audit] = await Promise.all([
+    listProducts(db, { includeInactive: true }), listTaxonomy(db, 'categories', true), listTaxonomy(db, 'collections', true), listTaxonomy(db, 'subcategories', true),
+    listTags(db, true), getSettings(db),
     db.prepare("SELECT * FROM site_settings WHERE key = 'legacy_featured'").first(), db.prepare('SELECT * FROM audit_log ORDER BY id DESC LIMIT 100').all(),
   ]);
-  return { products, categories, collections, subcategories, settings, pendingFeatured: pending ? JSON.parse(pending.value_json) : [], pendingVersion: pending?.version ?? 0, audit: rows(audit).map(camelRow) };
+  return { products, categories, collections, subcategories, tags, settings, pendingFeatured: pending ? JSON.parse(pending.value_json) : [], pendingVersion: pending?.version ?? 0, audit: rows(audit).map(camelRow) };
 };

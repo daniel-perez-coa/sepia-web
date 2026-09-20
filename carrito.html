@@ -42,33 +42,85 @@
       </header>
 
       <div class="cart-layout">
-        <section class="cart-items" aria-label="Productos en el carrito">
-          <div class="cart-table-head" aria-hidden="true">
-            <span>PRODUCTO</span><span>PRECIO UNITARIO</span><span>CANTIDAD</span><span>SUBTOTAL</span><span></span>
-          </div>
-          <div data-cart-items></div>
-          <div class="cart-empty" data-cart-empty hidden>
-            <i class="bi bi-bag" aria-hidden="true"></i>
-            <h2>Tu carrito está vacío</h2>
-            <p>Explora el catálogo y agrega las piezas que quieras pedir.</p>
-            <a class="button button--fresh" href="/explorar">VER CATÁLOGO</a>
-          </div>
-          <div class="cart-error" data-cart-error hidden role="alert">
-            <h2>No pudimos cargar tu carrito</h2><p>Actualiza la página para intentarlo de nuevo.</p>
-          </div>
-          <footer class="cart-total">
-            <span>Subtotal <small data-cart-products>(0 productos)</small></span>
-            <strong data-cart-subtotal>$0.00 MXN</strong>
-          </footer>
-        </section>
+        <div class="cart-order-column">
+          <section class="cart-items" aria-label="Productos en el carrito">
+            <div class="cart-table-head" aria-hidden="true">
+              <span>PRODUCTO</span><span>PRECIO UNITARIO</span><span>CANTIDAD</span><span>SUBTOTAL</span><span></span>
+            </div>
+            <div data-cart-items></div>
+            <div class="cart-empty" data-cart-empty hidden>
+              <i class="bi bi-bag" aria-hidden="true"></i>
+              <h2>Tu carrito está vacío</h2>
+              <p>Explora el catálogo y agrega las piezas que quieras pedir.</p>
+              <a class="button button--fresh" href="/explorar">VER CATÁLOGO</a>
+            </div>
+            <div class="cart-error" data-cart-error hidden role="alert">
+              <h2>No pudimos cargar tu carrito</h2><p>Actualiza la página para intentarlo de nuevo.</p>
+            </div>
+            <footer class="cart-total">
+              <span>Subtotal <small data-cart-products>(0 productos)</small></span>
+              <strong data-cart-subtotal>$0.00 MXN</strong>
+            </footer>
+          </section>
+
+          <form class="delivery-form" id="delivery-checkout" data-delivery-form>
+            <header class="delivery-form__heading">
+              <div><p class="eyebrow">ENTREGA</p><h2>¿Cómo recibes tu pedido?</h2></div>
+              <span class="delivery-save-status" data-save-status aria-live="polite"></span>
+            </header>
+
+            <fieldset class="delivery-methods">
+              <legend class="sr-only">Método de entrega</legend>
+              <label class="delivery-method">
+                <input type="radio" name="deliveryMethod" value="shipping" checked />
+                <span><i class="bi bi-box-seam" aria-hidden="true"></i><strong>Envío</strong><small>Coordinamos el costo y la fecha por WhatsApp.</small></span>
+              </label>
+              <label class="delivery-method">
+                <input type="radio" name="deliveryMethod" value="puebla" />
+                <span><i class="bi bi-geo-alt" aria-hidden="true"></i><strong>Entrega gratis en Puebla</strong><small>Disponible los sábados en puntos seleccionados.</small></span>
+              </label>
+            </fieldset>
+
+            <section class="delivery-section" aria-labelledby="contact-details-title">
+              <div class="delivery-section__title"><span>01</span><div><h3 id="contact-details-title">Tus datos</h3><p>Los usaremos únicamente para coordinar este pedido.</p></div></div>
+              <div class="delivery-fields">
+                <label><span>Nombre completo</span><input name="fullName" type="text" autocomplete="name" maxlength="120" required /></label>
+                <label><span>Teléfono</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" pattern="[0-9+() .-]{10,20}" required /></label>
+                <label class="delivery-field--wide"><span>Email</span><input name="email" type="email" autocomplete="email" maxlength="160" required /></label>
+              </div>
+            </section>
+
+            <section class="delivery-section" data-shipping-fields aria-labelledby="shipping-title">
+              <div class="delivery-section__title"><span>02</span><div><h3 id="shipping-title">Dirección de envío</h3><p>Incluye calle, número, colonia, ciudad, estado, código postal y referencias.</p></div></div>
+              <label class="delivery-address"><span>Dirección completa</span><textarea name="address" autocomplete="street-address" maxlength="600" rows="4" required></textarea></label>
+            </section>
+
+            <section class="delivery-section" data-puebla-fields aria-labelledby="pickup-title" hidden>
+              <div class="delivery-section__title"><span>02</span><div><h3 id="pickup-title">Entrega el sábado, gratis</h3><p>Selecciona el lugar que mejor te funcione.</p></div></div>
+              <div class="pickup-loading" data-pickup-loading>Consultando puntos de entrega…</div>
+              <div class="pickup-list" data-pickup-list></div>
+              <div class="pickup-empty" data-pickup-empty hidden>No hay puntos disponibles por el momento. Elige envío para continuar.</div>
+              <div class="pickup-map" data-pickup-map hidden>
+                <iframe title="Mapa del punto de entrega" loading="lazy" referrerpolicy="no-referrer" data-pickup-map-frame></iframe>
+                <div><strong data-pickup-map-name></strong><a data-pickup-map-link target="_blank" rel="noopener">Abrir en Google Maps <span aria-hidden="true">↗</span></a></div>
+              </div>
+            </section>
+
+            <footer class="delivery-form__footer">
+              <p><i class="bi bi-device-ssd" aria-hidden="true"></i> Autoguardado solo en este dispositivo.</p>
+              <button type="button" class="delivery-clear" data-clear-delivery>Olvidar mis datos</button>
+            </footer>
+          </form>
+        </div>
 
         <aside class="cart-summary">
           <p class="eyebrow">RESUMEN</p>
           <h2>Tu pedido</h2>
-          <p>El envío y la entrega se coordinarán directamente con un operador.</p>
+          <p>El envío y la entrega se coordinarán directamente contigo por WhatsApp.</p>
           <div class="cart-summary__row"><span>Subtotal</span><strong data-cart-summary>$0.00 MXN</strong></div>
           <div class="cart-summary__row cart-summary__total"><span>Total</span><strong data-cart-summary>$0.00 MXN</strong></div>
-          <button class="cart-checkout" type="button">REALIZA TU COMPRA</button>
+          <button class="cart-checkout" type="submit" form="delivery-checkout" data-checkout disabled>REALIZA TU COMPRA</button>
+          <p class="cart-checkout-status" data-checkout-status role="alert" hidden></p>
           <small><i class="bi bi-lock" aria-hidden="true"></i> Compra gestionada por un operador</small>
         </aside>
       </div>

@@ -1,6 +1,7 @@
 const COOKIE_NAME = 'sepia-cart';
 const MAX_ITEMS = 40;
 const MAX_QUANTITY = 99;
+const COOKIE_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 const normalizeItem = (item) => {
   if (!item || (typeof item.id !== 'string' && typeof item.id !== 'number')) return null;
@@ -39,7 +40,8 @@ export const setCart = (items) => {
     syncCartCount();
     return [];
   }
-  document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(cart))}; Path=/; SameSite=Lax`;
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(cart))}; Path=/; SameSite=Lax; Max-Age=${COOKIE_TTL_SECONDS}${secure}`;
   syncCartCount();
   return cart;
 };

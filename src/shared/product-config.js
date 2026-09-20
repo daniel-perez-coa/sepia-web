@@ -127,7 +127,14 @@ export const validateContent = (v = {}) => {
   if (v.link != null && v.link !== '#contacto') safeUrl(v.link);
   return v;
 };
-export const DEFAULT_SETTINGS = Object.freeze({ tabMode: 'collections', autoplayMs: 6500, featuredEnabled: true, signalText: 'MAKE / PRODUCE / MOVE / SHIFT', signalIcon: '' });
+export const DEFAULT_SETTINGS = Object.freeze({
+  tabMode: 'collections',
+  autoplayMs: 6500,
+  featuredEnabled: true,
+  signalText: 'MAKE / PRODUCE / MOVE / SHIFT',
+  signalIcon: '',
+  whatsappPhone: '',
+});
 export const validateSettings = v => {
   if (!object(v) || Object.keys(v).some(k => !Object.hasOwn(DEFAULT_SETTINGS, k))) fail('Configuración desconocida.');
   const out = { ...DEFAULT_SETTINGS, ...v };
@@ -137,6 +144,7 @@ export const validateSettings = v => {
   textValue(out.signalText, 'Texto del cintillo', 160);
   if (typeof out.signalIcon !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(out.signalIcon) && out.signalIcon !== '') fail('Ícono del cintillo: usa únicamente el nombre de un ícono Bootstrap, por ejemplo “star-fill”.');
   if (!out.signalText && !out.signalIcon) fail('Escribe texto o indica un ícono Bootstrap para el cintillo.');
+  if (typeof out.whatsappPhone !== 'string' || out.whatsappPhone && !/^\d{10,15}$/.test(out.whatsappPhone)) fail('WhatsApp: escribe entre 10 y 15 dígitos con código de país, sin espacios ni símbolos.');
   return out;
 };
 

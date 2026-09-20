@@ -1,4 +1,4 @@
-import { getPublicCatalog, listProducts, listTaxonomy, listTags, listFeaturedItems, getAdminSnapshot } from './catalog-data.js';
+import { getPublicCatalog, listProducts, listTaxonomy, listTags, listFeaturedItems, listDeliveryPoints, getSettings, getAdminSnapshot } from './catalog-data.js';
 import { saveRecord, setRecordActive, assignLegacyFeatured } from './admin-data.js';
 import { FEATURED_FIELDS, FEATURED_TEMPLATES, object } from '../shared/product-config.js';
 import { FEATURED_ADJUSTMENT_FIELDS } from '../shared/featured-config.js';
@@ -54,7 +54,7 @@ export const handleApiRequest = async (request, env) => {
       if ((origin && origin !== url.origin) || request.headers.get('sec-fetch-site') === 'cross-site') return json({ error: 'Origen no permitido.' }, 403);
       const body = await payloadFor(request);
       if (path === '/api/admin/assign-featured' && request.method === 'POST') return json({ ok: true, ...await assignLegacyFeatured(env.DB, body, actor) });
-      const match = path.match(/^\/api\/admin\/(products|collections|categories|subcategories|tags|settings)(?:\/(\d+))?(?:\/(reactivate|deactivate))?$/);
+      const match = path.match(/^\/api\/admin\/(products|collections|categories|subcategories|tags|settings|delivery-points)(?:\/(\d+))?(?:\/(reactivate|deactivate))?$/);
       if (!match) return json({ error: 'Ruta no encontrada.' }, 404);
       const [, resource, idText, action] = match, id = idText ? Number(idText) : null;
       if (id && action && request.method === 'POST') return json({ ok: true, ...await setRecordActive(env.DB, resource, id, body, actor, action === 'reactivate') });
@@ -72,6 +72,10 @@ export const handleApiRequest = async (request, env) => {
     for (const resource of ['categories', 'collections', 'subcategories']) if (path === `/api/${resource}`) return json({ [resource]: await listTaxonomy(env.DB, resource) });
     if (path === '/api/tags') return json({ tags: await listTags(env.DB) });
     if (path === '/api/featured') return json({ featured: await listFeaturedItems(env.DB) });
+    if (path === '/api/delivery') {
+      const [deliveryPoints, settings] = await Promise.all([listDeliveryPoints(env.DB), getSettings(env.DB)]);
+      return json({ deliveryPoints, whatsappPhone: settings.value.whatsappPhone });
+    }
     if (path === '/api/config/featured-adjustments') return json({ version: 1, fields: FEATURED_ADJUSTMENT_FIELDS, templates: FEATURED_TEMPLATES, featuredFields: FEATURED_FIELDS });
     return json({ error: 'Ruta no encontrada.' }, 404);
   } catch (error) {

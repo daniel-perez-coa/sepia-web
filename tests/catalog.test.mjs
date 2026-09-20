@@ -18,6 +18,7 @@ function setup() {
   sqlite.exec(read('../drizzle/0000_grey_redwing.sql')); sqlite.exec(read('../drizzle/0001_dear_sue_storm.sql'));
   sqlite.exec(read('../drizzle/0005_tags_and_product_content_cleanup.sql'));
   sqlite.exec(read('../drizzle/0006_one_tag_per_product.sql'));
+  sqlite.exec(read('../drizzle/0008_delivery_points.sql'));
   sqlite.exec(buildImport(source));
   const db = {
     prepare(sql) {
@@ -179,6 +180,15 @@ test('new products require existing taxonomy and get an audit event',withDb(asyn
 test('tabs switch to categories without duplicate tab records',withDb(async s=>{
   const snapshot=await getAdminSnapshot(s.db);await saveRecord(s.db,'settings',{version:1,active:true,value:{tabMode:'categories',autoplayMs:8000,featuredEnabled:true}},actor,snapshot.settings.id);
   const c=await getPublicCatalog(s.db);assert.equal(c.tabs.length,2);assert.equal(c.tabs[1].filterType,'category');assert.equal(c.autoplayMs,8000);
+}));
+test('delivery points and WhatsApp configuration are managed and exposed without audit fields',withDb(async s=>{
+  let snapshot=await getAdminSnapshot(s.db);
+  await saveRecord(s.db,'delivery-points',{name:'Punto Centro',address:'Zócalo de Puebla',schedule:'Sábados, 11:00 a 14:00',latitude:'19.0414',longitude:'-98.2063',sortOrder:1,active:true},actor);
+  await saveRecord(s.db,'settings',{version:snapshot.settings.version,active:true,value:{...snapshot.settings.value,whatsappPhone:'5212221234567'}},actor,snapshot.settings.id);
+  snapshot=await getAdminSnapshot(s.db);assert.equal(snapshot.deliveryPoints[0].name,'Punto Centro');
+  const response=await handleApiRequest(new Request('https://example.test/api/delivery'),{DB:s.db});
+  assert.equal(response.status,200);
+  const data=await response.json();assert.equal(data.whatsappPhone,'5212221234567');assert.equal(data.deliveryPoints[0].schedule,'Sábados, 11:00 a 14:00');assert.equal('updatedBy' in data.deliveryPoints[0],false);
 }));
 test('API denies anonymous and non-admin identities; fails closed without allowlist',withDb(async s=>{
   const req=id=>new Request('http://test/api/admin/bootstrap',{headers:id?{'oai-authenticated-user-id':id}:{}});

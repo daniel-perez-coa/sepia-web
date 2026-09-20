@@ -12,7 +12,7 @@ const featuredPreviewContent = dialog.querySelector('[data-featured-preview-cont
 const featuredPreviewTitle = dialog.querySelector('[data-featured-preview-title]');
 const featuredPreviewEyebrow = dialog.querySelector('[data-featured-preview-eyebrow]');
 const fieldTooltip = document.querySelector('[data-field-tooltip]');
-const titles = { products: 'Productos', collections: 'Colecciones', categories: 'Categorías', subcategories: 'Subcategorías', tags: 'Etiquetas', featured: 'Destacados', settings: 'Configuración', activity: 'Actividad' };
+const titles = { products: 'Productos', collections: 'Colecciones', categories: 'Categorías', subcategories: 'Subcategorías', tags: 'Etiquetas', featured: 'Destacados', deliveryPoints: 'Puntos de entrega', settings: 'Configuración', activity: 'Actividad' };
 const ICON_OPTIONS = [
   { value: 'box-seam', label: 'Caja / empaque' }, { value: 'box', label: 'Caja' }, { value: 'rulers', label: 'Regla / medición' },
   { value: 'arrows-vertical', label: 'Alto / vertical' }, { value: 'arrows', label: 'Ancho / doble flecha' },
@@ -66,6 +66,9 @@ const fieldHelp = (name, label, type) => ({
   imageAlt: 'Describe brevemente qué aparece en la imagen.',
   tabLabel: 'Escribe el texto corto que aparecerá en la navegación.',
   signalIcon: 'Usa el nombre de un icono de Bootstrap, por ejemplo: star-fill.',
+  whatsappPhone: 'Incluye código de país y número, solo dígitos. Ejemplo para México: 5212221234567.',
+  latitude: 'Coordenada decimal entre -90 y 90. Puedes copiarla desde Google Maps u OpenStreetMap.',
+  longitude: 'Coordenada decimal entre -180 y 180. Puedes copiarla desde Google Maps u OpenStreetMap.',
 }[name] ?? (type === 'select' ? 'Selecciona una opción de la lista.' : type === 'number' ? 'Ingresa un valor numérico válido.' : type === 'textarea' ? `Escribe la información de ${label.toLowerCase()}.` : type === 'boolean' ? 'Activa la opción solo cuando deba aplicarse.' : `Completa ${label.toLowerCase()}.`));
 const input = (name, label, value = '', type = 'text', options = [], attributes = {}) => {
   const wrapper = el('label', `admin-field${type === 'textarea' ? ' admin-field--wide' : ''}${type === 'boolean' ? ' admin-field--checkbox' : ''}`);
@@ -419,7 +422,20 @@ const editSettings=()=>{
     input('autoplayMs','Cambio de banner (milisegundos)',s.value.autoplayMs,'number',[],{min:3000,max:60000,step:500}),
     input('featuredEnabled','Mostrar carrusel de destacados',s.value.featuredEnabled,'boolean'),input('active','Configuración activa',s.active,'boolean'),
     input('signalText','Texto del cintillo superior',s.value.signalText),input('signalIcon','Ícono Bootstrap opcional',s.value.signalIcon,'text',[],{placeholder:'Ejemplo: star-fill'}),
-  ],()=>({value:validateSettings({tabMode:val('tabMode'),autoplayMs:num('autoplayMs'),featuredEnabled:checked('featuredEnabled'),signalText:val('signalText'),signalIcon:val('signalIcon')}),active:checked('active')}));
+    input('whatsappPhone','WhatsApp empresarial',s.value.whatsappPhone,'tel',[],{placeholder:'5212221234567'}),
+  ],()=>({value:validateSettings({tabMode:val('tabMode'),autoplayMs:num('autoplayMs'),featuredEnabled:checked('featuredEnabled'),signalText:val('signalText'),signalIcon:val('signalIcon'),whatsappPhone:val('whatsappPhone')}),active:checked('active')}));
+};
+const editDeliveryPoint = (item = null) => {
+  fields.oninput=null; fields.onchange=null;
+  openEditor('delivery-points', item, item?.name ?? 'Nuevo punto de entrega', [
+    input('name','Lugar',item?.name,'text',[],{required:''}),
+    input('schedule','Horario',item?.schedule,'text',[],{required:'',placeholder:'Sábados, 11:00 a 14:00'}),
+    input('address','Dirección o referencia',item?.address,'textarea'),
+    input('latitude','Latitud',item?.latitude,'text',[],{required:'',inputmode:'decimal',placeholder:'19.0414'}),
+    input('longitude','Longitud',item?.longitude,'text',[],{required:'',inputmode:'decimal',placeholder:'-98.2063'}),
+    input('sortOrder','Orden',item?.sortOrder??0,'number',[],{min:0,step:1}),
+    input('active','Mostrar para entrega',item?.active??true,'boolean'),
+  ],()=>({name:val('name'),schedule:val('schedule'),address:val('address'),latitude:val('latitude'),longitude:val('longitude'),sortOrder:num('sortOrder'),active:checked('active')}));
 };
 const confirmAction = (title, message, action = 'Confirmar', danger = false) => new Promise(resolve => {
   confirmDialog.querySelector('[data-confirm-title]').textContent = title;
@@ -441,28 +457,29 @@ const renderTable=(items,columns,resource)=>{
   const wrap=el('div','admin-table-wrap'),table=el('table','admin-table'),head=el('thead'),tr=el('tr'),body=el('tbody');
   columns.forEach(c=>tr.append(el('th','',c[0])));if(resource)tr.append(el('th','','Acciones'));head.append(tr);
   items.forEach(item=>{const row=el('tr');columns.forEach(([label,read])=>{const cell=el('td'),value=read(item);cell.dataset.label=label;value instanceof Node?cell.append(value):cell.textContent=value??'—';row.append(cell);});
-    if(resource){const cell=el('td','admin-table__actions');cell.dataset.label='Acciones';cell.append(button('Editar',()=>resource==='products'?editProduct(item):editTaxonomy(resource,item)),button(item.active?'Desactivar':'Reactivar',()=>setActive(resource,item)));row.append(cell);}body.append(row);});
+    if(resource){const cell=el('td','admin-table__actions');cell.dataset.label='Acciones';cell.append(button('Editar',()=>resource==='products'?editProduct(item):resource==='delivery-points'?editDeliveryPoint(item):editTaxonomy(resource,item)),button(item.active?'Desactivar':'Reactivar',()=>setActive(resource,item)));row.append(cell);}body.append(row);});
   table.append(head,body);wrap.append(table);return wrap;
 };
 const render=()=>{
   workspace.replaceChildren();root.querySelector('[data-admin-title]').textContent=titles[current];
   nav.querySelectorAll('button').forEach(b=>b.classList.toggle('is-active',b.dataset.section===current));
   const toolbar=el('div','admin-section__toolbar');workspace.append(toolbar);
-  const resource=current==='featured'?'products':current;
-  if(['products','collections','categories','subcategories','tags','featured'].includes(current)){
+  const resource=current==='featured'?'products':current==='deliveryPoints'?'delivery-points':current;
+  if(['products','collections','categories','subcategories','tags','featured','deliveryPoints'].includes(current)){
     const filter=input('stateFilter','Estado',stateFilter,'select',[{value:'all',label:'Todos'},{value:'active',label:'Activos'},{value:'inactive',label:'Inactivos'}]);
     filter.querySelector('select').addEventListener('change',e=>{stateFilter=e.target.value;render();});toolbar.append(filter);
-    toolbar.append(button(current==='featured'?'Elegir producto':'Nuevo registro',()=>current==='featured'?chooseFeatured():resource==='products'?editProduct():editTaxonomy(resource),true));
-    let items=snapshot[resource].filter(x=>stateFilter==='all'||x.active===(stateFilter==='active'));
+    toolbar.append(button(current==='featured'?'Elegir producto':current==='deliveryPoints'?'Nuevo punto':'Nuevo registro',()=>current==='featured'?chooseFeatured():resource==='products'?editProduct():resource==='delivery-points'?editDeliveryPoint():editTaxonomy(resource),true));
+    const source = current==='featured' ? snapshot.products : current==='deliveryPoints' ? snapshot.deliveryPoints : snapshot[resource];
+    let items=source.filter(x=>stateFilter==='all'||x.active===(stateFilter==='active'));
     if(current==='featured')items=items.filter(p=>p.isFeatured);
     const status=p=>p.active?(p.visible===false?'Oculto por catálogo inactivo':'Activo'):'Inactivo';
     workspace.append(renderTable(items,resource==='products'?[
       ['Producto',p=>p.title],['Colección',p=>p.Collection],['Precio',p=>money(p.priceMinor)],['Promoción',p=>p.promotionActive?'Vigente':p.isPromotion?'Programada / vencida':'No'],['Destacado',p=>p.isFeatured?'Sí':'No'],['Estado',status],
-    ]:[['Nombre',p=>p.name],...(resource==='subcategories'?[['Categoría',p=>p.categoryName]]:[]),['Orden',p=>p.sortOrder],['Estado',status]],resource));
+    ]:resource==='delivery-points'?[['Lugar',p=>p.name],['Horario',p=>p.schedule],['Dirección',p=>p.address],['Orden',p=>p.sortOrder],['Estado',status]]:[['Nombre',p=>p.name],...(resource==='subcategories'?[['Categoría',p=>p.categoryName]]:[]),['Orden',p=>p.sortOrder],['Estado',status]],resource));
     if(current==='featured')renderPending();
   }else if(current==='settings'){
     toolbar.append(el('p','','Las tabs se generan desde los catálogos activos. “Todos” no necesita un registro.'),button('Editar configuración',editSettings,true));
-    workspace.append(el('p','',`Tabs por ${titles[snapshot.settings.value.tabMode].toLowerCase()} · Carrusel: ${snapshot.settings.value.featuredEnabled?'activo':'oculto'} · ${snapshot.settings.value.autoplayMs/1000} segundos`));
+    workspace.append(el('p','',`Tabs por ${titles[snapshot.settings.value.tabMode].toLowerCase()} · Carrusel: ${snapshot.settings.value.featuredEnabled?'activo':'oculto'} · ${snapshot.settings.value.autoplayMs/1000} segundos · WhatsApp: ${snapshot.settings.value.whatsappPhone || 'pendiente'}`));
   }else{
     toolbar.append(el('p','','Últimos 100 eventos. Historial de solo lectura; incluye valores anteriores y posteriores.'));
     workspace.append(renderTable(snapshot.audit,[['Fecha',p=>dateText(p.createdAt)],['Responsable',p=>p.actorEmail||p.actorId],['Registro',p=>`${p.entityType} / ${p.entityId}`],['Acción',p=>p.action],['Cambios',p=>{const d=el('details');d.append(el('summary','','Ver detalle'),el('pre','admin-audit-json',JSON.stringify({antes:p.beforeJson?JSON.parse(p.beforeJson):null,despues:p.afterJson?JSON.parse(p.afterJson):null},null,2)));return d; }]]));

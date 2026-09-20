@@ -203,8 +203,12 @@ const createPreview = () => {
   const card = el('article', 'featured-card admin-featured-preview'); const image = el('img');
   const shade = el('div', 'featured-card__shade'), label = el('p', 'featured-card__label meta');
   const content = el('div', 'featured-card__content');
-  content.append(el('h3'), el('p'), el('a')); card.append(image, shade, label, content);
-  card.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); }); return card;
+  const controls = el('div', 'featured-card__controls');
+  const previewControl = icon => { const control = el('button'); control.type = 'button'; control.tabIndex = -1; control.setAttribute('aria-hidden', 'true'); control.append(el('i', `bi bi-${icon}`)); return control; };
+  const dots = el('div', 'featured-card__dots'), activeDot = el('button', 'is-active'); activeDot.type = 'button'; activeDot.tabIndex = -1; activeDot.setAttribute('aria-hidden', 'true'); dots.append(activeDot);
+  controls.append(previewControl('arrow-left'), dots, previewControl('arrow-right'));
+  content.append(el('h3'), el('p'), el('a')); card.append(image, shade, label, content, controls);
+  card.addEventListener('click', e => { if (e.target.closest('a,button')) e.preventDefault(); }); return card;
 };
 const createProductPreview = () => {
   const card = el('article', 'product-card admin-product-preview');
@@ -286,6 +290,9 @@ const editProduct = (p = null) => {
     const modeButton = button(name, () => setPreviewMode(mode)); modeButton.dataset.previewMode = mode; modeButton.classList.add('admin-preview-switch__button'); previewSwitch.append(modeButton);
   }
   previewDevice.append(featuredCard);
+  const previewScaleObserver = new ResizeObserver(([entry]) => previewDevice.style.setProperty('--admin-preview-scale', String(entry.contentRect.width / 800)));
+  previewScaleObserver.observe(previewDevice);
+  dialog.addEventListener('close', () => previewScaleObserver.disconnect(), { once: true });
   const featuredPreviewSection = el('section', 'admin-featured-preview-section'); featuredPreviewSection.append(previewSwitch, previewDevice);
   const productPreviewSection = el('section', 'admin-product-preview-section'); productPreviewSection.append(el('h4', '', 'Tarjeta en catálogo'), productCard);
   const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(featuredPreviewSection, productPreviewSection); setPreviewMode('desktop');

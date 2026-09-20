@@ -31,8 +31,20 @@
 .admin-template-option__check { display: grid; width: 1.25rem; height: 1.25rem; place-items: center; border-radius: 50%; background: var(--color-ink); color: var(--color-fresh); opacity: 0; }
 .admin-template-option[aria-pressed='true'] .admin-template-option__check { opacity: 1; }
 .admin-preview-device { min-width: 0; width: 100%; container-type: inline-size; transition: width var(--transition); }
+.admin-preview-device.is-desktop { position: relative; aspect-ratio: 50 / 21; overflow: hidden; border-radius: 1rem; }
+.admin-preview-device.is-desktop .admin-featured-preview {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 50rem;
+  height: 21rem;
+  min-height: 0;
+  transform: scale(var(--admin-preview-scale, 1));
+  transform-origin: top left;
+}
+.admin-preview-device.is-desktop .admin-featured-preview .featured-card__content { min-height: 0; }
 .admin-preview-device.is-mobile { width: min(100%, 18rem); margin-inline: auto; }
 .admin-featured-preview h3 { overflow-wrap: anywhere; }
+.admin-page .admin-featured-preview .meta { font-size: 0.6875rem; }
 .admin-pending { margin-top: 2.5rem; }
 .admin-pending-row { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; padding:1rem 0; border-bottom:1px solid var(--color-line); }
 .admin-audit-json { max-width: 42rem; max-height: 30rem; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; font-size:0.875rem; }
@@ -576,19 +588,6 @@
 }
 
 .admin-preview-switch__button[aria-pressed='true'] { background: var(--color-ink); color: var(--color-bg); }
-
-.admin-featured-preview,
-.admin-featured-preview .featured-card__content {
-  min-height: 18rem;
-}
-
-.admin-featured-preview .featured-card__content {
-  width: min(67%, 23rem);
-  padding: 2rem;
-}
-
-.admin-featured-preview .featured-card__content > p:not(.featured-card__label) { margin-top: 0.8rem; font-size: var(--featured-description-size, 0.85rem); }
-.admin-featured-preview .featured-card__content > a { margin-top: 1rem; }
 
 .admin-preview-device.is-mobile .admin-featured-preview,
 .admin-preview-device.is-mobile .admin-featured-preview .featured-card__content { min-height: 24rem; }

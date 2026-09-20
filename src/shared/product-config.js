@@ -17,6 +17,7 @@ export const FEATURED_FIELDS = Object.freeze([
   { key: 'linkColor', label: 'Color del texto del botón', type: 'color', defaultValue: '#ffffff' },
   { key: 'lineColor', label: 'Color de la línea sobre el botón', type: 'color', defaultValue: '#ffffff' },
   { key: 'labelColor', label: 'Color de la etiqueta del banner', type: 'color', defaultValue: '#ffffff' },
+  { key: 'titleBoxColor', label: 'Color de la caja del título', type: 'color', defaultValue: '#ffffff' },
   { key: 'overlayColor', label: 'Color del fondo', type: 'color', defaultValue: '#142fd3' },
   { key: 'textColor', label: 'Color del texto', type: 'color', defaultValue: '#ffffff' },
   { key: 'overlayOpacity', label: 'Intensidad del fondo (0–1)', type: 'number', min: 0, max: 1, step: 0.05, defaultValue: 0.9 },
@@ -43,7 +44,7 @@ export const normalizeFeaturedConfig = (v = {}) => {
     version: 1, ...Object.fromEntries(FEATURED_FIELDS.map(f => [f.key, v[f.key] ?? f.defaultValue])),
     title1Adj: normalizeFeaturedAdjustments(v.title1Adj ?? { horizontal: 'right', vertical: 'top', boxed: true, rounded: 'soft' }), title2Adj: normalizeFeaturedAdjustments(v.title2Adj),
   };
-  for (const key of ['linkColor', 'lineColor', 'labelColor']) if (v[key] === undefined) normalized[key] = normalized.textColor;
+  for (const key of ['linkColor', 'lineColor', 'labelColor', 'titleBoxColor']) if (v[key] === undefined) normalized[key] = normalized.textColor;
   return normalized;
 };
 export const validateFeaturedConfig = (v = {}) => {
@@ -149,6 +150,6 @@ export const featuredFromProduct = product => {
     text: c.text || product.desc, LinkText: c.linkLabel || 'VER PRODUCTO →',
     LinkUrl: `/producto?id=${encodeURIComponent(product.id)}`, Line: c.showLine ? 'yes' : 'no',
     template: c.template, overlayColor: c.overlayColor, textColor: c.textColor, overlayOpacity: c.overlayOpacity,
-    titleSize: c.titleSize, descriptionSize: c.descriptionSize, linkColor: c.linkColor, lineColor: c.lineColor, labelColor: c.labelColor,
+    titleSize: c.titleSize, descriptionSize: c.descriptionSize, linkColor: c.linkColor, lineColor: c.lineColor, labelColor: c.labelColor, titleBoxColor: c.titleBoxColor,
   };
 };

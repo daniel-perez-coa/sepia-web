@@ -97,6 +97,7 @@ export const paintFeatured = (card, slide) => {
   card.style.setProperty('--featured-link', slide.linkColor || '#ffffff');
   card.style.setProperty('--featured-line', slide.lineColor || '#ffffff');
   card.style.setProperty('--featured-label', slide.labelColor || '#ffffff');
+  card.style.setProperty('--featured-title-box', slide.titleBoxColor || slide.textColor || '#ffffff');
   if (Number(slide.titleSize) > 0) card.style.setProperty('--featured-title-size', `${slide.titleSize}px`); else card.style.removeProperty('--featured-title-size');
   if (Number(slide.descriptionSize) > 0) card.style.setProperty('--featured-description-size', `${slide.descriptionSize}px`); else card.style.removeProperty('--featured-description-size');
 };

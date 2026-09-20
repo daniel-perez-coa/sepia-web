@@ -205,7 +205,7 @@
 
 .featured-card h3.is-boxed {
   padding: 0.25em 0.35em;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--featured-title-box, rgba(255, 255, 255, 0.7));
 }
 
 .featured-card h3.is-rounded-pill {

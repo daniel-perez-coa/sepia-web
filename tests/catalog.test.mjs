@@ -7,6 +7,7 @@ import { getPublicCatalog, getAdminSnapshot, listProducts, listFeaturedItems } f
 import { saveRecord, setRecordActive, assignLegacyFeatured, writeStatements } from '../src/server/admin-data.js';
 import { handleApiRequest } from '../src/server/api.js';
 import { normalizeFeaturedConfig, validateFeaturedConfig, validateContent } from '../src/shared/product-config.js';
+import { getExplorePrice, productMatchesExploreFilters } from '../src/shared/explore-filters.js';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const original = JSON.parse(read('../public/data/c_products.json'));
@@ -43,6 +44,25 @@ const payload = r => ({ code:r.code,slug:r.slug,title:r.title,label:r.label,shor
   featuredConfig:JSON.parse(r.featured_config_json),sortOrder:r.sort_order,active:Boolean(r.active),version:r.version });
 const tax = (name, extra={}) => ({name,slug:name.toLowerCase(),description:'',active:true,showInNav:true,sortOrder:0,...extra});
 const countAudit = s => s.sqlite.prepare('SELECT count(*) AS n FROM audit_log').get().n;
+
+test('Explore filters use their explicit product data without cross-field matches', () => {
+  const blueSeries = { label: 'SERIES', stock: 7, priceMinor: 55000, options: [{ label: 'Color', values: ['Azul Shift'] }] };
+  const blackDescription = { label: 'NEW', stock: 3, priceMinor: 65000, desc: 'Una pieza azul, pero sin opción de color.', options: [{ label: 'Acabado', values: ['Negro mate'] }] };
+  const soldOut = { label: 'DROP_01', stock: 0, priceMinor: 100000, variants: [{ value: 'Verde Foam' }], variantLabel: 'Color' };
+
+  assert.equal(productMatchesExploreFilters(blueSeries, { color: 'azul' }), true);
+  assert.equal(productMatchesExploreFilters(blackDescription, { color: 'azul' }), false);
+  assert.equal(productMatchesExploreFilters(blackDescription, { color: 'negro' }), false);
+  assert.equal(productMatchesExploreFilters(blueSeries, { series: 'series' }), true);
+  assert.equal(productMatchesExploreFilters(blueSeries, { availability: 'available' }), true);
+  assert.equal(productMatchesExploreFilters(blackDescription, { availability: 'available' }), false);
+  assert.equal(productMatchesExploreFilters(blackDescription, { availability: 'low' }), true);
+  assert.equal(productMatchesExploreFilters(soldOut, { availability: 'sold-out' }), true);
+  assert.equal(productMatchesExploreFilters(soldOut, { availability: 'available' }), false);
+  assert.equal(productMatchesExploreFilters(blueSeries, { price: 'under-600' }), true);
+  assert.equal(productMatchesExploreFilters(blackDescription, { price: '600-999' }), true);
+  assert.equal(getExplorePrice({ price: '$550 MXN' }), 550);
+});
 const withDb = fn => async () => { const s=setup();try{await fn(s);}finally{s.close();} };
 
 test('imports all product content and retains collection banners pending explicit association', withDb(async s=>{

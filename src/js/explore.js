@@ -28,7 +28,9 @@ const createCard = (product, index) => {
   card.className = `explore-card${index % 4 === 1 ? ' explore-card--dark' : ''}`;
   card.style.setProperty('--card-order', String(index % PAGE_SIZE));
   label.className = 'explore-card__label meta';
-  const labelText = product.promotionActive ? product.promotionLabel : product.label;
+  const labelText = product.promotionActive
+    ? product.promotionLabel
+    : (product.label || product.tags?.find(tag => tag.active)?.name || '');
   label.textContent = labelText || '';
   label.hidden = !labelText;
   if (product.photo) image.src = product.photo; else image.hidden = true;

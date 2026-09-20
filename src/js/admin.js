@@ -381,7 +381,7 @@ const editProduct = (p = null) => {
       exploreCard.classList.toggle('has-missing-image', exploreImageFailed); exploreImage.hidden = exploreImageFailed;
       exploreImage.alt = `${val('title') || 'Producto'}: ${val('shortDescription') || 'Descripción corta del producto.'}`;
       const exploreLabel = exploreCard.querySelector('.explore-card__label');
-      exploreLabel.textContent = promotionActive ? val('promotionLabel') : val('label'); exploreLabel.hidden = !exploreLabel.textContent;
+      exploreLabel.textContent = promotionActive ? val('promotionLabel') : (val('label') || selectedTag?.name || ''); exploreLabel.hidden = !exploreLabel.textContent;
       exploreCard.querySelector('h2').textContent = val('title') || 'Nombre del producto';
       exploreCard.querySelector('p').textContent = snapshot.collections.find(item => String(item.id) === val('collectionId'))?.name ?? 'Colección';
       exploreCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';

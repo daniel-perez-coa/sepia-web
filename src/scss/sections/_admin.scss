@@ -613,28 +613,30 @@
   border-top: 0;
 }
 
-.admin-product-preview {
-  width: 13.5rem;
-  min-height: 21rem;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.admin-product-preview img { height: 10rem; }
-.admin-product-preview img[hidden] { display: none; }
-.admin-product-preview h3 { font-size: 0.78rem; }
-.admin-product-preview small { min-height: 2.7em; display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-.admin-product-preview.has-missing-image::before {
-  display: grid;
+.admin-product-preview-device { display: grid; width: 100%; justify-items: center; }
+.admin-product-preview-device.is-desktop .admin-product-preview { width: 15.5rem; }
+.admin-product-preview-device.is-mobile .admin-product-preview { width: min(100%, 20rem); padding: 1rem; border-radius: 1rem; }
+.admin-product-preview-device.is-mobile .admin-product-preview .product-card__label { top: 1rem; left: 1rem; }
+.admin-product-preview-device.is-mobile .admin-product-preview img,
+.admin-product-preview-device.is-mobile .admin-product-preview.has-missing-image::before {
   width: calc(100% + 2rem);
-  height: 10rem;
+  height: auto;
   margin: -1rem -1rem 0.9rem;
-  place-items: center;
-  background: rgba(9, 10, 13, 0.08);
-  color: rgba(9, 10, 13, 0.5);
-  content: 'Sin imagen';
-  font: 700 0.7rem/1 var(--font-mono);
-  text-transform: uppercase;
+  aspect-ratio: 1;
 }
+.admin-product-preview-device.is-mobile .admin-product-preview h3 { font-size: 0.9rem; }
+.admin-product-preview-device.is-mobile .admin-product-preview p { font-size: 0.85rem; }
+.admin-product-preview-device.is-mobile .admin-product-preview small {
+  display: block;
+  min-height: 2.7em;
+  margin-top: 0.45rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  -webkit-line-clamp: initial;
+}
+.admin-product-preview-device.is-mobile .admin-product-preview > a { min-height: 2.75rem; }
+.admin-page .admin-product-preview .meta { font-size: 0.6875rem; }
 
 .admin-dialog header,
 .admin-dialog footer {

@@ -113,10 +113,16 @@ const createProductCard = (product, index) => {
   label.hidden = !labelText;
 
   const image = document.createElement('img');
-  image.src = product.photo;
+  image.dataset.source = product.photo || '';
+  if (product.photo) image.src = product.photo; else image.hidden = true;
   image.alt = `${product.title}: ${product.desc}`;
   image.loading = 'lazy';
   image.decoding = 'async';
+  image.addEventListener('error', () => {
+    image.hidden = true;
+    card.classList.add('has-missing-image');
+  });
+  card.classList.toggle('has-missing-image', !product.photo);
 
   const title = document.createElement('h3');
   title.textContent = product.title;

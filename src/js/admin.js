@@ -282,8 +282,10 @@ const editProduct = (p = null) => {
   const featuredCard = createPreview(), productCard = createProductPreview();
   const previewSwitch = el('div', 'admin-preview-switch'); previewSwitch.setAttribute('role', 'group'); previewSwitch.setAttribute('aria-label', 'Tamaño de vista previa');
   const previewDevice = el('section', 'admin-preview-device is-desktop');
+  const productPreviewDevice = el('div', 'admin-product-preview-device is-desktop');
   const setPreviewMode = mode => {
     previewDevice.classList.toggle('is-mobile', mode === 'mobile'); previewDevice.classList.toggle('is-desktop', mode === 'desktop');
+    productPreviewDevice.classList.toggle('is-mobile', mode === 'mobile'); productPreviewDevice.classList.toggle('is-desktop', mode === 'desktop');
     previewSwitch.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.previewMode === mode)));
   };
   for (const [name, mode] of [['Escritorio', 'desktop'], ['Móvil', 'mobile']]) {
@@ -293,9 +295,10 @@ const editProduct = (p = null) => {
   const previewScaleObserver = new ResizeObserver(([entry]) => previewDevice.style.setProperty('--admin-preview-scale', String(entry.contentRect.width / 800)));
   previewScaleObserver.observe(previewDevice);
   dialog.addEventListener('close', () => previewScaleObserver.disconnect(), { once: true });
-  const featuredPreviewSection = el('section', 'admin-featured-preview-section'); featuredPreviewSection.append(previewSwitch, previewDevice);
-  const productPreviewSection = el('section', 'admin-product-preview-section'); productPreviewSection.append(el('h4', '', 'Tarjeta en catálogo'), productCard);
-  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(featuredPreviewSection, productPreviewSection); setPreviewMode('desktop');
+  const featuredPreviewSection = el('section', 'admin-featured-preview-section'); featuredPreviewSection.append(previewDevice);
+  productPreviewDevice.append(productCard);
+  const productPreviewSection = el('section', 'admin-product-preview-section'); productPreviewSection.append(el('h4', '', 'Tarjeta en catálogo'), productPreviewDevice);
+  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(previewSwitch, featuredPreviewSection, productPreviewSection); setPreviewMode('desktop');
   const adjustmentSections = ['title1Adj','title2Adj'].map((key,i) => heading(i ? 'Ajustes del título' : 'Ajustes de la etiqueta', FEATURED_ADJUSTMENT_FIELDS.map(f => input(`${key}_${f.key}`, f.label, config[key][f.key], f.type, f.options))));
   const basics = [
     input('code','Código estable',p?.id ?? '', 'text', [], { required: '', ...(p ? { readonly: '' } : {}) }),
@@ -352,7 +355,9 @@ const editProduct = (p = null) => {
       if (image.dataset.source !== imageUrl) { image.dataset.source = imageUrl; delete image.dataset.failedUrl; image.src = imageUrl; }
       const imageFailed = !imageUrl || image.dataset.failedUrl === image.src;
       productCard.classList.toggle('has-missing-image', imageFailed); image.hidden = imageFailed; image.alt = val('primaryImageAlt') || val('title');
-      label.textContent = checked('isPromotion') ? val('promotionLabel') : selectedTag?.name ?? ''; label.hidden = !label.textContent;
+      const now = Date.now(), promotionStarts = val('promotionStartsAt'), promotionEnds = val('promotionEndsAt');
+      const promotionActive = checked('isPromotion') && (!promotionStarts || Date.parse(promotionStarts) <= now) && (!promotionEnds || Date.parse(promotionEnds) > now);
+      label.textContent = promotionActive ? val('promotionLabel') : selectedTag?.name ?? ''; label.hidden = !label.textContent;
       productCard.querySelector('h3').textContent = val('title') || 'Nombre del producto';
       productCard.querySelector('p').textContent = snapshot.collections.find(item => String(item.id) === val('collectionId'))?.name ?? 'Colección';
       productCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';

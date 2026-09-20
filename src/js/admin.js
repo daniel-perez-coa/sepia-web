@@ -9,6 +9,8 @@ const nav = root.querySelector('[data-admin-nav]'), dialog = document.querySelec
 const form = dialog.querySelector('form'), fields = dialog.querySelector('[data-dialog-fields]'), errorLabel = dialog.querySelector('[data-form-error]');
 const featuredPreviewPane = dialog.querySelector('[data-featured-preview-pane]');
 const featuredPreviewContent = dialog.querySelector('[data-featured-preview-content]');
+const featuredPreviewTitle = dialog.querySelector('[data-featured-preview-title]');
+const featuredPreviewEyebrow = dialog.querySelector('[data-featured-preview-eyebrow]');
 const fieldTooltip = document.querySelector('[data-field-tooltip]');
 const titles = { products: 'Productos', collections: 'Colecciones', categories: 'Categorías', subcategories: 'Subcategorías', tags: 'Etiquetas', featured: 'Destacados', settings: 'Configuración', activity: 'Actividad' };
 const ICON_OPTIONS = [
@@ -270,10 +272,8 @@ const editProduct = (p = null) => {
   FEATURED_TEMPLATES.forEach(t => {
     const b = button(t.name, () => { control('featured_template').value = t.id; refreshPreview(); });
     b.classList.add('admin-template-option');
-    const miniature = el('span', 'admin-template-miniature'); miniature.dataset.position = t.position; miniature.setAttribute('aria-hidden', 'true');
-    miniature.append(el('span', '', 'Título\nDescripción'));
     const choiceLabel = el('span', 'admin-template-option__label', t.name); choiceLabel.append(el('span', 'admin-template-option__check', '✓'));
-    b.replaceChildren(miniature, choiceLabel); b.setAttribute('aria-label', `Plantilla ${t.name}`); b.dataset.templateChoice = t.id; thumbs.append(b);
+    b.replaceChildren(choiceLabel); b.setAttribute('aria-label', `Plantilla ${t.name}`); b.dataset.templateChoice = t.id; thumbs.append(b);
   });
   const featuredCard = createPreview(), productCard = createProductPreview();
   const previewSwitch = el('div', 'admin-preview-switch'); previewSwitch.setAttribute('role', 'group'); previewSwitch.setAttribute('aria-label', 'Tamaño de vista previa');
@@ -286,8 +286,9 @@ const editProduct = (p = null) => {
     const modeButton = button(name, () => setPreviewMode(mode)); modeButton.dataset.previewMode = mode; modeButton.classList.add('admin-preview-switch__button'); previewSwitch.append(modeButton);
   }
   previewDevice.append(featuredCard);
+  const featuredPreviewSection = el('section', 'admin-featured-preview-section'); featuredPreviewSection.append(previewSwitch, previewDevice);
   const productPreviewSection = el('section', 'admin-product-preview-section'); productPreviewSection.append(el('h4', '', 'Tarjeta en catálogo'), productCard);
-  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(previewSwitch, previewDevice, productPreviewSection); setPreviewMode('desktop');
+  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(featuredPreviewSection, productPreviewSection); setPreviewMode('desktop');
   const adjustmentSections = ['title1Adj','title2Adj'].map((key,i) => heading(i ? 'Ajustes del título' : 'Ajustes de la etiqueta', FEATURED_ADJUSTMENT_FIELDS.map(f => input(`${key}_${f.key}`, f.label, config[key][f.key], f.type, f.options))));
   const basics = [
     input('code','Código estable',p?.id ?? '', 'text', [], { required: '', ...(p ? { readonly: '' } : {}) }),
@@ -350,7 +351,10 @@ const editProduct = (p = null) => {
       productCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';
       productCard.querySelector('a').setAttribute('aria-label', `Información de ${val('title') || 'producto'}`);
       thumbs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.templateChoice===c.template)));
-      const enabled = checked('isFeatured'); featuredPreviewPane.hidden = !enabled; dialog.classList.toggle('admin-dialog--with-preview', enabled);
+      const enabled = checked('isFeatured');
+      featuredPreviewSection.hidden = !enabled; previewPanel.classList.toggle('is-featured-disabled', !enabled);
+      featuredPreviewTitle.textContent = enabled ? 'Vista previa destacado' : 'Vista previa del producto';
+      featuredPreviewEyebrow.textContent = enabled ? 'PRODUCTO DESTACADO' : 'PRODUCTO';
     } catch { /* Incomplete input is validated on submit; keep the last good preview. */ }
   }
   fields.oninput=refreshPreview; fields.onchange=refreshPreview; refreshPreview();

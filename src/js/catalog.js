@@ -61,12 +61,10 @@ const renderRichText = (element, value) => {
 
 const applyAdjustments = (element, adjustments = {}) => {
   const normalized = normalizeFeaturedAdjustments(adjustments);
-  const { horizontal, vertical, textAlign, justify, rounded, boxed } = normalized;
+  const { horizontal, vertical, rounded, boxed } = normalized;
 
   element.dataset.horizontal = horizontal;
   element.dataset.vertical = vertical;
-  element.dataset.textAlign = textAlign;
-  element.dataset.justify = justify;
   element.classList.toggle('is-boxed', boxed);
   element.classList.remove('is-rounded-none', 'is-rounded-soft', 'is-rounded-pill');
   element.classList.add(`is-rounded-${rounded}`);
@@ -96,6 +94,11 @@ export const paintFeatured = (card, slide) => {
   card.style.setProperty('--featured-overlay', slide.overlayColor || '#142fd3');
   card.style.setProperty('--featured-text', slide.textColor || '#ffffff');
   card.style.setProperty('--featured-opacity', String(slide.overlayOpacity ?? 0.9));
+  card.style.setProperty('--featured-link', slide.linkColor || '#ffffff');
+  card.style.setProperty('--featured-line', slide.lineColor || '#ffffff');
+  card.style.setProperty('--featured-label', slide.labelColor || '#ffffff');
+  if (Number(slide.titleSize) > 0) card.style.setProperty('--featured-title-size', `${slide.titleSize}px`); else card.style.removeProperty('--featured-title-size');
+  if (Number(slide.descriptionSize) > 0) card.style.setProperty('--featured-description-size', `${slide.descriptionSize}px`); else card.style.removeProperty('--featured-description-size');
 };
 
 const createProductCard = (product, index) => {

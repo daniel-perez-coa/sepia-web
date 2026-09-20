@@ -144,10 +144,12 @@ test('pending banner association is explicit, atomic, traceable, and cannot over
 test('prices, dates, booleans, content and visual choices are validated',withDb(async s=>{
   for(const invalid of [{priceMinor:1.5},{stock:-1},{isPromotion:'yes'},{promotionPriceMinor:60000},{promotionStartsAt:'invalid'},{promotionStartsAt:'2030-02-01T00:00:00Z',promotionEndsAt:'2030-01-01T00:00:00Z'}])await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),...invalid},actor,1));
   assert.throws(()=>validateFeaturedConfig({template:'unknown'}));assert.throws(()=>validateFeaturedConfig({imageUrl:'javascript:alert(1)'}));assert.throws(()=>validateFeaturedConfig({title1Adj:{horizontal:'diagonal'}}));
+  assert.throws(()=>validateFeaturedConfig({titleSize:97}));assert.throws(()=>validateFeaturedConfig({descriptionSize:41}));
+  assert.doesNotThrow(()=>validateFeaturedConfig({titleSize:36,descriptionSize:18,lineColor:'#ff3300',linkColor:'#00ff99',labelColor:'#ffffff',title1Adj:{textAlign:'center',justify:'end'}}));
   assert.throws(()=>validateContent({gallery:'not-array'}));assert.throws(()=>validateContent({options:[{label:'Color',values:[],selected:0}]}));
   assert.doesNotThrow(()=>validateContent({variantLabel:'Color',variants:[{value:'Azul',priceMinor:12000,stock:3,isPromotion:true,promotionLabel:'PROMOCIÓN',promotionPriceMinor:10000,promotionStartsAt:'2030-01-01T00:00:00Z',promotionEndsAt:'2030-02-01T00:00:00Z'}]}));
   assert.throws(()=>validateContent({variants:[{value:'Azul',priceMinor:12000,stock:3,isPromotion:true,promotionLabel:'PROMOCIÓN',promotionPriceMinor:13000}]}));
-  assert.equal(normalizeFeaturedConfig({}).template,'editorial-left');assert.equal(countAudit(s),1);
+  const normalizedFeatured=normalizeFeaturedConfig({textColor:'#fa0000'});assert.equal(normalizedFeatured.template,'editorial-left');assert.equal(normalizedFeatured.lineColor,'#fa0000');assert.equal(Object.hasOwn(normalizedFeatured.title1Adj,'textAlign'),false);assert.equal(countAudit(s),1);
 }));
 test('new products require existing taxonomy and get an audit event',withDb(async s=>{
   const p={...payload(raw(s)),code:'TEST_NEW',slug:'test-new',content:{},active:false};delete p.version;

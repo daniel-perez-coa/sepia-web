@@ -7,6 +7,10 @@ import { paintFeatured } from './catalog.js';
 const root = document.querySelector('[data-admin]'), workspace = root.querySelector('[data-admin-workspace]');
 const nav = root.querySelector('[data-admin-nav]'), dialog = document.querySelector('[data-admin-dialog]'), confirmDialog = document.querySelector('[data-confirm-dialog]');
 const form = dialog.querySelector('form'), fields = dialog.querySelector('[data-dialog-fields]'), errorLabel = dialog.querySelector('[data-form-error]');
+const featuredPreviewPane = dialog.querySelector('[data-featured-preview-pane]');
+const featuredPreviewContent = dialog.querySelector('[data-featured-preview-content]');
+const featuredPreviewTitle = dialog.querySelector('[data-featured-preview-title]');
+const featuredPreviewEyebrow = dialog.querySelector('[data-featured-preview-eyebrow]');
 const fieldTooltip = document.querySelector('[data-field-tooltip]');
 const titles = { products: 'Productos', collections: 'Colecciones', categories: 'Categorías', subcategories: 'Subcategorías', tags: 'Etiquetas', featured: 'Destacados', settings: 'Configuración', activity: 'Actividad' };
 const ICON_OPTIONS = [
@@ -123,11 +127,15 @@ const repeat = (name, title, values, columns, options = {}) => {
     return [c.key, c.type === 'number' ? (v === '' ? null : Number(v)) : v];
   }))) };
 };
-const openEditor = (resource, record, title, children, serialize) => {
+const openEditor = (resource, record, title, children, serialize, preview = null) => {
   editor = { resource, record, serialize };
   dialog.querySelector('[data-dialog-title]').textContent = title;
   dialog.querySelector('[data-dialog-eyebrow]').textContent = record ? 'EDITAR / DATOS COMPARTIDOS' : 'ALTA';
-  fields.replaceChildren(el('p', 'admin-form-note', 'Los campos marcados con * son obligatorios. En productos, algunos son necesarios para publicar.'), ...children); errorLabel.hidden = true; dialog.showModal(); fields.querySelector('input,select,textarea')?.focus();
+  fields.replaceChildren(el('p', 'admin-form-note', 'Los campos marcados con * son obligatorios. En productos, algunos son necesarios para publicar.'), ...children);
+  featuredPreviewContent.replaceChildren(...(preview ? [preview] : []));
+  featuredPreviewPane.hidden = !preview;
+  dialog.classList.toggle('admin-dialog--with-preview', Boolean(preview));
+  errorLabel.hidden = true; dialog.showModal(); fields.querySelector('input,select,textarea')?.focus();
 };
 const inferredErrorFields = message => {
   const names = [];
@@ -195,8 +203,35 @@ const createPreview = () => {
   const card = el('article', 'featured-card admin-featured-preview'); const image = el('img');
   const shade = el('div', 'featured-card__shade'), label = el('p', 'featured-card__label meta');
   const content = el('div', 'featured-card__content');
-  content.append(el('h3'), el('p'), el('a')); card.append(image, shade, label, content);
-  card.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); }); return card;
+  const controls = el('div', 'featured-card__controls');
+  const previewControl = icon => { const control = el('button'); control.type = 'button'; control.tabIndex = -1; control.setAttribute('aria-hidden', 'true'); control.append(el('i', `bi bi-${icon}`)); return control; };
+  const dots = el('div', 'featured-card__dots'), activeDot = el('button', 'is-active'); activeDot.type = 'button'; activeDot.tabIndex = -1; activeDot.setAttribute('aria-hidden', 'true'); dots.append(activeDot);
+  controls.append(previewControl('arrow-left'), dots, previewControl('arrow-right'));
+  content.append(el('h3'), el('p'), el('a')); card.append(image, shade, label, content, controls);
+  card.addEventListener('click', e => { if (e.target.closest('a,button')) e.preventDefault(); }); return card;
+};
+const createProductPreview = () => {
+  const card = el('article', 'product-card admin-product-preview');
+  const label = el('span', 'product-card__label meta');
+  const image = el('img');
+  const title = el('h3');
+  const collection = el('p');
+  const description = el('small');
+  const link = el('a', '', 'INFORMACIÓN');
+  link.href = '#';
+  link.addEventListener('click', event => event.preventDefault());
+  image.addEventListener('error', () => { image.dataset.failedUrl = image.src; image.hidden = true; card.classList.add('has-missing-image'); });
+  card.append(label, image, title, collection, description, link);
+  return card;
+};
+const createExplorePreview = () => {
+  const card = el('article', 'explore-card is-visible admin-explore-preview');
+  const label = el('span', 'explore-card__label meta'), image = el('img'), title = el('h2');
+  const collection = el('p'), description = el('small'), link = el('a', '', 'INFORMACIÓN');
+  link.href = '#'; link.addEventListener('click', event => event.preventDefault());
+  image.addEventListener('error', () => { image.dataset.failedUrl = image.src; image.hidden = true; card.classList.add('has-missing-image'); });
+  card.append(label, image, title, collection, description, link);
+  return card;
 };
 const editProduct = (p = null) => {
   const {
@@ -231,23 +266,52 @@ const editProduct = (p = null) => {
     { key: 'promotionStartsAt', label: 'Inicio de promoción', type: 'datetime-local' },
     { key: 'promotionEndsAt', label: 'Fin de promoción', type: 'datetime-local' },
   ]);
-  const tagPicker = input('tagId','Etiqueta del producto', p?.tagIds?.[0] ?? '', 'select', [{ value: '', label: 'Sin etiqueta' }, ...snapshot.tags.filter(tag => tag.active || p?.tagIds?.includes(tag.id)).map(tag => ({ value: tag.id, label: `${tag.name}${tag.active ? '' : ' (inactiva)'}` }))], { help:'Selecciona una etiqueta. Se muestra en la ficha y se utiliza para encontrar productos relacionados.' });
-  const featureControls = FEATURED_FIELDS.map(f => input(`featured_${f.key}`, f.label, config[f.key], f.type, f.key === 'template' ? FEATURED_TEMPLATES.map(t => ({ value: t.id, label: t.name })) : f.options ?? [], { min: f.min, max: f.max, step: f.step }));
+  const tagPicker = input('tagId','Etiqueta del producto', p?.tagIds?.[0] ?? '', 'select', [{ value: '', label: 'Sin etiqueta' }, ...snapshot.tags.filter(tag => tag.active || p?.tagIds?.includes(tag.id)).map(tag => ({ value: tag.id, label: `${tag.name}${tag.active ? '' : ' (inactiva)'}` }))], { help:'Selecciona una etiqueta. Se muestra en la ficha, en la tarjeta del catálogo y se utiliza para encontrar productos relacionados.' });
+  const configuredFeaturedTag = snapshot.tags.find(tag => tag.name === config.title1);
+  const featuredTagPicker = input('featuredTagId', 'Etiqueta del banner', configuredFeaturedTag?.id ?? '', 'select', [
+    { value: '', label: 'Usar etiqueta del producto' },
+    ...snapshot.tags.filter(tag => tag.active).map(tag => ({ value: tag.id, label: tag.name })),
+  ], { help: 'Elige una etiqueta existente del catálogo. Si lo dejas vacío, se usará la etiqueta seleccionada para el producto.' });
+  const editableFeaturedFields = FEATURED_FIELDS.filter(f => !['template', 'title1'].includes(f.key));
+  const featureControls = editableFeaturedFields.map(f => input(`featured_${f.key}`, f.label, config[f.key], f.type, f.options ?? [], { min: f.min, max: f.max, step: f.step }));
   const readFeature = () => validateFeaturedConfig({ version: 1,
-    ...Object.fromEntries(FEATURED_FIELDS.map(f => [f.key, f.type === 'boolean' ? checked(`featured_${f.key}`) : f.type === 'number' ? num(`featured_${f.key}`) : val(`featured_${f.key}`)])),
+    template: val('featured_template'),
+    title1: snapshot.tags.find(tag => String(tag.id) === val('featuredTagId'))?.name ?? '',
+    ...Object.fromEntries(editableFeaturedFields.map(f => [f.key, f.type === 'boolean' ? checked(`featured_${f.key}`) : f.type === 'number' ? num(`featured_${f.key}`) : val(`featured_${f.key}`)])),
     ...Object.fromEntries(['title1Adj','title2Adj'].map(key => [key, Object.fromEntries(FEATURED_ADJUSTMENT_FIELDS.map(f => [f.key, f.type === 'boolean' ? checked(`${key}_${f.key}`) : val(`${key}_${f.key}`)]))])),
   });
   const thumbs = el('div', 'admin-template-picker');
+  const templateInput = el('input'); templateInput.type = 'hidden'; templateInput.name = 'featured_template'; templateInput.value = config.template; thumbs.append(templateInput);
   FEATURED_TEMPLATES.forEach(t => {
     const b = button(t.name, () => { control('featured_template').value = t.id; refreshPreview(); });
-    const miniature = el('span', 'admin-template-miniature'); miniature.dataset.position = t.position;
-    miniature.append(el('span', '', 'Título\nDescripción')); b.prepend(miniature); b.dataset.templateChoice = t.id; thumbs.append(b);
+    b.classList.add('admin-template-option');
+    const choiceLabel = el('span', 'admin-template-option__label', t.name); choiceLabel.append(el('span', 'admin-template-option__check', '✓'));
+    b.replaceChildren(choiceLabel); b.setAttribute('aria-label', `Plantilla ${t.name}`); b.dataset.templateChoice = t.id; thumbs.append(b);
   });
-  const desktop = createPreview(), mobile = createPreview();
-  const previews = el('div', 'admin-preview-grid');
-  for (const [name, card, mode] of [['Escritorio', desktop, 'desktop'], ['Móvil', mobile, 'mobile']]) {
-    const wrapper = el('section', `admin-preview-device is-${mode}`); wrapper.append(el('h4', '', name), card); previews.append(wrapper);
+  const featuredCard = createPreview(), productCard = createProductPreview(), exploreCard = createExplorePreview();
+  const previewSwitch = el('div', 'admin-preview-switch'); previewSwitch.setAttribute('role', 'group'); previewSwitch.setAttribute('aria-label', 'Tamaño de vista previa');
+  const previewDevice = el('section', 'admin-preview-device is-desktop');
+  const productPreviewDevice = el('div', 'admin-product-preview-device is-desktop');
+  const explorePreviewDevice = el('div', 'admin-explore-preview-device is-desktop');
+  const setPreviewMode = mode => {
+    previewDevice.classList.toggle('is-mobile', mode === 'mobile'); previewDevice.classList.toggle('is-desktop', mode === 'desktop');
+    productPreviewDevice.classList.toggle('is-mobile', mode === 'mobile'); productPreviewDevice.classList.toggle('is-desktop', mode === 'desktop');
+    explorePreviewDevice.classList.toggle('is-mobile', mode === 'mobile'); explorePreviewDevice.classList.toggle('is-desktop', mode === 'desktop');
+    previewSwitch.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.previewMode === mode)));
+  };
+  for (const [name, mode] of [['Escritorio', 'desktop'], ['Móvil', 'mobile']]) {
+    const modeButton = button(name, () => setPreviewMode(mode)); modeButton.dataset.previewMode = mode; modeButton.classList.add('admin-preview-switch__button'); previewSwitch.append(modeButton);
   }
+  previewDevice.append(featuredCard);
+  const previewScaleObserver = new ResizeObserver(([entry]) => previewDevice.style.setProperty('--admin-preview-scale', String(entry.contentRect.width / 800)));
+  previewScaleObserver.observe(previewDevice);
+  dialog.addEventListener('close', () => previewScaleObserver.disconnect(), { once: true });
+  const featuredPreviewSection = el('section', 'admin-featured-preview-section'); featuredPreviewSection.append(previewDevice);
+  productPreviewDevice.append(productCard);
+  const productPreviewSection = el('section', 'admin-product-preview-section'); productPreviewSection.append(el('h4', '', 'Tarjeta en catálogo'), productPreviewDevice);
+  explorePreviewDevice.append(exploreCard);
+  const explorePreviewSection = el('section', 'admin-explore-preview-section'); explorePreviewSection.append(el('h4', '', 'Tarjeta en Explorar'), explorePreviewDevice);
+  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(previewSwitch, featuredPreviewSection, productPreviewSection, explorePreviewSection); setPreviewMode('desktop');
   const adjustmentSections = ['title1Adj','title2Adj'].map((key,i) => heading(i ? 'Ajustes del título' : 'Ajustes de la etiqueta', FEATURED_ADJUSTMENT_FIELDS.map(f => input(`${key}_${f.key}`, f.label, config[key][f.key], f.type, f.options))));
   const basics = [
     input('code','Código estable',p?.id ?? '', 'text', [], { required: '', ...(p ? { readonly: '' } : {}) }),
@@ -272,7 +336,7 @@ const editProduct = (p = null) => {
     heading('Variantes por color u opción',[input('variantLabel','Nombre de la opción',content.variantLabel ?? content.options?.[0]?.label ?? 'Color','text',[],{ help:'Ejemplo: Color. Cada variante puede tener precio, existencias y promoción propios.' }),variants.node]),
     heading('Galería y especificaciones',[gallery.node,specs.node]),
     heading('Etiquetas y relaciones',[tagPicker]), heading('Dimensiones y materiales',dimensions), heading('Contenido de la ficha',[includes.node,excludes.node,options.node]),
-    heading('Destacado',[input('isFeatured','Mostrar este producto como destacado',p?.isFeatured ?? false,'boolean'),input('featuredOrder','Orden en destacados',p?.featuredOrder ?? 0,'number',[],{min:0,step:1}),thumbs,...featureControls,...adjustmentSections,previews]),
+    heading('Destacado',[input('isFeatured','Mostrar este producto como destacado',p?.isFeatured ?? false,'boolean'),input('featuredOrder','Orden en destacados',p?.featuredOrder ?? 0,'number',[],{min:0,step:1}),featuredTagPicker,thumbs,...featureControls,...adjustmentSections]),
   ], () => ({ code:val('code'),slug:val('slug'),title:val('title'),label:val('label'),shortDescription:val('shortDescription'),longDescription:val('longDescription'),
     primaryImageUrl:val('primaryImageUrl'),primaryImageAlt:val('primaryImageAlt'),collectionId:num('collectionId'),categoryId:num('categoryId'),subcategoryId:val('subcategoryId') ? num('subcategoryId') : null,
     sortOrder:num('sortOrder'),active:checked('active'),priceMinor:cents('price'),currency:'MXN',stock:val('stock') === '' ? null : num('stock'),isPromotion:checked('isPromotion'),promotionLabel:val('promotionLabel'),
@@ -288,16 +352,45 @@ const editProduct = (p = null) => {
       })),
       options:options.read().map(o=>({...o,values:o.values.split('\n').map(s=>s.trim()).filter(Boolean)})),
       dimensionsMaterialsImage:val('dimensionsMaterialsImage'),dimensions:dimensionsRepeater.read() }),
-  }));
+  }), previewPanel);
   control('categoryId').addEventListener('change',()=>{
     const select=control('subcategoryId'); select.replaceChildren();
     catalogOptions('subcategories',null,r=>r.categoryId===num('categoryId')).forEach(o=>{const option=el('option','',o.label);option.value=o.value;select.append(option);});
   });
   function refreshPreview() {
     try {
-      const c=readFeature(); const slide=featuredFromProduct({id:val('code'),title:val('title'),label:val('label'),desc:val('shortDescription'),photo:val('primaryImageUrl'),photoAlt:val('primaryImageAlt'),featuredConfig:c});
-      paintFeatured(desktop,slide);paintFeatured(mobile,slide);
+      const c=readFeature();
+      const selectedTag = snapshot.tags.find(tag => String(tag.id) === val('tagId'));
+      const slide=featuredFromProduct({id:val('code'),title:val('title'),label:val('label'),desc:val('shortDescription'),photo:val('primaryImageUrl'),photoAlt:val('primaryImageAlt'),tags:selectedTag ? [selectedTag] : [],featuredConfig:c});
+      paintFeatured(featuredCard,slide);
+      const image = productCard.querySelector('img'), label = productCard.querySelector('.product-card__label');
+      const imageUrl = val('primaryImageUrl');
+      if (image.dataset.source !== imageUrl) { image.dataset.source = imageUrl; delete image.dataset.failedUrl; image.src = imageUrl; }
+      const imageFailed = !imageUrl || image.dataset.failedUrl === image.src;
+      productCard.classList.toggle('has-missing-image', imageFailed); image.hidden = imageFailed; image.alt = val('primaryImageAlt') || val('title');
+      const now = Date.now(), promotionStarts = val('promotionStartsAt'), promotionEnds = val('promotionEndsAt');
+      const promotionActive = checked('isPromotion') && (!promotionStarts || Date.parse(promotionStarts) <= now) && (!promotionEnds || Date.parse(promotionEnds) > now);
+      label.textContent = promotionActive ? val('promotionLabel') : selectedTag?.name ?? ''; label.hidden = !label.textContent;
+      productCard.querySelector('h3').textContent = val('title') || 'Nombre del producto';
+      productCard.querySelector('p').textContent = snapshot.collections.find(item => String(item.id) === val('collectionId'))?.name ?? 'Colección';
+      productCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';
+      productCard.querySelector('a').setAttribute('aria-label', `Información de ${val('title') || 'producto'}`);
+      const exploreImage = exploreCard.querySelector('img');
+      if (exploreImage.dataset.source !== imageUrl) { exploreImage.dataset.source = imageUrl; delete exploreImage.dataset.failedUrl; exploreImage.src = imageUrl; }
+      const exploreImageFailed = !imageUrl || exploreImage.dataset.failedUrl === exploreImage.src;
+      exploreCard.classList.toggle('has-missing-image', exploreImageFailed); exploreImage.hidden = exploreImageFailed;
+      exploreImage.alt = `${val('title') || 'Producto'}: ${val('shortDescription') || 'Descripción corta del producto.'}`;
+      const exploreLabel = exploreCard.querySelector('.explore-card__label');
+      exploreLabel.textContent = promotionActive ? val('promotionLabel') : (val('label') || selectedTag?.name || ''); exploreLabel.hidden = !exploreLabel.textContent;
+      exploreCard.querySelector('h2').textContent = val('title') || 'Nombre del producto';
+      exploreCard.querySelector('p').textContent = snapshot.collections.find(item => String(item.id) === val('collectionId'))?.name ?? 'Colección';
+      exploreCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';
+      exploreCard.querySelector('a').setAttribute('aria-label', `Información de ${val('title') || 'producto'}`);
       thumbs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.templateChoice===c.template)));
+      const enabled = checked('isFeatured');
+      featuredPreviewSection.hidden = !enabled; previewPanel.classList.toggle('is-featured-disabled', !enabled);
+      featuredPreviewTitle.textContent = enabled ? 'Vista previa destacado' : 'Vista previa del producto';
+      featuredPreviewEyebrow.textContent = enabled ? 'PRODUCTO DESTACADO' : 'PRODUCTO';
     } catch { /* Incomplete input is validated on submit; keep the last good preview. */ }
   }
   fields.oninput=refreshPreview; fields.onchange=refreshPreview; refreshPreview();

@@ -14,20 +14,6 @@ export const FEATURED_ADJUSTMENT_FIELDS = Object.freeze([
     options: Object.freeze(['top', 'center', 'bottom']),
   }),
   Object.freeze({
-    key: 'textAlign',
-    label: 'Alineación de texto',
-    type: 'select',
-    defaultValue: 'left',
-    options: Object.freeze(['left', 'center', 'right']),
-  }),
-  Object.freeze({
-    key: 'justify',
-    label: 'Justificación',
-    type: 'select',
-    defaultValue: 'start',
-    options: Object.freeze(['start', 'center', 'end']),
-  }),
-  Object.freeze({
     key: 'boxed',
     label: 'Mostrar caja',
     type: 'boolean',

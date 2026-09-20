@@ -3,6 +3,10 @@
   "name": "sepia-chroma-street-2026",
   "main": "./worker.js",
   "compatibility_date": "2026-08-31",
+  "vars": {},
+  "secrets": {
+    "required": ["ADMIN_USER_EMAILS", "LOCAL_DEV_AUTH"]
+  },
   "assets": {
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"

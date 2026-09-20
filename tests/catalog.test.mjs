@@ -7,6 +7,7 @@ import { getPublicCatalog, getAdminSnapshot, listProducts, listFeaturedItems } f
 import { saveRecord, setRecordActive, assignLegacyFeatured, writeStatements } from '../src/server/admin-data.js';
 import { handleApiRequest } from '../src/server/api.js';
 import { normalizeFeaturedConfig, validateFeaturedConfig, validateContent } from '../src/shared/product-config.js';
+import { getExplorePrice, productMatchesExploreFilters } from '../src/shared/explore-filters.js';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const original = JSON.parse(read('../public/data/c_products.json'));
@@ -43,6 +44,25 @@ const payload = r => ({ code:r.code,slug:r.slug,title:r.title,label:r.label,shor
   featuredConfig:JSON.parse(r.featured_config_json),sortOrder:r.sort_order,active:Boolean(r.active),version:r.version });
 const tax = (name, extra={}) => ({name,slug:name.toLowerCase(),description:'',active:true,showInNav:true,sortOrder:0,...extra});
 const countAudit = s => s.sqlite.prepare('SELECT count(*) AS n FROM audit_log').get().n;
+
+test('Explore filters use their explicit product data without cross-field matches', () => {
+  const blueSeries = { label: 'SERIES', stock: 7, priceMinor: 55000, options: [{ label: 'Color', values: ['Azul Shift'] }] };
+  const blackDescription = { label: 'NEW', stock: 3, priceMinor: 65000, desc: 'Una pieza azul, pero sin opción de color.', options: [{ label: 'Acabado', values: ['Negro mate'] }] };
+  const soldOut = { label: 'DROP_01', stock: 0, priceMinor: 100000, variants: [{ value: 'Verde Foam' }], variantLabel: 'Color' };
+
+  assert.equal(productMatchesExploreFilters(blueSeries, { color: 'azul' }), true);
+  assert.equal(productMatchesExploreFilters(blackDescription, { color: 'azul' }), false);
+  assert.equal(productMatchesExploreFilters(blackDescription, { color: 'negro' }), false);
+  assert.equal(productMatchesExploreFilters(blueSeries, { series: 'series' }), true);
+  assert.equal(productMatchesExploreFilters(blueSeries, { availability: 'available' }), true);
+  assert.equal(productMatchesExploreFilters(blackDescription, { availability: 'available' }), false);
+  assert.equal(productMatchesExploreFilters(blackDescription, { availability: 'low' }), true);
+  assert.equal(productMatchesExploreFilters(soldOut, { availability: 'sold-out' }), true);
+  assert.equal(productMatchesExploreFilters(soldOut, { availability: 'available' }), false);
+  assert.equal(productMatchesExploreFilters(blueSeries, { price: 'under-600' }), true);
+  assert.equal(productMatchesExploreFilters(blackDescription, { price: '600-999' }), true);
+  assert.equal(getExplorePrice({ price: '$550 MXN' }), 550);
+});
 const withDb = fn => async () => { const s=setup();try{await fn(s);}finally{s.close();} };
 
 test('imports all product content and retains collection banners pending explicit association', withDb(async s=>{
@@ -57,6 +77,14 @@ test('product tags are selected from the managed catalog and saved atomically',w
   await saveRecord(s.db,'products',{...payload(raw(s)),tagId:selected[0]},actor,1);
   assert.deepEqual((await listProducts(s.db,{identifier:'ORBIT_01'}))[0].tagIds,[selected[0]]);
   await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),tagId:99999},actor,1));
+}));
+test('featured labels are selected from catalog tags and fall back to the product tag',withDb(async s=>{
+  const tags=(await getAdminSnapshot(s.db)).tags;
+  await saveRecord(s.db,'products',{...payload(raw(s)),tagId:tags[0].id,isFeatured:true,featuredConfig:{...payload(raw(s)).featuredConfig,title1:tags[1].name}},actor,1);
+  assert.equal((await listFeaturedItems(s.db))[0].Titulo1,tags[1].name);
+  await saveRecord(s.db,'products',{...payload(raw(s)),tagId:tags[0].id,isFeatured:true,featuredConfig:{...payload(raw(s)).featuredConfig,title1:''}},actor,1);
+  assert.equal((await listFeaturedItems(s.db))[0].Titulo1,tags[0].name);
+  await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),isFeatured:true,featuredConfig:{...payload(raw(s)).featuredConfig,title1:'NO EXISTE'}},actor,1),/etiqueta activa del catálogo/i);
 }));
 test('one product supplies details, card and featured; overrides do not copy price or link',withDb(async s=>{
   const data=payload(raw(s));Object.assign(data,{title:'Nombre único',shortDescription:'Descripción compartida',priceMinor:60000,isFeatured:true});
@@ -136,10 +164,12 @@ test('pending banner association is explicit, atomic, traceable, and cannot over
 test('prices, dates, booleans, content and visual choices are validated',withDb(async s=>{
   for(const invalid of [{priceMinor:1.5},{stock:-1},{isPromotion:'yes'},{promotionPriceMinor:60000},{promotionStartsAt:'invalid'},{promotionStartsAt:'2030-02-01T00:00:00Z',promotionEndsAt:'2030-01-01T00:00:00Z'}])await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),...invalid},actor,1));
   assert.throws(()=>validateFeaturedConfig({template:'unknown'}));assert.throws(()=>validateFeaturedConfig({imageUrl:'javascript:alert(1)'}));assert.throws(()=>validateFeaturedConfig({title1Adj:{horizontal:'diagonal'}}));
+  assert.throws(()=>validateFeaturedConfig({titleSize:97}));assert.throws(()=>validateFeaturedConfig({descriptionSize:41}));
+  assert.doesNotThrow(()=>validateFeaturedConfig({titleSize:36,descriptionSize:18,lineColor:'#ff3300',linkColor:'#00ff99',labelColor:'#ffffff',titleBoxColor:'#6633ff',title1Adj:{textAlign:'center',justify:'end'}}));
   assert.throws(()=>validateContent({gallery:'not-array'}));assert.throws(()=>validateContent({options:[{label:'Color',values:[],selected:0}]}));
   assert.doesNotThrow(()=>validateContent({variantLabel:'Color',variants:[{value:'Azul',priceMinor:12000,stock:3,isPromotion:true,promotionLabel:'PROMOCIÓN',promotionPriceMinor:10000,promotionStartsAt:'2030-01-01T00:00:00Z',promotionEndsAt:'2030-02-01T00:00:00Z'}]}));
   assert.throws(()=>validateContent({variants:[{value:'Azul',priceMinor:12000,stock:3,isPromotion:true,promotionLabel:'PROMOCIÓN',promotionPriceMinor:13000}]}));
-  assert.equal(normalizeFeaturedConfig({}).template,'editorial-left');assert.equal(countAudit(s),1);
+  const normalizedFeatured=normalizeFeaturedConfig({textColor:'#fa0000'});assert.equal(normalizedFeatured.template,'editorial-left');assert.equal(normalizedFeatured.lineColor,'#fa0000');assert.equal(normalizedFeatured.titleBoxColor,'#fa0000');assert.equal(Object.hasOwn(normalizedFeatured.title1Adj,'textAlign'),false);assert.equal(countAudit(s),1);
 }));
 test('new products require existing taxonomy and get an audit event',withDb(async s=>{
   const p={...payload(raw(s)),code:'TEST_NEW',slug:'test-new',content:{},active:false};delete p.version;
@@ -156,6 +186,13 @@ test('API denies anonymous and non-admin identities; fails closed without allowl
   assert.equal((await handleApiRequest(req('visitor'),{DB:s.db,ADMIN_USER_IDS:actor.id})).status,403);
   assert.equal((await handleApiRequest(req(actor.id),{DB:s.db})).status,403);
   assert.equal((await handleApiRequest(req(actor.id),{DB:s.db,ADMIN_USER_IDS:actor.id})).status,200);
+}));
+test('Cloudflare Access and local development authentication stay isolated',withDb(async s=>{
+  const token=`header.${Buffer.from(JSON.stringify({sub:'access-user',email:'admin@example.com'})).toString('base64url')}.signature`;
+  const accessRequest=new Request('http://test/api/admin/bootstrap',{headers:{'Cf-Access-Jwt-Assertion':token}});
+  assert.equal((await handleApiRequest(accessRequest,{DB:s.db,ADMIN_USER_EMAILS:'admin@example.com'})).status,200);
+  assert.equal((await handleApiRequest(accessRequest,{DB:s.db,ADMIN_USER_EMAILS:'other@example.com'})).status,403);
+  assert.equal((await handleApiRequest(new Request('http://test/api/admin/bootstrap'),{DB:s.db,LOCAL_DEV_AUTH:'true'})).status,200);
 }));
 test('API returns detail by code and slug; handles async validation errors and cross-origin writes',withDb(async s=>{
   const env={DB:s.db,ADMIN_USER_IDS:actor.id};

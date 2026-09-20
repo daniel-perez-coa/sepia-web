@@ -8,10 +8,16 @@ export const FEATURED_FIELDS = Object.freeze([
   { key: 'template', label: 'Plantilla', type: 'select', options: FEATURED_TEMPLATES.map(t => t.id), defaultValue: 'editorial-left' },
   { key: 'title1', label: 'Etiqueta del banner (vacío: etiqueta del producto)', type: 'text', defaultValue: '' },
   { key: 'title2', label: 'Título del banner (vacío: nombre del producto)', type: 'textarea', defaultValue: '' },
+  { key: 'titleSize', label: 'Tamaño del título en px (0: automático)', type: 'number', min: 0, max: 96, step: 1, defaultValue: 0 },
   { key: 'text', label: 'Descripción del banner (vacío: descripción corta)', type: 'textarea', defaultValue: '' },
+  { key: 'descriptionSize', label: 'Tamaño de la descripción en px (0: automático)', type: 'number', min: 0, max: 40, step: 1, defaultValue: 0 },
   { key: 'imageUrl', label: 'Imagen del banner (vacío: imagen principal)', type: 'text', defaultValue: '' },
   { key: 'imageAlt', label: 'Texto alternativo del banner', type: 'text', defaultValue: '' },
   { key: 'linkLabel', label: 'Texto del botón', type: 'text', defaultValue: 'VER PRODUCTO →' },
+  { key: 'linkColor', label: 'Color del texto del botón', type: 'color', defaultValue: '#ffffff' },
+  { key: 'lineColor', label: 'Color de la línea sobre el botón', type: 'color', defaultValue: '#ffffff' },
+  { key: 'labelColor', label: 'Color de la etiqueta del banner', type: 'color', defaultValue: '#ffffff' },
+  { key: 'titleBoxColor', label: 'Color de la caja del título', type: 'color', defaultValue: '#ffffff' },
   { key: 'overlayColor', label: 'Color del fondo', type: 'color', defaultValue: '#142fd3' },
   { key: 'textColor', label: 'Color del texto', type: 'color', defaultValue: '#ffffff' },
   { key: 'overlayOpacity', label: 'Intensidad del fondo (0–1)', type: 'number', min: 0, max: 1, step: 0.05, defaultValue: 0.9 },
@@ -33,10 +39,14 @@ export const integerValue = (v, label, min = 0, max = 2147483647) => {
   if (!Number.isSafeInteger(v) || v < min || v > max) fail(`${label}: ingresa un entero entre ${min} y ${max}.`);
   return v;
 };
-export const normalizeFeaturedConfig = (v = {}) => ({
-  version: 1, ...Object.fromEntries(FEATURED_FIELDS.map(f => [f.key, v[f.key] ?? f.defaultValue])),
-  title1Adj: normalizeFeaturedAdjustments(v.title1Adj ?? { horizontal: 'right', vertical: 'top', boxed: true, rounded: 'soft' }), title2Adj: normalizeFeaturedAdjustments(v.title2Adj),
-});
+export const normalizeFeaturedConfig = (v = {}) => {
+  const normalized = {
+    version: 1, ...Object.fromEntries(FEATURED_FIELDS.map(f => [f.key, v[f.key] ?? f.defaultValue])),
+    title1Adj: normalizeFeaturedAdjustments(v.title1Adj ?? { horizontal: 'right', vertical: 'top', boxed: true, rounded: 'soft' }), title2Adj: normalizeFeaturedAdjustments(v.title2Adj),
+  };
+  for (const key of ['linkColor', 'lineColor', 'labelColor', 'titleBoxColor']) if (v[key] === undefined) normalized[key] = normalized.textColor;
+  return normalized;
+};
 export const validateFeaturedConfig = (v = {}) => {
   if (!object(v)) fail('Los ajustes deben ser un objeto.');
   const keys = ['version', 'title1Adj', 'title2Adj', ...FEATURED_FIELDS.map(f => f.key)];
@@ -51,7 +61,8 @@ export const validateFeaturedConfig = (v = {}) => {
     if (f.type === 'color' && !/^#[0-9a-f]{6}$/i.test(x)) fail('Color inválido.');
   }
   for (const key of ['title1Adj', 'title2Adj']) {
-    if (v[key] !== undefined && (!isValidFeaturedAdjustments(v[key]) || Object.keys(v[key]).some(k => !FEATURED_ADJUSTMENT_FIELDS.some(f => f.key === k)))) fail('Ajuste de título inválido.');
+    const legacyKeys = ['textAlign', 'justify'];
+    if (v[key] !== undefined && (!isValidFeaturedAdjustments(v[key]) || Object.keys(v[key]).some(k => !FEATURED_ADJUSTMENT_FIELDS.some(f => f.key === k) && !legacyKeys.includes(k)))) fail('Ajuste de título inválido.');
   }
   safeUrl(v.imageUrl ?? ''); return normalizeFeaturedConfig(v);
 };
@@ -131,12 +142,14 @@ export const validateSettings = v => {
 
 export const featuredFromProduct = product => {
   const c = normalizeFeaturedConfig(product.featuredConfig);
+  const catalogTag = product.tags?.find(tag => tag.active)?.name ?? '';
   return {
     id: product.id, databaseId: product.databaseId, productId: product.databaseId,
-    Titulo1: c.title1 || product.label, Titulo2: c.title2 || product.title, Titulo1adj: c.title1Adj, Titulo2adj: c.title2Adj,
+    Titulo1: c.title1 || catalogTag, Titulo2: c.title2 || product.title, Titulo1adj: c.title1Adj, Titulo2adj: c.title2Adj,
     Photo: c.imageUrl || product.photo, imageAlt: c.imageAlt || product.photoAlt,
     text: c.text || product.desc, LinkText: c.linkLabel || 'VER PRODUCTO →',
     LinkUrl: `/producto?id=${encodeURIComponent(product.id)}`, Line: c.showLine ? 'yes' : 'no',
     template: c.template, overlayColor: c.overlayColor, textColor: c.textColor, overlayOpacity: c.overlayOpacity,
+    titleSize: c.titleSize, descriptionSize: c.descriptionSize, linkColor: c.linkColor, lineColor: c.lineColor, labelColor: c.labelColor, titleBoxColor: c.titleBoxColor,
   };
 };

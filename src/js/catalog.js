@@ -61,12 +61,10 @@ const renderRichText = (element, value) => {
 
 const applyAdjustments = (element, adjustments = {}) => {
   const normalized = normalizeFeaturedAdjustments(adjustments);
-  const { horizontal, vertical, textAlign, justify, rounded, boxed } = normalized;
+  const { horizontal, vertical, rounded, boxed } = normalized;
 
   element.dataset.horizontal = horizontal;
   element.dataset.vertical = vertical;
-  element.dataset.textAlign = textAlign;
-  element.dataset.justify = justify;
   element.classList.toggle('is-boxed', boxed);
   element.classList.remove('is-rounded-none', 'is-rounded-soft', 'is-rounded-pill');
   element.classList.add(`is-rounded-${rounded}`);
@@ -78,8 +76,15 @@ export const paintFeatured = (card, slide) => {
   const label = card.querySelector('.featured-card__label');
   const title = card.querySelector('h3');
   const content = card.querySelector('.featured-card__content');
-  photo.src = slide.Photo; photo.alt = slide.imageAlt || '';
+  const photoUrl = slide.Photo || '';
+  if (!photo.dataset.errorHandler) {
+    photo.dataset.errorHandler = 'true';
+    photo.addEventListener('error', () => { photo.dataset.failedUrl = photo.dataset.source ?? ''; photo.hidden = true; });
+  }
+  if (photo.dataset.source !== photoUrl) { photo.dataset.source = photoUrl; delete photo.dataset.failedUrl; photo.src = photoUrl; }
+  photo.hidden = !photoUrl || photo.dataset.failedUrl === photoUrl; photo.alt = slide.imageAlt || '';
   renderRichText(label, slide.Titulo1); renderRichText(title, slide.Titulo2);
+  label.hidden = !slide.Titulo1;
   applyAdjustments(label, slide.Titulo1adj); applyAdjustments(title, slide.Titulo2adj);
   content.dataset.vertical = normalizeFeaturedAdjustments(slide.Titulo2adj).vertical;
   content.querySelector('p').textContent = slide.text;
@@ -89,6 +94,12 @@ export const paintFeatured = (card, slide) => {
   card.style.setProperty('--featured-overlay', slide.overlayColor || '#142fd3');
   card.style.setProperty('--featured-text', slide.textColor || '#ffffff');
   card.style.setProperty('--featured-opacity', String(slide.overlayOpacity ?? 0.9));
+  card.style.setProperty('--featured-link', slide.linkColor || '#ffffff');
+  card.style.setProperty('--featured-line', slide.lineColor || '#ffffff');
+  card.style.setProperty('--featured-label', slide.labelColor || '#ffffff');
+  card.style.setProperty('--featured-title-box', slide.titleBoxColor || slide.textColor || '#ffffff');
+  if (Number(slide.titleSize) > 0) card.style.setProperty('--featured-title-size', `${slide.titleSize}px`); else card.style.removeProperty('--featured-title-size');
+  if (Number(slide.descriptionSize) > 0) card.style.setProperty('--featured-description-size', `${slide.descriptionSize}px`); else card.style.removeProperty('--featured-description-size');
 };
 
 const createProductCard = (product, index) => {
@@ -97,15 +108,21 @@ const createProductCard = (product, index) => {
 
   const label = document.createElement('span');
   label.className = 'product-card__label meta';
-  const labelText = product.promotionActive ? product.promotionLabel : product.label;
+  const labelText = product.promotionActive ? product.promotionLabel : product.tags?.find(tag => tag.active)?.name;
   label.textContent = labelText || '';
   label.hidden = !labelText;
 
   const image = document.createElement('img');
-  image.src = product.photo;
+  image.dataset.source = product.photo || '';
+  if (product.photo) image.src = product.photo; else image.hidden = true;
   image.alt = `${product.title}: ${product.desc}`;
   image.loading = 'lazy';
   image.decoding = 'async';
+  image.addEventListener('error', () => {
+    image.hidden = true;
+    card.classList.add('has-missing-image');
+  });
+  card.classList.toggle('has-missing-image', !product.photo);
 
   const title = document.createElement('h3');
   title.textContent = product.title;

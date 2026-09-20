@@ -253,6 +253,22 @@
   object-fit: cover;
 }
 
+.explore-card > img[hidden] { display: none; }
+
+.explore-card.has-missing-image::before {
+  display: grid;
+  flex-shrink: 0;
+  width: calc(100% + 1.5rem);
+  height: 11.5rem;
+  margin: -0.75rem -0.75rem 0.8rem;
+  place-items: center;
+  background: rgba(9, 10, 13, 0.08);
+  color: rgba(9, 10, 13, 0.5);
+  content: 'Sin imagen';
+  font: 700 0.7rem/1 var(--font-mono);
+  text-transform: uppercase;
+}
+
 .explore-card h2 {
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -483,6 +499,11 @@
   }
 
   .explore-card > img {
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .explore-card.has-missing-image::before {
     height: auto;
     aspect-ratio: 1;
   }

@@ -2,19 +2,11 @@ import { initSiteNavigation } from './site-navigation.js';
 import '../scss/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { syncCartCount } from './cart-store.js';
+import { getExplorePrice, productMatchesExploreFilters } from '../shared/explore-filters.js';
 
 syncCartCount();
 
 const PAGE_SIZE = 6;
-
-const normalizeText = (value = '') => String(value)
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '')
-  .toLowerCase();
-
-const getPrice = (product) => Number.isFinite(Number(product.effectivePriceMinor ?? product.priceMinor))
-  ? Number(product.effectivePriceMinor ?? product.priceMinor) / 100
-  : Number(String(product.price || '').replace(/[^\d]/g, '')) || 0;
 
 const createCard = (product, index) => {
   const card = document.createElement('article');
@@ -28,13 +20,20 @@ const createCard = (product, index) => {
   card.className = `explore-card${index % 4 === 1 ? ' explore-card--dark' : ''}`;
   card.style.setProperty('--card-order', String(index % PAGE_SIZE));
   label.className = 'explore-card__label meta';
-  const labelText = product.promotionActive ? product.promotionLabel : product.label;
+  const labelText = product.promotionActive
+    ? product.promotionLabel
+    : (product.label || product.tags?.find(tag => tag.active)?.name || '');
   label.textContent = labelText || '';
   label.hidden = !labelText;
-  image.src = product.photo;
+  if (product.photo) image.src = product.photo; else image.hidden = true;
   image.alt = `${product.title}: ${product.desc}`;
   image.loading = 'lazy';
   image.decoding = 'async';
+  image.addEventListener('error', () => {
+    image.hidden = true;
+    card.classList.add('has-missing-image');
+  });
+  card.classList.toggle('has-missing-image', !product.photo);
   title.textContent = product.title;
   collection.textContent = product.Collection;
   description.textContent = product.desc;
@@ -86,22 +85,12 @@ const initExplore = async () => {
   };
 
   const productMatchesFilters = (product) => {
-    const color = filters.elements.color.value;
-    const series = filters.elements.series.value;
-    const availability = filters.elements.availability.value;
-    const price = filters.elements.price.value;
-    const searchable = normalizeText(JSON.stringify(product));
-    const numericPrice = getPrice(product);
-
-    if (color !== '*' && !searchable.includes(normalizeText(color))) return false;
-    if (series !== '*' && product.label !== series) return false;
-    if (availability === 'available' && product.stock !== null && product.stock <= 0) return false;
-    if (availability === 'low' && !(product.stock > 0 && product.stock <= 5)) return false;
-    if (availability === 'sold-out' && product.stock !== null && product.stock > 0) return false;
-    if (price === 'under-600' && numericPrice >= 600) return false;
-    if (price === '600-999' && !(numericPrice >= 600 && numericPrice < 1000)) return false;
-    if (price === 'over-1000' && numericPrice < 1000) return false;
-    return true;
+    return productMatchesExploreFilters(product, {
+      color: filters.elements.color.value,
+      series: filters.elements.series.value,
+      availability: filters.elements.availability.value,
+      price: filters.elements.price.value,
+    });
   };
 
   const sortProducts = (items) => {
@@ -109,9 +98,9 @@ const initExplore = async () => {
     if (sort.value === 'newest') {
       sorted.sort((first, second) => Number(second.label === 'NEW') - Number(first.label === 'NEW'));
     } else if (sort.value === 'price-asc') {
-      sorted.sort((first, second) => getPrice(first) - getPrice(second));
+      sorted.sort((first, second) => getExplorePrice(first) - getExplorePrice(second));
     } else if (sort.value === 'price-desc') {
-      sorted.sort((first, second) => getPrice(second) - getPrice(first));
+      sorted.sort((first, second) => getExplorePrice(second) - getExplorePrice(first));
     } else if (sort.value === 'name') {
       sorted.sort((first, second) => first.title.localeCompare(second.title, 'es'));
     } else if (sort.value === 'featured') {

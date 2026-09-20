@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="es">
+<html class="js" lang="es">
   <head>
+    <style>html.js body:not(.is-ready) { visibility: hidden; background: #f4f0e8; }</style>
+    <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -57,6 +59,7 @@
           <a href="#catalogo">Catálogo</a>
           <a href="/explorar">Explorar</a>
           <a href="#contacto">Contacto</a>
+          <a href="/carrito">Carrito <span class="cart-count" data-cart-count hidden></span></a>
         </nav>
 
         <div class="site-header__signal" aria-hidden="true">
@@ -119,13 +122,22 @@
                 <span>01</span>
                 <span>ESTRATEGIA</span>
               </div>
-              <div class="hero-card__art hero-card__art--strategy">
-                <span></span>
-                <span></span>
-              </div>
+              <svg class="hero-card__art hero-card__art--strategy" viewBox="0 0 270 370" focusable="false" aria-hidden="true">
+                <path class="strategy-rules" d="M0 72H174 M0 86H174 M0 100H174 M0 114H174 M0 128H174 M0 142H174 M0 156H174" />
+                <g class="strategy-dots">
+                  <circle cx="190" cy="72" r="1.2" /><circle cx="204" cy="72" r="1.2" /><circle cx="218" cy="72" r="1.2" /><circle cx="232" cy="72" r="1.2" /><circle cx="246" cy="72" r="1.2" />
+                  <circle cx="190" cy="86" r="1.2" /><circle cx="204" cy="86" r="1.2" /><circle cx="218" cy="86" r="1.2" /><circle cx="232" cy="86" r="1.2" /><circle cx="246" cy="86" r="1.2" />
+                  <circle cx="190" cy="100" r="1.2" /><circle cx="204" cy="100" r="1.2" /><circle cx="218" cy="100" r="1.2" /><circle cx="232" cy="100" r="1.2" /><circle cx="246" cy="100" r="1.2" />
+                  <circle cx="190" cy="114" r="1.2" /><circle cx="204" cy="114" r="1.2" /><circle cx="218" cy="114" r="1.2" /><circle cx="232" cy="114" r="1.2" /><circle cx="246" cy="114" r="1.2" />
+                  <circle cx="190" cy="128" r="1.2" /><circle cx="204" cy="128" r="1.2" /><circle cx="218" cy="128" r="1.2" /><circle cx="232" cy="128" r="1.2" /><circle cx="246" cy="128" r="1.2" />
+                  <circle cx="190" cy="142" r="1.2" /><circle cx="204" cy="142" r="1.2" /><circle cx="218" cy="142" r="1.2" /><circle cx="232" cy="142" r="1.2" /><circle cx="246" cy="142" r="1.2" />
+                  <circle cx="190" cy="156" r="1.2" /><circle cx="204" cy="156" r="1.2" /><circle cx="218" cy="156" r="1.2" /><circle cx="232" cy="156" r="1.2" /><circle cx="246" cy="156" r="1.2" />
+                </g>
+              </svg>
               <strong>HACEMOS<br />LO QUE<br />SIGUE.</strong>
               <div class="hero-card__footer">
                 <span>LO QUE VIENE EMPIEZA HOY</span>
+                <svg class="hero-card__arrow" viewBox="0 0 16 10" focusable="false" aria-hidden="true"><path d="M1 5H15 M10 1L15 5L10 9" /></svg>
               </div>
             </div>
             <div class="hero-card hero-card--foam" aria-hidden="true">
@@ -133,7 +145,12 @@
                 <span>02</span>
                 <span>CREATIVIDAD</span>
               </div>
-              <div class="hero-card__art hero-card__art--creative"></div>
+              <svg class="hero-card__art hero-card__art--creative" viewBox="0 0 270 370" focusable="false" aria-hidden="true">
+                <g>
+                  <circle cx="18" cy="164" r="56" /><circle cx="18" cy="164" r="70" /><circle cx="18" cy="164" r="84" /><circle cx="18" cy="164" r="98" /><circle cx="18" cy="164" r="112" />
+                  <circle cx="280" cy="220" r="48" /><circle cx="280" cy="220" r="60" /><circle cx="280" cy="220" r="72" /><circle cx="280" cy="220" r="84" /><circle cx="280" cy="220" r="96" /><circle cx="280" cy="220" r="108" />
+                </g>
+              </svg>
               <strong>LAS IDEAS<br />SE HACEN<br />COSAS.</strong>
               <div class="hero-card__footer">
                 <span>DE LA IDEA A LO REAL</span>
@@ -144,18 +161,12 @@
                 <span>03</span>
                 <span>INNOVACIÓN</span>
               </div>
-              <div class="hero-card__art hero-card__art--innovation">
-                <span class="innovation-mark innovation-mark--stripes"></span>
-                <svg class="innovation-motion" viewBox="0 0 220 135" focusable="false" aria-hidden="true">
-                  <path class="innovation-motion__wave" d="M 18 116 C 24 54, 64 34, 108 43 C 148 51, 176 49, 190 22" />
-                  <path class="innovation-motion__wave" d="M 30 118 C 38 75, 72 63, 113 70 C 151 77, 179 79, 197 64" />
-                  <path class="innovation-motion__arrow" d="M 186 24 L 191 20 L 192 27" />
-                  <path class="innovation-motion__arrow" d="M 193 63 L 199 63 L 197 69" />
-                  <circle class="innovation-motion__divider" cx="24" cy="117" r="1.8" />
-                  <circle class="innovation-motion__target" cx="192" cy="19" r="18.5" />
-                  <circle class="innovation-motion__core" cx="192" cy="19" r="8" />
-                </svg>
-              </div>
+              <svg class="hero-card__art hero-card__art--innovation" viewBox="0 0 270 370" focusable="false" aria-hidden="true">
+                <path class="innovation-stripes" d="M22 72h10L17 98H7z M41 72h10L36 98H26z M60 72h10L55 98H45z" />
+                <path class="innovation-wave" d="M64 199C67 159 91 129 133 139S205 150 220 118 M77 199C82 175 102 158 139 167S200 179 221 158" />
+                <circle class="innovation-target" cx="223" cy="101" r="18" />
+                <circle class="innovation-core" cx="223" cy="101" r="7.5" />
+              </svg>
               <strong>EL FUTURO<br />SE HACE<br />AQUÍ.</strong>
               <div class="hero-card__footer">
                 <span>DONDE LO NUEVO TOMA FORMA</span>

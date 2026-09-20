@@ -138,6 +138,34 @@ a {
   }
 }
 
+@media (max-width: 64rem), (max-height: 43.99rem) {
+  html {
+    scroll-snap-type: none;
+    scroll-padding-top: calc(var(--header-height) + 1rem);
+  }
+
+  .page-view {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
+@media (max-width: 51.99rem) {
+  :root {
+    --header-height: 4.5rem;
+  }
+
+  .section {
+    padding-block: 3.5rem;
+  }
+
+  .button {
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.35;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

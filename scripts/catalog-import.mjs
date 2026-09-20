@@ -5,13 +5,16 @@ export const slugify = value => String(value).normalize('NFD').replace(/[\u0300-
 export const jsonAsLegacy = (productData, toyData, tabData) => {
   const collections = tabData.tabs.filter(t => t.Collection !== '*').map((t, i) => ({ id: i + 1, name: t.Collection, slug: slugify(t.Collection), active: 1, sort_order: i }));
   const products = productData.products.map((p, i) => {
-    const { gallery = [], edition = null, badges = [], options = [], story = null, includes = [], dimensionsMaterialsImage = '', dimensionsMaterialsAlt = '', details = [], specifications = [], relatedProducts = [], link = null } = p;
+    const { gallery = [], options = [], includes = [], excludes = [], dimensionsMaterialsImage = '', dimensions = [], specifications = [], link = null } = p;
     const amount = Number(String(p.price).replace(/[^\d.]/g, ''));
     return { id: i + 1, legacy_id: p.id, slug: slugify(p.id), title: p.title, label: p.label, short_description: p.desc, long_description: p.longDescription,
       price_minor: Math.round(amount * 100), currency: 'MXN', stock: p.stock, primary_image_url: p.photo, primary_image_alt: gallery[0]?.alt ?? '',
-      status: 'published', sort_order: i, content_json: JSON.stringify({ gallery, edition, badges, options, story, includes, dimensionsMaterialsImage, dimensionsMaterialsAlt, details, specifications, relatedProducts, link }), Collection: p.Collection };
+      status: 'published', sort_order: i, content_json: JSON.stringify({ gallery, options, includes, excludes, dimensionsMaterialsImage, dimensions, specifications, link }), Collection: p.Collection };
   });
-  return { products, collections, categories: [{ id: 1, name: 'Figuras', slug: 'figuras', active: 1 }],
+  const tagNames = [...new Set(productData.products.flatMap(p => p.tags ?? []))];
+  const catalog_tags = tagNames.map((name, i) => ({ id: i + 1, name, slug: `tag-${Buffer.from(name).toString('hex').toLowerCase()}`, sort_order: i, active: 1 }));
+  const product_tags = productData.products.flatMap((p, productIndex) => (p.tags ?? []).slice(0, 1).map(name => ({ product_id: productIndex + 1, tag_id: catalog_tags.find(t => t.name === name).id })));
+  return { products, collections, catalog_tags, product_tags, categories: [{ id: 1, name: 'Figuras', slug: 'figuras', active: 1 }],
     product_categories: products.map(p => ({ product_id: p.id, category_id: 1 })),
     product_collections: products.map(p => ({ product_id: p.id, collection_id: collections.find(c => c.name === p.Collection)?.id })),
     catalog_tabs: tabData.tabs.map((t,i) => ({ target_type: t.Collection === '*' ? 'all' : 'collection', collection_id: collections.find(c => c.name === t.Collection)?.id, label: t.label, active: 1, sort_order: i })),
@@ -33,6 +36,7 @@ export const buildImport = source => {
     if (!source.categories.some(p => p.id === c.parent_id && !p.parent_id)) throw new Error('Hay más de dos niveles de categorías. Requiere revisión antes de migrar.');
     sql.push(insert('catalog_subcategories', { ...taxonomy(c, 'categories'), category_id: c.parent_id }));
   });
+  (source.catalog_tags ?? []).forEach(t => sql.push(insert('catalog_tags', { ...t, ...life(t) })));
   for (const p of source.products) {
     const cats = source.product_categories.filter(r => r.product_id === p.id), cols = source.product_collections.filter(r => r.product_id === p.id);
     if (cols.length !== 1 || cats.length < 1 || cats.length > 2) throw new Error(`Revisar clasificación de ${p.legacy_id}; no se descartan relaciones automáticamente.`);
@@ -50,6 +54,7 @@ export const buildImport = source => {
       featured_order: feature?.sort_order ?? 0, featured_config_json: feature ? JSON.stringify(config(feature)) : '{}', sort_order: p.sort_order,
       ...life({ ...p, active: Number(active) }) }));
   }
+  (source.product_tags ?? []).forEach(tag => sql.push(insert('product_tags', tag)));
   function config(f) {
     const preset = id => JSON.parse(source.display_presets.find(p => p.id === id)?.config_json ?? '{}');
     return validateFeaturedConfig(normalizeFeaturedConfig({ title1: f.title1, title2: f.title2, text: f.body ?? '', imageUrl: f.image_url, imageAlt: f.image_alt ?? '', linkLabel: f.link_label ?? 'VER PRODUCTO →', showLine: Boolean(f.show_line), title1Adj: f.title1Config ?? preset(f.title1_preset_id), title2Adj: f.title2Config ?? preset(f.title2_preset_id) }));

@@ -1,0 +1,78 @@
+<!doctype html>
+<html class="js" lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Revisa las piezas seleccionadas para tu pedido SEPIA." />
+    <meta name="theme-color" content="#090a0d" />
+    <link rel="icon" type="image/png" href="/assets/sepia-mark-dark.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <title>Carrito | SEPIA</title>
+  </head>
+  <body class="cart-page">
+    <a class="skip-link" href="#cart-content">Saltar al contenido</a>
+    <header class="site-header site-header--product" data-header>
+      <div class="container site-header__inner">
+        <a class="brand" href="/#inicio" aria-label="SEPIA, ir al inicio">
+          <img class="brand__wordmark" src="/assets/sepia-wordmark-light.png" alt="" />
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="cart-navigation" aria-label="Abrir menú" data-menu-toggle>
+          <span></span><span></span>
+        </button>
+        <nav class="site-nav" id="cart-navigation" aria-label="Navegación principal" data-navigation>
+          <a href="/#inicio">Inicio</a>
+          <a href="/#catalogo">Catálogo</a>
+          <a href="/explorar">Explorar</a>
+          <a href="/#contacto">Contacto</a>
+          <a href="/carrito" aria-current="page">Carrito <span class="cart-count" data-cart-count hidden></span></a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="cart-shell" id="cart-content">
+      <header class="cart-heading">
+        <div>
+          <nav class="cart-breadcrumb meta" aria-label="Ruta de navegación"><a href="/#inicio">INICIO</a><span>›</span><strong>CARRITO</strong></nav>
+          <h1>TU CARRITO</h1>
+          <p>Revisa tus productos antes de continuar.</p>
+        </div>
+        <a href="/explorar" class="cart-continue">SEGUIR COMPRANDO <span aria-hidden="true">→</span></a>
+      </header>
+
+      <div class="cart-layout">
+        <section class="cart-items" aria-label="Productos en el carrito">
+          <div class="cart-table-head" aria-hidden="true">
+            <span>PRODUCTO</span><span>PRECIO UNITARIO</span><span>CANTIDAD</span><span>SUBTOTAL</span><span></span>
+          </div>
+          <div data-cart-items></div>
+          <div class="cart-empty" data-cart-empty hidden>
+            <i class="bi bi-bag" aria-hidden="true"></i>
+            <h2>Tu carrito está vacío</h2>
+            <p>Explora el catálogo y agrega las piezas que quieras pedir.</p>
+            <a class="button button--fresh" href="/explorar">VER CATÁLOGO</a>
+          </div>
+          <div class="cart-error" data-cart-error hidden role="alert">
+            <h2>No pudimos cargar tu carrito</h2><p>Actualiza la página para intentarlo de nuevo.</p>
+          </div>
+          <footer class="cart-total">
+            <span>Subtotal <small data-cart-products>(0 productos)</small></span>
+            <strong data-cart-subtotal>$0.00 MXN</strong>
+          </footer>
+        </section>
+
+        <aside class="cart-summary">
+          <p class="eyebrow">RESUMEN</p>
+          <h2>Tu pedido</h2>
+          <p>El envío y la entrega se coordinarán directamente con un operador.</p>
+          <div class="cart-summary__row"><span>Subtotal</span><strong data-cart-summary>$0.00 MXN</strong></div>
+          <div class="cart-summary__row cart-summary__total"><span>Total</span><strong data-cart-summary>$0.00 MXN</strong></div>
+          <button class="cart-checkout" type="button">REALIZA TU COMPRA</button>
+          <small><i class="bi bi-lock" aria-hidden="true"></i> Compra gestionada por un operador</small>
+        </aside>
+      </div>
+    </main>
+    <script type="module" src="/src/js/cart.js"></script>
+  </body>
+</html>

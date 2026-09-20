@@ -9,6 +9,10 @@ export default {
       url.pathname = '/admin.html';
       return environment.ASSETS.fetch(new Request(url, request));
     }
+    if (url.pathname === '/carrito' || url.pathname === '/carrito/') {
+      url.pathname = '/carrito.html';
+      return environment.ASSETS.fetch(new Request(url, request));
+    }
     return environment.ASSETS.fetch(request);
   },
 };

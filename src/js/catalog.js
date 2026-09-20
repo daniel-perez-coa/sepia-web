@@ -97,7 +97,9 @@ const createProductCard = (product, index) => {
 
   const label = document.createElement('span');
   label.className = 'product-card__label meta';
-  label.textContent = product.promotionActive ? product.promotionLabel : product.label;
+  const labelText = product.promotionActive ? product.promotionLabel : product.label;
+  label.textContent = labelText || '';
+  label.hidden = !labelText;
 
   const image = document.createElement('img');
   image.src = product.photo;

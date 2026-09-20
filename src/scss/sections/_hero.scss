@@ -1,3 +1,5 @@
+@use '../components/hero-cards';
+
 @keyframes rise-in {
   from {
     transform: translateY(1.5rem);
@@ -45,6 +47,8 @@
 }
 
 .hero__content {
+  min-width: 0;
+  container-type: inline-size;
   display: flex;
   align-items: flex-start;
   flex-direction: column;
@@ -57,13 +61,13 @@
 }
 
 .hero__content h1 {
-  width: 10ch;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
   height: 2.88em;
   min-height: 2.88em;
   margin-top: 1rem;
   font-family: var(--font-display);
-  font-size: clamp(4rem, 7.6vw, 7.4rem);
+  font-size: clamp(2.5rem, 17cqw, 7.4rem);
   font-weight: 800;
   letter-spacing: -0.065em;
   line-height: 0.96;
@@ -312,367 +316,6 @@
   --fragment-y: 1.7rem;
 }
 
-.hero-card {
-  --card-pad: clamp(1.05rem, 2.15vw, 1.45rem);
-
-  position: absolute;
-  z-index: 1;
-  display: flex;
-  overflow: hidden;
-  width: clamp(11rem, 17vw, 14.5rem);
-  aspect-ratio: 0.75;
-  flex-direction: column;
-  padding: var(--card-pad);
-  border: 0.0625rem solid rgba(9, 10, 13, 0.12);
-  border-radius: 0.75rem;
-  box-shadow: 0 1.5rem 3.5rem rgba(9, 10, 13, 0.25);
-  color: var(--color-ink);
-}
-
-.hero-card__top,
-.hero-card__footer {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: clamp(0.38rem, 0.62vw, 0.5rem);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-
-.hero-card__art {
-  position: relative;
-  min-height: clamp(4.25rem, 8vw, 6.5rem);
-  flex: 1;
-  margin-block: 0.7rem 0.35rem;
-}
-
-.hero-card__art--strategy span:first-child {
-  position: absolute;
-  top: 8%;
-  left: 0;
-  width: 68%;
-  height: 74%;
-  background: repeating-linear-gradient(0deg, currentColor 0 0.0625rem, transparent 0.0625rem 0.78rem);
-  opacity: 0.42;
-}
-
-.hero-card__art--strategy span:last-child {
-  position: absolute;
-  top: 8%;
-  right: 0;
-  width: 28%;
-  height: 74%;
-  background: radial-gradient(circle, currentColor 0 0.1rem, transparent 0.14rem);
-  background-size: 0.78rem 0.78rem;
-  opacity: 0.85;
-}
-
-.hero-card__art--creative {
-  margin-inline: calc(clamp(1rem, 2vw, 1.35rem) * -1);
-  background: radial-gradient(
-    circle at 0 43%,
-    transparent 0 2.95rem,
-    rgba(9, 10, 13, 0.12) 2.95rem 3rem,
-    transparent 3rem 3.8rem,
-    rgba(9, 10, 13, 0.12) 3.8rem 3.85rem,
-    transparent 3.85rem 4.65rem,
-    rgba(9, 10, 13, 0.12) 4.65rem 4.7rem,
-    transparent 4.7rem 5.5rem,
-    rgba(9, 10, 13, 0.12) 5.5rem 5.55rem,
-    transparent 5.55rem 6.35rem,
-    rgba(9, 10, 13, 0.12) 6.35rem 6.4rem,
-    transparent 6.4rem
-  );
-  background-position: left center;
-  background-repeat: no-repeat;
-  background-size: 46% 100%;
-}
-
-.hero-card__art--creative::after {
-  position: absolute;
-  top: 20%;
-  right: 0;
-  width: 41%;
-  height: 74%;
-  background: radial-gradient(
-    circle at 100% 53%,
-    transparent 0 2.15rem,
-    rgba(9, 10, 13, 0.12) 2.15rem 2.2rem,
-    transparent 2.2rem 2.7rem,
-    rgba(9, 10, 13, 0.12) 2.7rem 2.75rem,
-    transparent 2.75rem 3.25rem,
-    rgba(9, 10, 13, 0.12) 3.25rem 3.3rem,
-    transparent 3.3rem 3.8rem,
-    rgba(9, 10, 13, 0.12) 3.8rem 3.85rem,
-    transparent 3.85rem 4.35rem,
-    rgba(9, 10, 13, 0.12) 4.35rem 4.4rem,
-    transparent 4.4rem 4.9rem,
-    rgba(9, 10, 13, 0.12) 4.9rem 4.95rem,
-    transparent 4.95rem 5.45rem,
-    rgba(9, 10, 13, 0.12) 5.45rem 5.5rem,
-    transparent 5.5rem
-  );
-  background-repeat: no-repeat;
-  content: '';
-}
-
-.innovation-mark {
-  position: absolute;
-  display: block;
-}
-
-.innovation-mark--stripes {
-  top: 7%;
-  left: 8%;
-  width: 0.62rem;
-  height: 1.35rem;
-  background: currentColor;
-  box-shadow: 1rem 0 currentColor, 2rem 0 currentColor;
-  opacity: 0.32;
-  transform: skewX(-28deg);
-}
-
-.innovation-motion {
-  position: absolute;
-  top: 17%;
-  right: 4%;
-  width: 82%;
-  height: auto;
-  overflow: visible;
-  color: currentColor;
-  opacity: 0.52;
-}
-
-.innovation-motion__wave {
-  fill: none;
-  stroke: currentColor;
-  stroke-dasharray: 1.5 5;
-  stroke-linecap: round;
-  stroke-width: 1.1;
-  vector-effect: non-scaling-stroke;
-}
-
-.innovation-motion__arrow {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.4;
-  vector-effect: non-scaling-stroke;
-}
-
-.innovation-motion__divider {
-  fill: currentColor;
-}
-
-.innovation-motion__target,
-.innovation-motion__core {
-  fill: none;
-  stroke: currentColor;
-  vector-effect: non-scaling-stroke;
-}
-
-.innovation-motion__target {
-  stroke-dasharray: 1.5 5.5;
-  stroke-linecap: round;
-  stroke-width: 1.2;
-}
-
-.innovation-motion__core {
-  stroke-width: 1.1;
-}
-
-.hero-card strong {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.8vw, 2.45rem);
-  letter-spacing: -0.055em;
-  line-height: 0.9;
-}
-
-.hero-card__footer {
-  position: relative;
-  display: block;
-  margin-top: 0.8rem;
-  padding-top: 0.55rem;
-}
-
-.hero-card__footer::before {
-  position: absolute;
-  top: 0;
-  right: 1.25rem;
-  left: 0;
-  border-top: 0.0625rem solid currentColor;
-  content: '';
-}
-
-.hero-card__footer span:first-child {
-  display: block;
-  padding-right: 1.4rem;
-}
-
-.hero-card__footer span:last-child:not(:first-child) {
-  position: absolute;
-  top: -0.34rem;
-  right: 0;
-  font-size: 1rem;
-  line-height: 0.7;
-}
-
-.hero-card--coral {
-  top: 7%;
-  left: 7%;
-  transform: rotate(-5deg);
-  background: linear-gradient(145deg, #ff4825, #ff5c3e 70%);
-  color: var(--color-bg);
-}
-
-.hero-card--coral .hero-card__art--strategy {
-  position: absolute;
-  top: 3.3rem;
-  right: var(--card-pad);
-  left: var(--card-pad);
-  // Keep the graphic field separate from the headline; it must finish above
-  // the wordmark instead of running behind it.
-  height: 4.7rem;
-  min-height: 0;
-  margin: 0;
-}
-
-.hero-card--coral .hero-card__art--strategy span {
-  top: 0;
-  height: 100%;
-}
-
-// The strategy card uses the same measured grid as the reference artwork:
-// six fine rules aligned to a five-by-six dot matrix.
-.hero-card--coral .hero-card__art--strategy span:first-child {
-  width: 64%;
-  background: repeating-linear-gradient(
-    to bottom,
-    currentColor 0 0.0625rem,
-    transparent 0.0625rem 0.72rem
-  );
-  opacity: 0.48;
-}
-
-.hero-card--coral .hero-card__art--strategy span:last-child {
-  width: 26%;
-  background: radial-gradient(circle, currentColor 0 0.095rem, transparent 0.12rem);
-  background-size: 0.72rem 0.72rem;
-  opacity: 0.92;
-}
-
-.hero-card--coral strong {
-  margin-top: auto;
-}
-
-.hero-card--coral .hero-card__footer {
-  padding-right: 1.35rem;
-}
-
-.hero-card--coral .hero-card__footer::before {
-  right: 1.65rem;
-}
-
-.hero-card--coral .hero-card__footer::after {
-  position: absolute;
-  top: -0.31rem;
-  right: 0;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-top: 0.075rem solid currentColor;
-  border-right: 0.075rem solid currentColor;
-  content: '';
-  transform: rotate(45deg);
-}
-
-.hero-card--foam {
-  top: 31%;
-  right: 6%;
-  transform: rotate(4deg);
-  background: linear-gradient(145deg, #f8f5ef, #f3f0ea);
-}
-
-.hero-card--foam .hero-card__art--creative {
-  position: absolute;
-  top: 2.65rem;
-  right: 0;
-  bottom: 2.35rem;
-  left: 0;
-  min-height: 0;
-  margin: 0;
-  z-index: 0;
-  background-size: 46% 100%;
-}
-
-.hero-card--foam strong {
-  margin-top: auto;
-}
-
-.hero-card--mint {
-  --card-pad: 1rem;
-
-  bottom: 5%;
-  left: 18%;
-  aspect-ratio: 0.61;
-  transform: rotate(4deg);
-  background: linear-gradient(145deg, #18debd, #14d7b5 72%);
-}
-
-.hero-card--mint .hero-card__art--innovation {
-  position: absolute;
-  top: 2.8rem;
-  right: 0;
-  bottom: 2.35rem;
-  left: 0;
-  min-height: 0;
-  margin: 0;
-  z-index: 0;
-}
-
-.hero-card--mint strong {
-  margin-top: auto;
-  font-size: clamp(1.45rem, 2.75vw, 2.4rem);
-  line-height: 0.9;
-}
-
-.hero-card--mint .hero-card__footer span:last-child:not(:first-child) {
-  top: -0.36rem;
-  width: 1.15rem;
-  height: 0.72rem;
-  font-size: 0;
-}
-
-.hero-card--mint .hero-card__footer span:last-child:not(:first-child)::before,
-.hero-card--mint .hero-card__footer span:last-child:not(:first-child)::after {
-  position: absolute;
-  content: '';
-}
-
-.hero-card--mint .hero-card__footer span:last-child:not(:first-child)::before {
-  top: 50%;
-  left: 0;
-  width: 1.05rem;
-  border-top: 0.1rem solid currentColor;
-  transform: translateY(-50%);
-}
-
-.hero-card--mint .hero-card__footer span:last-child:not(:first-child)::after {
-  top: 50%;
-  right: 0;
-  width: 0.38rem;
-  aspect-ratio: 1;
-  border-top: 0.1rem solid currentColor;
-  border-right: 0.1rem solid currentColor;
-  transform: translateY(-50%) rotate(45deg);
-}
-
 .signal-bar {
   overflow: hidden;
   height: 2.5rem;
@@ -698,9 +341,6 @@
     grid-template-columns: minmax(0, 1fr) minmax(21rem, 0.85fr);
   }
 
-  .hero-card--foam {
-    right: 2%;
-  }
 }
 
 @media (max-width: 51.99rem) {
@@ -709,17 +349,13 @@
   }
 
   .hero__grid {
-    min-height: auto;
-    grid-template-columns: 1fr;
+    min-height: calc(100svh - var(--header-height));
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .hero__content {
-    min-height: 76svh;
-    padding: 5.5rem 0 3rem;
-  }
-
-  .hero__content h1 {
-    font-size: clamp(3.7rem, 17vw, 6.5rem);
+    min-height: 0;
+    padding: clamp(2.5rem, 8svh, 4rem) 0 2rem;
   }
 
   .hero__summary {
@@ -727,55 +363,21 @@
   }
 
   .hero__visual {
-    height: auto;
-    min-height: 34rem;
+    display: none;
   }
 }
 
-@media (max-width: 34rem) {
+@media (max-height: 43.99rem) and (min-width: 52rem) {
+  .hero {
+    height: auto;
+  }
+
+  .hero__content {
+    padding-block: 2.5rem;
+  }
+
   .hero__visual {
-    min-height: 29rem;
-  }
-
-  .hero-card {
-    width: 9.25rem;
-    padding: 0.8rem;
-  }
-
-  .hero-card__art {
-    min-height: 3.25rem;
-    margin-block: 0.4rem 0.2rem;
-  }
-
-  .hero-card__art--creative {
-    margin-inline: -0.8rem;
-  }
-
-  .hero-card strong {
-    font-size: 1.15rem;
-  }
-
-  .hero-card__footer {
-    margin-top: 0.45rem;
-    padding-top: 0.35rem;
-  }
-
-  .hero-card__footer span:last-child:not(:first-child) {
-    top: -0.28rem;
-  }
-
-  .hero-card--coral {
-    top: 5%;
-    left: 4%;
-  }
-
-  .hero-card--foam {
-    top: 29%;
-    right: 3%;
-  }
-
-  .hero-card--mint {
-    bottom: 4%;
-    left: 16%;
+    height: 100%;
+    min-height: 32rem;
   }
 }

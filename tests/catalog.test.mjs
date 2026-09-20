@@ -15,6 +15,8 @@ const actor = { id: 'test-admin', email: 'test@example.test' };
 function setup() {
   const sqlite = new DatabaseSync(':memory:');
   sqlite.exec(read('../drizzle/0000_grey_redwing.sql')); sqlite.exec(read('../drizzle/0001_dear_sue_storm.sql'));
+  sqlite.exec(read('../drizzle/0005_tags_and_product_content_cleanup.sql'));
+  sqlite.exec(read('../drizzle/0006_one_tag_per_product.sql'));
   sqlite.exec(buildImport(source));
   const db = {
     prepare(sql) {
@@ -45,9 +47,16 @@ const withDb = fn => async () => { const s=setup();try{await fn(s);}finally{s.cl
 
 test('imports all product content and retains collection banners pending explicit association', withDb(async s=>{
   const c=await getPublicCatalog(s.db);assert.equal(c.products.length,12);assert.equal(c.tabs.length,5);assert.equal(c.destacados.length,0);
-  for(const p of c.products){const old=original.products.find(x=>x.id===p.id);assert.equal(p.title,old.title);assert.equal(p.longDescription,old.longDescription);assert.equal(p.Collection,old.Collection);assert.deepEqual(p.gallery,old.gallery);assert.deepEqual(p.specifications,old.specifications);}
+  for(const p of c.products){const old=original.products.find(x=>x.id===p.id);assert.equal(p.title,old.title);assert.equal(p.longDescription,old.longDescription);assert.equal(p.Collection,old.Collection);assert.deepEqual(p.gallery,old.gallery);assert.deepEqual(p.specifications,old.specifications);assert.deepEqual(p.tags.map(t=>t.name),old.tags.slice(0,1));}
   const snapshot=await getAdminSnapshot(s.db);assert.equal(snapshot.pendingFeatured.length,3);assert.equal(snapshot.pendingFeatured[0].assignedProductId,null);
   assert.deepEqual(s.sqlite.prepare('PRAGMA foreign_key_check').all(),[]);
+}));
+test('product tags are selected from the managed catalog and saved atomically',withDb(async s=>{
+  const tags=(await getAdminSnapshot(s.db)).tags;
+  const selected=tags.slice(0,2).map(tag=>tag.id);
+  await saveRecord(s.db,'products',{...payload(raw(s)),tagId:selected[0]},actor,1);
+  assert.deepEqual((await listProducts(s.db,{identifier:'ORBIT_01'}))[0].tagIds,[selected[0]]);
+  await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),tagId:99999},actor,1));
 }));
 test('one product supplies details, card and featured; overrides do not copy price or link',withDb(async s=>{
   const data=payload(raw(s));Object.assign(data,{title:'Nombre único',shortDescription:'Descripción compartida',priceMinor:60000,isFeatured:true});
@@ -128,6 +137,8 @@ test('prices, dates, booleans, content and visual choices are validated',withDb(
   for(const invalid of [{priceMinor:1.5},{stock:-1},{isPromotion:'yes'},{promotionPriceMinor:60000},{promotionStartsAt:'invalid'},{promotionStartsAt:'2030-02-01T00:00:00Z',promotionEndsAt:'2030-01-01T00:00:00Z'}])await assert.rejects(saveRecord(s.db,'products',{...payload(raw(s)),...invalid},actor,1));
   assert.throws(()=>validateFeaturedConfig({template:'unknown'}));assert.throws(()=>validateFeaturedConfig({imageUrl:'javascript:alert(1)'}));assert.throws(()=>validateFeaturedConfig({title1Adj:{horizontal:'diagonal'}}));
   assert.throws(()=>validateContent({gallery:'not-array'}));assert.throws(()=>validateContent({options:[{label:'Color',values:[],selected:0}]}));
+  assert.doesNotThrow(()=>validateContent({variantLabel:'Color',variants:[{value:'Azul',priceMinor:12000,stock:3,isPromotion:true,promotionLabel:'PROMOCIÓN',promotionPriceMinor:10000,promotionStartsAt:'2030-01-01T00:00:00Z',promotionEndsAt:'2030-02-01T00:00:00Z'}]}));
+  assert.throws(()=>validateContent({variants:[{value:'Azul',priceMinor:12000,stock:3,isPromotion:true,promotionLabel:'PROMOCIÓN',promotionPriceMinor:13000}]}));
   assert.equal(normalizeFeaturedConfig({}).template,'editorial-left');assert.equal(countAudit(s),1);
 }));
 test('new products require existing taxonomy and get an audit event',withDb(async s=>{

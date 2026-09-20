@@ -2,10 +2,25 @@ import '../scss/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { initCatalog } from './catalog.js';
 import { siteConfig } from './site-config.js';
+import { syncCartCount } from './cart-store.js';
+import { initHeroCards } from './hero-cards.js';
+import { initSiteNavigation } from './site-navigation.js';
 
 document.documentElement.classList.add('js');
+syncCartCount();
+const disposeHeroCards = initHeroCards();
+if (import.meta.hot) import.meta.hot.dispose(() => disposeHeroCards?.());
 
-initCatalog();
+const catalogReady = initCatalog();
+const scrollStorageKey = `sepia-scroll:${window.location.pathname}`;
+let scrollSaveFrame = 0;
+window.addEventListener('scroll', () => {
+  if (scrollSaveFrame) return;
+  scrollSaveFrame = window.requestAnimationFrame(() => {
+    sessionStorage.setItem(scrollStorageKey, String(window.scrollY));
+    scrollSaveFrame = 0;
+  });
+}, { passive: true });
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -16,38 +31,13 @@ const createIcon = (name) => {
   return icon;
 };
 
-const menuButton = document.querySelector('[data-menu-toggle]');
-const navigation = document.querySelector('[data-navigation]');
 const header = document.querySelector('[data-header]');
 const pageViews = [...document.querySelectorAll('[data-page-view]')];
-
-const setMenuState = (isOpen) => {
-  menuButton?.setAttribute('aria-expanded', String(isOpen));
-  menuButton?.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
-  navigation?.classList.toggle('is-open', isOpen);
-  document.body.classList.toggle('menu-open', isOpen);
-};
-
-menuButton?.addEventListener('click', () => {
-  const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
-  setMenuState(!isOpen);
-});
-
-navigation?.addEventListener('click', (event) => {
-  if (event.target.closest('a')) setMenuState(false);
-});
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') setMenuState(false);
-});
-
-window.matchMedia('(min-width: 52rem)').addEventListener('change', (event) => {
-  if (event.matches) setMenuState(false);
-});
+initSiteNavigation();
 
 const returnTopLinks = [...document.querySelectorAll('[data-return-top]')];
 // Every data-page-view section automatically joins the full-page navigation flow.
-const fullPageNavigation = window.matchMedia('(min-width: 60.01rem) and (min-height: 36rem)');
+const fullPageNavigation = window.matchMedia('(min-width: 64.01rem) and (min-height: 44rem)');
 
 let activeViewIndex = 0;
 let navigationLocked = false;
@@ -66,7 +56,7 @@ const syncViewState = (index) => {
   if (!activeView) return;
 
   activeViewIndex = index;
-  const headerMode = activeView.dataset.headerMode ?? 'default';
+  const headerMode = fullPageNavigation.matches ? activeView.dataset.headerMode ?? 'default' : 'default';
   document.body.dataset.activeView = activeView.id || `view-${index + 1}`;
   header?.classList.toggle('is-scrolled', headerMode === 'default' && window.scrollY > 24);
   header?.classList.toggle('is-section-view', headerMode === 'signal');
@@ -84,9 +74,9 @@ const navigateToView = (index) => {
   navigationLocked = true;
   wheelDelta = 0;
   syncViewState(nextIndex);
-  nextView.scrollIntoView({
+  window.scrollTo({
+    top: Math.max(0, nextView.offsetTop - (fullPageNavigation.matches || nextIndex === 0 ? 0 : header?.offsetHeight ?? 0)),
     behavior: prefersReducedMotion ? 'auto' : 'smooth',
-    block: 'start',
   });
 
   window.clearTimeout(navigationUnlockTimer);
@@ -95,9 +85,31 @@ const navigateToView = (index) => {
   }, prefersReducedMotion ? 80 : 900);
 };
 
+const restoreSavedScroll = () => {
+  const hashTarget = window.location.hash ? document.querySelector(window.location.hash) : null;
+  if (window.location.hash && hashTarget) {
+    window.scrollTo({ top: Math.max(0, hashTarget.offsetTop - (fullPageNavigation.matches || hashTarget.id === 'inicio' ? 0 : header?.offsetHeight ?? 0)), left: 0, behavior: 'auto' });
+    return;
+  }
+
+  const savedScroll = Number(sessionStorage.getItem(scrollStorageKey));
+  if (Number.isFinite(savedScroll) && sessionStorage.getItem(scrollStorageKey) !== null) {
+    window.scrollTo({ top: savedScroll, left: 0, behavior: 'auto' });
+    return;
+  }
+
+  const defaultTarget = document.querySelector('#inicio');
+  if (defaultTarget) defaultTarget.scrollIntoView({ behavior: 'auto', block: 'start' });
+};
+
 const handleWheelNavigation = (event) => {
   if (!fullPageNavigation.matches || document.body.classList.contains('menu-open')) return;
   if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+  // Tall sections must be readable before advancing to the next section.
+  const bounds = pageViews[activeViewIndex]?.getBoundingClientRect();
+  if (bounds && (event.deltaY > 0 && bounds.bottom > window.innerHeight + 2
+    || event.deltaY < 0 && bounds.top < -2)) return;
 
   event.preventDefault();
   if (navigationLocked) return;
@@ -133,6 +145,10 @@ document.addEventListener('keydown', (event) => {
   const forward = event.key === 'PageDown' || event.key === 'ArrowDown' || event.key === ' ';
   const backward = event.key === 'PageUp' || event.key === 'ArrowUp' || event.key === 'Home';
   if (!forward && !backward) return;
+
+  const bounds = pageViews[activeViewIndex]?.getBoundingClientRect();
+  if (event.key !== 'Home' && bounds && (forward && bounds.bottom > window.innerHeight + 2
+    || backward && bounds.top < -2)) return;
 
   event.preventDefault();
   navigateToView(event.key === 'Home' ? 0 : activeViewIndex + (forward ? 1 : -1));
@@ -242,3 +258,8 @@ if (!prefersReducedMotion && 'IntersectionObserver' in window) {
 } else {
   revealItems.forEach((item) => item.classList.add('is-visible'));
 }
+
+catalogReady.finally(() => {
+  restoreSavedScroll();
+  document.body.classList.add('is-ready');
+});

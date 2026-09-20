@@ -612,6 +612,7 @@
   padding-top: 0;
   border-top: 0;
 }
+.admin-product-preview-stack.is-featured-disabled .admin-preview-switch { order: -2; }
 
 .admin-product-preview-device { display: grid; width: 100%; justify-items: center; }
 .admin-product-preview-device.is-desktop .admin-product-preview { width: 15.5rem; }
@@ -637,6 +638,35 @@
 }
 .admin-product-preview-device.is-mobile .admin-product-preview > a { min-height: 2.75rem; }
 .admin-page .admin-product-preview .meta { font-size: 0.6875rem; }
+
+.admin-explore-preview-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  justify-items: center;
+  align-items: start;
+  padding-top: 1rem;
+  border-top: 0.0625rem solid var(--color-line);
+}
+.admin-explore-preview-section h4 { justify-self: start; font-size: 0.9rem; }
+.admin-explore-preview-device { display: grid; width: 100%; justify-items: center; }
+.admin-explore-preview-device.is-desktop .admin-explore-preview { width: 19.25rem; }
+.admin-explore-preview-device.is-mobile .admin-explore-preview { width: min(100%, 20rem); min-height: 25rem; }
+.admin-explore-preview-device.is-mobile .admin-explore-preview h2 { font-size: 0.9rem; }
+.admin-explore-preview-device.is-mobile .admin-explore-preview small { font-size: 0.875rem; }
+.admin-explore-preview-device.is-mobile .admin-explore-preview .explore-card__label { max-width: calc(100% - 1.5rem); overflow-wrap: anywhere; }
+.admin-explore-preview-device.is-mobile .admin-explore-preview > a { min-height: 2.75rem; font-size: 0.75rem; }
+.admin-explore-preview-device.is-mobile .admin-explore-preview > img,
+.admin-explore-preview-device.is-mobile .admin-explore-preview.has-missing-image::before { height: auto; aspect-ratio: 1; }
+.admin-page .admin-explore-preview .meta { font-size: 0.6875rem; }
+.admin-dialog .admin-explore-preview h2 {
+  margin-top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: normal;
+}
+.admin-dialog .admin-explore-preview-device.is-mobile .admin-explore-preview h2 { font-size: 0.9rem; }
 
 .admin-dialog header,
 .admin-dialog footer {

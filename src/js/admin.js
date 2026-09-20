@@ -224,6 +224,15 @@ const createProductPreview = () => {
   card.append(label, image, title, collection, description, link);
   return card;
 };
+const createExplorePreview = () => {
+  const card = el('article', 'explore-card is-visible admin-explore-preview');
+  const label = el('span', 'explore-card__label meta'), image = el('img'), title = el('h2');
+  const collection = el('p'), description = el('small'), link = el('a', '', 'INFORMACIÓN');
+  link.href = '#'; link.addEventListener('click', event => event.preventDefault());
+  image.addEventListener('error', () => { image.dataset.failedUrl = image.src; image.hidden = true; card.classList.add('has-missing-image'); });
+  card.append(label, image, title, collection, description, link);
+  return card;
+};
 const editProduct = (p = null) => {
   const {
     details: _legacyDetails, story: _legacyStory, edition: _legacyEdition, badges: _legacyBadges,
@@ -279,13 +288,15 @@ const editProduct = (p = null) => {
     const choiceLabel = el('span', 'admin-template-option__label', t.name); choiceLabel.append(el('span', 'admin-template-option__check', '✓'));
     b.replaceChildren(choiceLabel); b.setAttribute('aria-label', `Plantilla ${t.name}`); b.dataset.templateChoice = t.id; thumbs.append(b);
   });
-  const featuredCard = createPreview(), productCard = createProductPreview();
+  const featuredCard = createPreview(), productCard = createProductPreview(), exploreCard = createExplorePreview();
   const previewSwitch = el('div', 'admin-preview-switch'); previewSwitch.setAttribute('role', 'group'); previewSwitch.setAttribute('aria-label', 'Tamaño de vista previa');
   const previewDevice = el('section', 'admin-preview-device is-desktop');
   const productPreviewDevice = el('div', 'admin-product-preview-device is-desktop');
+  const explorePreviewDevice = el('div', 'admin-explore-preview-device is-desktop');
   const setPreviewMode = mode => {
     previewDevice.classList.toggle('is-mobile', mode === 'mobile'); previewDevice.classList.toggle('is-desktop', mode === 'desktop');
     productPreviewDevice.classList.toggle('is-mobile', mode === 'mobile'); productPreviewDevice.classList.toggle('is-desktop', mode === 'desktop');
+    explorePreviewDevice.classList.toggle('is-mobile', mode === 'mobile'); explorePreviewDevice.classList.toggle('is-desktop', mode === 'desktop');
     previewSwitch.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.previewMode === mode)));
   };
   for (const [name, mode] of [['Escritorio', 'desktop'], ['Móvil', 'mobile']]) {
@@ -298,7 +309,9 @@ const editProduct = (p = null) => {
   const featuredPreviewSection = el('section', 'admin-featured-preview-section'); featuredPreviewSection.append(previewDevice);
   productPreviewDevice.append(productCard);
   const productPreviewSection = el('section', 'admin-product-preview-section'); productPreviewSection.append(el('h4', '', 'Tarjeta en catálogo'), productPreviewDevice);
-  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(previewSwitch, featuredPreviewSection, productPreviewSection); setPreviewMode('desktop');
+  explorePreviewDevice.append(exploreCard);
+  const explorePreviewSection = el('section', 'admin-explore-preview-section'); explorePreviewSection.append(el('h4', '', 'Tarjeta en Explorar'), explorePreviewDevice);
+  const previewPanel = el('div', 'admin-product-preview-stack'); previewPanel.append(previewSwitch, featuredPreviewSection, productPreviewSection, explorePreviewSection); setPreviewMode('desktop');
   const adjustmentSections = ['title1Adj','title2Adj'].map((key,i) => heading(i ? 'Ajustes del título' : 'Ajustes de la etiqueta', FEATURED_ADJUSTMENT_FIELDS.map(f => input(`${key}_${f.key}`, f.label, config[key][f.key], f.type, f.options))));
   const basics = [
     input('code','Código estable',p?.id ?? '', 'text', [], { required: '', ...(p ? { readonly: '' } : {}) }),
@@ -362,6 +375,17 @@ const editProduct = (p = null) => {
       productCard.querySelector('p').textContent = snapshot.collections.find(item => String(item.id) === val('collectionId'))?.name ?? 'Colección';
       productCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';
       productCard.querySelector('a').setAttribute('aria-label', `Información de ${val('title') || 'producto'}`);
+      const exploreImage = exploreCard.querySelector('img');
+      if (exploreImage.dataset.source !== imageUrl) { exploreImage.dataset.source = imageUrl; delete exploreImage.dataset.failedUrl; exploreImage.src = imageUrl; }
+      const exploreImageFailed = !imageUrl || exploreImage.dataset.failedUrl === exploreImage.src;
+      exploreCard.classList.toggle('has-missing-image', exploreImageFailed); exploreImage.hidden = exploreImageFailed;
+      exploreImage.alt = `${val('title') || 'Producto'}: ${val('shortDescription') || 'Descripción corta del producto.'}`;
+      const exploreLabel = exploreCard.querySelector('.explore-card__label');
+      exploreLabel.textContent = promotionActive ? val('promotionLabel') : val('label'); exploreLabel.hidden = !exploreLabel.textContent;
+      exploreCard.querySelector('h2').textContent = val('title') || 'Nombre del producto';
+      exploreCard.querySelector('p').textContent = snapshot.collections.find(item => String(item.id) === val('collectionId'))?.name ?? 'Colección';
+      exploreCard.querySelector('small').textContent = val('shortDescription') || 'Descripción corta del producto.';
+      exploreCard.querySelector('a').setAttribute('aria-label', `Información de ${val('title') || 'producto'}`);
       thumbs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.templateChoice===c.template)));
       const enabled = checked('isFeatured');
       featuredPreviewSection.hidden = !enabled; previewPanel.classList.toggle('is-featured-disabled', !enabled);

@@ -31,10 +31,15 @@ const createCard = (product, index) => {
   const labelText = product.promotionActive ? product.promotionLabel : product.label;
   label.textContent = labelText || '';
   label.hidden = !labelText;
-  image.src = product.photo;
+  if (product.photo) image.src = product.photo; else image.hidden = true;
   image.alt = `${product.title}: ${product.desc}`;
   image.loading = 'lazy';
   image.decoding = 'async';
+  image.addEventListener('error', () => {
+    image.hidden = true;
+    card.classList.add('has-missing-image');
+  });
+  card.classList.toggle('has-missing-image', !product.photo);
   title.textContent = product.title;
   collection.textContent = product.Collection;
   description.textContent = product.desc;

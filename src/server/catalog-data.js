@@ -5,6 +5,14 @@ export const formatPrice = (minor, currency = 'MXN') => `${new Intl.NumberFormat
 const visibility = `p.active = 1 AND c.active = 1 AND cat.active = 1 AND (p.subcategory_id IS NULL OR sub.active = 1)`;
 export const listTags = async (db, includeInactive = false) => rows(await db.prepare(`SELECT * FROM catalog_tags ${includeInactive ? '' : 'WHERE active = 1'} ORDER BY sort_order, name`).all())
   .map(tag => ({ ...camelRow(tag), active: Boolean(tag.active) }));
+export const listDeliveryPoints = async (db, includeInactive = false) => rows(await db.prepare(`SELECT * FROM delivery_points ${includeInactive ? '' : 'WHERE active = 1'} ORDER BY sort_order, name`).all())
+  .map(point => {
+    const item = { ...camelRow(point), active: Boolean(point.active) };
+    if (!includeInactive) {
+      for (const key of ['createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'deactivatedAt', 'deactivatedBy', 'version']) delete item[key];
+    }
+    return item;
+  });
 export const listProducts = async (db, { includeInactive = false, identifier } = {}) => {
   const statement = db.prepare(`SELECT p.*, c.name AS collection_name, c.slug AS collection_slug,
     cat.name AS category_name, cat.slug AS category_slug, sub.name AS subcategory_name, sub.slug AS subcategory_slug,
@@ -78,10 +86,10 @@ export const getPublicCatalog = async db => {
   return { products, tabs, destacados: settings.active && settings.value.featuredEnabled ? products.filter(p => p.isFeatured).sort((a,b) => a.featuredOrder - b.featuredOrder || a.databaseId - b.databaseId).map(featuredFromProduct) : [], autoplayMs: settings.value.autoplayMs, signalText: settings.value.signalText, signalIcon: settings.value.signalIcon };
 };
 export const getAdminSnapshot = async db => {
-  const [products, categories, collections, subcategories, tags, settings, pending, audit] = await Promise.all([
+  const [products, categories, collections, subcategories, tags, deliveryPoints, settings, pending, audit] = await Promise.all([
     listProducts(db, { includeInactive: true }), listTaxonomy(db, 'categories', true), listTaxonomy(db, 'collections', true), listTaxonomy(db, 'subcategories', true),
-    listTags(db, true), getSettings(db),
+    listTags(db, true), listDeliveryPoints(db, true), getSettings(db),
     db.prepare("SELECT * FROM site_settings WHERE key = 'legacy_featured'").first(), db.prepare('SELECT * FROM audit_log ORDER BY id DESC LIMIT 100').all(),
   ]);
-  return { products, categories, collections, subcategories, tags, settings, pendingFeatured: pending ? JSON.parse(pending.value_json) : [], pendingVersion: pending?.version ?? 0, audit: rows(audit).map(camelRow) };
+  return { products, categories, collections, subcategories, tags, deliveryPoints, settings, pendingFeatured: pending ? JSON.parse(pending.value_json) : [], pendingVersion: pending?.version ?? 0, audit: rows(audit).map(camelRow) };
 };

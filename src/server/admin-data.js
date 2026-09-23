@@ -1,7 +1,7 @@
 import { taxonomyTables, rows } from './catalog-data.js';
 import { fail, integerValue, textValue, safeUrl, validateContent, validateFeaturedConfig, validateSettings, normalizeFeaturedConfig } from '../shared/product-config.js';
 
-const tables = { ...taxonomyTables, tags: 'catalog_tags', products: 'catalog_products', settings: 'site_settings' };
+const tables = { ...taxonomyTables, tags: 'catalog_tags', products: 'catalog_products', settings: 'site_settings', 'delivery-points': 'delivery_points' };
 const bool = (v, label) => { if (typeof v !== 'boolean') fail(`${label}: estado inválido.`); return Number(v); };
 const slug = v => { const s = textValue(v, 'Slug', 160); if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s)) fail('Slug: usa minúsculas, números y guiones.'); return s; };
 const date = v => {
@@ -10,6 +10,13 @@ const date = v => {
   return new Date(v).toISOString();
 };
 const required = (v, label, max = 200) => { const t = textValue(v, label, max); if (!t) fail(`${label} es obligatorio.`); return t; };
+const coordinate = (v, label, min, max) => {
+  const text = required(String(v ?? ''), label, 30);
+  if (!/^-?\d{1,3}(?:\.\d+)?$/.test(text)) fail(`${label}: usa un número decimal válido.`);
+  const number = Number(text);
+  if (!Number.isFinite(number) || number < min || number > max) fail(`${label}: valor fuera de rango.`);
+  return String(number);
+};
 const optionalStock = v => { if (v === null || v === undefined || v === '') return null; return integerValue(v, 'Existencias'); };
 export const getRecord = async (db, resource, id) => {
   if (!Object.hasOwn(tables, resource)) fail('Recurso inválido.');
@@ -117,6 +124,18 @@ const prepareSave = async (db, resource, payload, actor, id) => {
   } else if (resource === 'settings') {
     if (before && before.key !== 'catalog') fail('Configuración protegida.');
     fields = { ...(before ? {} : { key: 'catalog' }), value_json: JSON.stringify(validateSettings(payload.value)), active: bool(payload.active, 'Activo') };
+  } else if (resource === 'delivery-points') {
+    const nextSortOrder = payload.sortOrder ?? before?.sort_order ?? (await db.prepare('SELECT COALESCE(MAX(sort_order), -1) + 1 AS next_order FROM delivery_points').first()).next_order;
+    fields = {
+      name: required(payload.name, 'Lugar'),
+      address: textValue(payload.address ?? '', 'Dirección', 500),
+      instructions: textValue(payload.instructions ?? '', 'Instrucciones de entrega', 1000),
+      schedule: required(payload.schedule, 'Horario', 500),
+      latitude: coordinate(payload.latitude, 'Latitud', -90, 90),
+      longitude: coordinate(payload.longitude, 'Longitud', -180, 180),
+      sort_order: integerValue(nextSortOrder, 'Orden'),
+      active: bool(payload.active, 'Activo'),
+    };
   } else fail('Operación no permitida.');
   const action = before && fields.active !== before.active ? (fields.active ? 'reactivate' : 'deactivate') : before ? 'update' : 'create';
   const statements = writeStatements(db, resource, before, fields, actor, action, guards.join(' AND ') || '1=1', guardArgs);

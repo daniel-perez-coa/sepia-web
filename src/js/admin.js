@@ -425,17 +425,199 @@ const editSettings=()=>{
     input('whatsappPhone','WhatsApp empresarial',s.value.whatsappPhone,'tel',[],{placeholder:'5212221234567'}),
   ],()=>({value:validateSettings({tabMode:val('tabMode'),autoplayMs:num('autoplayMs'),featuredEnabled:checked('featuredEnabled'),signalText:val('signalText'),signalIcon:val('signalIcon'),whatsappPhone:val('whatsappPhone')}),active:checked('active')}));
 };
+const deliveryLocationPicker = (addressField, latitudeField, longitudeField) => {
+  const addressGroup = el('div', 'admin-address-search');
+  const section = el('section', 'admin-location-picker');
+  const heading = el('div', 'admin-location-picker__heading');
+  heading.append(el('div', '', 'UBICACIÓN EN EL MAPA'), el('p', '', 'Elige una sugerencia de dirección o selecciona el punto directamente en el mapa.'));
+  const map = el('div', 'admin-location-map');
+  map.tabIndex = 0;
+  map.setAttribute('role', 'application');
+  map.setAttribute('aria-label', 'Mapa para seleccionar el punto de entrega');
+  const tiles = el('div', 'admin-location-map__tiles');
+  const marker = el('span', 'admin-location-map__marker');
+  marker.innerHTML = '<i class="bi bi-geo-alt-fill" aria-hidden="true"></i>';
+  marker.hidden = true;
+  const zoomControls = el('div', 'admin-location-map__zoom');
+  const zoomIn = button('+', () => changeZoom(1));
+  const zoomOut = button('−', () => changeZoom(-1));
+  zoomIn.setAttribute('aria-label', 'Acercar mapa'); zoomOut.setAttribute('aria-label', 'Alejar mapa');
+  zoomControls.append(zoomIn, zoomOut); map.append(tiles, marker, zoomControls);
+  const status = el('p', 'admin-location-picker__status', 'Selecciona una ubicación para guardar sus coordenadas.');
+  status.setAttribute('aria-live', 'polite');
+  const attribution = el('a', 'admin-location-picker__attribution', '© OpenStreetMap');
+  attribution.href = 'https://www.openstreetmap.org/copyright'; attribution.target = '_blank'; attribution.rel = 'noopener';
+  const addressControl = addressField.querySelector('[name="address"]');
+  const latitudeControl = latitudeField;
+  const longitudeControl = longitudeField;
+  addressControl.setAttribute('autocomplete', 'off');
+  addressControl.placeholder = 'Escribe calle, número, colonia o lugar';
+  const searchButton = button('Buscar', () => findAddress(), true);
+  searchButton.classList.add('admin-address-search__button');
+  const suggestions = el('div', 'admin-location-suggestions');
+  suggestions.hidden = true; suggestions.setAttribute('role', 'listbox');
+  suggestions.setAttribute('aria-label', 'Sugerencias de dirección');
+  addressGroup.append(addressField, searchButton, suggestions);
+  section.append(heading, map, status, attribution);
+  const defaultLocation = { latitude: 19.0414, longitude: -98.2063 };
+  const initialLatitude = Number(latitudeControl.value), initialLongitude = Number(longitudeControl.value);
+  const initialIsValid = Number.isFinite(initialLatitude) && Number.isFinite(initialLongitude) && latitudeControl.value !== '' && longitudeControl.value !== '';
+  const view = { latitude: initialIsValid ? initialLatitude : defaultLocation.latitude, longitude: initialIsValid ? initialLongitude : defaultLocation.longitude, zoom: 14 };
+  let mapOrigin = null, suggestionTimer, suggestionController, settingAddress = false;
+  const updateLocationValidity = () => {
+    const latitude = Number(latitudeControl.value), longitude = Number(longitudeControl.value);
+    const selected = latitudeControl.value !== '' && longitudeControl.value !== '' && Number.isFinite(latitude) && Number.isFinite(longitude);
+    addressControl.setCustomValidity(selected ? '' : 'Selecciona una sugerencia de dirección o marca el punto en el mapa.');
+    return selected;
+  };
+  updateLocationValidity();
+
+  const worldPoint = (latitude, longitude, zoom) => {
+    const size = 256 * (2 ** zoom), limitedLatitude = Math.max(-85.0511, Math.min(85.0511, latitude));
+    const sine = Math.sin(limitedLatitude * Math.PI / 180);
+    return { x: (longitude + 180) / 360 * size, y: (0.5 - Math.log((1 + sine) / (1 - sine)) / (4 * Math.PI)) * size, size };
+  };
+  const coordinatesAt = (x, y, zoom) => {
+    const size = 256 * (2 ** zoom), longitude = x / size * 360 - 180;
+    const latitude = Math.atan(Math.sinh(Math.PI * (1 - 2 * y / size))) * 180 / Math.PI;
+    return { latitude, longitude };
+  };
+  const renderMap = () => {
+    const width = map.clientWidth, height = map.clientHeight;
+    if (!width || !height) return;
+    const center = worldPoint(view.latitude, view.longitude, view.zoom);
+    mapOrigin = { x: center.x - width / 2, y: center.y - height / 2 };
+    const firstX = Math.floor(mapOrigin.x / 256), lastX = Math.floor((mapOrigin.x + width) / 256);
+    const firstY = Math.floor(mapOrigin.y / 256), lastY = Math.floor((mapOrigin.y + height) / 256), limit = 2 ** view.zoom;
+    const fragment = document.createDocumentFragment();
+    for (let tileY = firstY; tileY <= lastY; tileY += 1) {
+      if (tileY < 0 || tileY >= limit) continue;
+      for (let tileX = firstX; tileX <= lastX; tileX += 1) {
+        const wrappedX = ((tileX % limit) + limit) % limit, image = el('img');
+        image.src = `https://tile.openstreetmap.org/${view.zoom}/${wrappedX}/${tileY}.png`;
+        image.alt = ''; image.draggable = false;
+        image.style.left = `${tileX * 256 - mapOrigin.x}px`; image.style.top = `${tileY * 256 - mapOrigin.y}px`;
+        fragment.append(image);
+      }
+    }
+    tiles.replaceChildren(fragment);
+    const selectedLatitude = Number(latitudeControl.value), selectedLongitude = Number(longitudeControl.value);
+    const hasSelection = latitudeControl.value !== '' && longitudeControl.value !== '' && Number.isFinite(selectedLatitude) && Number.isFinite(selectedLongitude);
+    marker.hidden = !hasSelection;
+    if (hasSelection) {
+      const selected = worldPoint(selectedLatitude, selectedLongitude, view.zoom);
+      marker.style.left = `${selected.x - mapOrigin.x}px`; marker.style.top = `${selected.y - mapOrigin.y}px`;
+    }
+  };
+  const setLocation = (latitude, longitude, message) => {
+    view.latitude = latitude; view.longitude = longitude;
+    latitudeControl.value = latitude.toFixed(6); longitudeControl.value = longitude.toFixed(6);
+    latitudeControl.dispatchEvent(new Event('input', { bubbles: true })); longitudeControl.dispatchEvent(new Event('input', { bubbles: true }));
+    updateLocationValidity();
+    status.textContent = message; renderMap();
+  };
+  const formatPlace = properties => [
+    properties.name,
+    [properties.housenumber, properties.street].filter(Boolean).join(' '),
+    properties.district,
+    properties.city || properties.county,
+    properties.state,
+    properties.country,
+  ].filter((part, index, parts) => part && parts.indexOf(part) === index).join(', ');
+  const choosePlace = feature => {
+    const [longitude, latitude] = feature.geometry.coordinates;
+    const label = formatPlace(feature.properties);
+    settingAddress = true; addressControl.value = label;
+    addressControl.dispatchEvent(new Event('input', { bubbles: true })); settingAddress = false;
+    suggestions.hidden = true; suggestions.replaceChildren();
+    setLocation(latitude, longitude, 'Dirección seleccionada y ubicada en el mapa.');
+  };
+  const searchPlaces = async (query, { explicit = false } = {}) => {
+    suggestionController?.abort();
+    suggestionController = new AbortController();
+    const params = new URLSearchParams({ q: query, ...(explicit ? { explicit: '1' } : {}) });
+    const response = await fetch(`/api/admin/place-suggestions?${params}`, { signal: suggestionController.signal });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'No pudimos consultar las sugerencias de dirección.');
+    const { features = [] } = data;
+    suggestions.replaceChildren(...features.map((feature, index) => {
+      const option = button(formatPlace(feature.properties), () => choosePlace(feature));
+      option.classList.add('admin-location-suggestion'); option.setAttribute('role', 'option'); option.id = `delivery-place-option-${index}`;
+      return option;
+    }));
+    suggestions.hidden = features.length === 0;
+    status.textContent = features.length ? `${features.length} sugerencias disponibles. Elige una dirección de la lista.` : 'Sin resultados; prueba con más detalles o marca el punto en el mapa.';
+  };
+  const reverseLocation = async (latitude, longitude) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&accept-language=es`);
+      if (!response.ok) throw new Error();
+      const result = await response.json();
+      if (result.display_name) {
+        settingAddress = true; addressControl.value = result.display_name;
+        addressControl.dispatchEvent(new Event('input', { bubbles: true })); settingAddress = false;
+      }
+      status.textContent = 'Ubicación seleccionada y dirección actualizada.';
+    } catch { status.textContent = 'Ubicación seleccionada. Puedes escribir la referencia manualmente.'; }
+  };
+  async function findAddress() {
+    const query = addressControl.value.trim();
+    if (query.length < 3) { status.textContent = 'Escribe al menos 3 caracteres para buscar una dirección.'; addressControl.focus(); return; }
+    clearTimeout(suggestionTimer);
+    searchButton.disabled = true; status.textContent = 'Buscando dirección…';
+    try {
+      await searchPlaces(query, { explicit: true });
+    } catch (error) { if (error.name !== 'AbortError') status.textContent = error.message || 'No pudimos buscar esa dirección.'; }
+    finally { searchButton.disabled = false; }
+  }
+  function changeZoom(amount) { view.zoom = Math.max(3, Math.min(18, view.zoom + amount)); renderMap(); }
+  map.addEventListener('click', event => {
+    if (event.target.closest('button') || !mapOrigin) return;
+    const rect = map.getBoundingClientRect(), point = coordinatesAt(mapOrigin.x + event.clientX - rect.left, mapOrigin.y + event.clientY - rect.top, view.zoom);
+    setLocation(point.latitude, point.longitude, 'Ubicación seleccionada; buscando la dirección…'); reverseLocation(point.latitude, point.longitude);
+  });
+  map.addEventListener('keydown', event => { if (event.key === '+' || event.key === '=') changeZoom(1); if (event.key === '-') changeZoom(-1); });
+  addressControl.addEventListener('input', () => {
+    if (settingAddress) return;
+    latitudeControl.value = ''; longitudeControl.value = ''; marker.hidden = true; updateLocationValidity(); renderMap();
+    clearTimeout(suggestionTimer); suggestionController?.abort();
+    suggestions.hidden = true; suggestions.replaceChildren();
+    const query = addressControl.value.trim();
+    if (query.length < 3) { suggestions.hidden = true; suggestions.replaceChildren(); return; }
+    suggestionTimer = window.setTimeout(async () => {
+      status.textContent = 'Buscando sugerencias…';
+      try { await searchPlaces(query); }
+      catch (error) { if (error.name !== 'AbortError') { suggestions.hidden = true; status.textContent = 'No pudimos cargar sugerencias. Puedes marcar el punto manualmente en el mapa.'; } }
+    }, 450);
+  });
+  addressControl.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { suggestions.hidden = true; return; }
+    if (event.key === 'Enter' && !suggestions.hidden) { const first = suggestions.querySelector('[role="option"]'); if (first) { event.preventDefault(); first.click(); } }
+  });
+  document.addEventListener('pointerdown', event => { if (!addressGroup.contains(event.target)) suggestions.hidden = true; });
+  const observer = new ResizeObserver(renderMap); observer.observe(map);
+  dialog.addEventListener('close', () => { observer.disconnect(); clearTimeout(suggestionTimer); suggestionController?.abort(); }, { once: true });
+  requestAnimationFrame(renderMap);
+  return { addressGroup, section };
+};
 const editDeliveryPoint = (item = null) => {
   fields.oninput=null; fields.onchange=null;
+  const nextSortOrder = snapshot.deliveryPoints.reduce((max, point) => Math.max(max, Number(point.sortOrder) || 0), -1) + 1;
+  const addressField = input('address','Dirección',item?.address,'text',[],{maxlength:500,placeholder:'Calle, número, colonia o lugar'});
+  const latitudeField = el('input'); latitudeField.type = 'hidden'; latitudeField.name = 'latitude'; latitudeField.value = item?.latitude ?? '';
+  const longitudeField = el('input'); longitudeField.type = 'hidden'; longitudeField.name = 'longitude'; longitudeField.value = item?.longitude ?? '';
+  const locationPicker = deliveryLocationPicker(addressField, latitudeField, longitudeField);
   openEditor('delivery-points', item, item?.name ?? 'Nuevo punto de entrega', [
-    input('name','Lugar',item?.name,'text',[],{required:''}),
+    input('name','Nombre del lugar de entrega',item?.name,'text',[],{required:''}),
     input('schedule','Horario',item?.schedule,'text',[],{required:'',placeholder:'Sábados, 11:00 a 14:00'}),
-    input('address','Dirección o referencia',item?.address,'textarea'),
-    input('latitude','Latitud',item?.latitude,'text',[],{required:'',inputmode:'decimal',placeholder:'19.0414'}),
-    input('longitude','Longitud',item?.longitude,'text',[],{required:'',inputmode:'decimal',placeholder:'-98.2063'}),
-    input('sortOrder','Orden',item?.sortOrder??0,'number',[],{min:0,step:1}),
+    locationPicker.addressGroup,
+    locationPicker.section,
+    latitudeField,
+    longitudeField,
+    input('instructions','Instrucciones de entrega',item?.instructions,'textarea',[],{maxlength:1000,placeholder:'Referencias para encontrar el punto o indicaciones para la entrega'}),
+    input('sortOrder','Orden',item?.sortOrder ?? nextSortOrder,'number',[],{min:0,step:1}),
     input('active','Mostrar para entrega',item?.active??true,'boolean'),
-  ],()=>({name:val('name'),schedule:val('schedule'),address:val('address'),latitude:val('latitude'),longitude:val('longitude'),sortOrder:num('sortOrder'),active:checked('active')}));
+  ],()=>({name:val('name'),schedule:val('schedule'),address:val('address'),latitude:val('latitude'),longitude:val('longitude'),instructions:val('instructions'),sortOrder:num('sortOrder'),active:checked('active')}));
 };
 const confirmAction = (title, message, action = 'Confirmar', danger = false) => new Promise(resolve => {
   confirmDialog.querySelector('[data-confirm-title]').textContent = title;

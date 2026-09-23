@@ -11,6 +11,7 @@ export const deliveryPoints = sqliteTable('delivery_points', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   address: text('address').notNull().default(''),
+  instructions: text('instructions').notNull().default(''),
   schedule: text('schedule').notNull(),
   latitude: text('latitude').notNull(),
   longitude: text('longitude').notNull(),

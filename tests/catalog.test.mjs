@@ -19,6 +19,8 @@ function setup() {
   sqlite.exec(read('../drizzle/0005_tags_and_product_content_cleanup.sql'));
   sqlite.exec(read('../drizzle/0006_one_tag_per_product.sql'));
   sqlite.exec(read('../drizzle/0008_delivery_points.sql'));
+  sqlite.exec(read('../drizzle/0009_delivery_instructions.sql'));
+  sqlite.exec(read('../drizzle/0010_increment_delivery_point_order.sql'));
   sqlite.exec(buildImport(source));
   const db = {
     prepare(sql) {

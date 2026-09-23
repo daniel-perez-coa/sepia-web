@@ -125,13 +125,15 @@ const prepareSave = async (db, resource, payload, actor, id) => {
     if (before && before.key !== 'catalog') fail('Configuración protegida.');
     fields = { ...(before ? {} : { key: 'catalog' }), value_json: JSON.stringify(validateSettings(payload.value)), active: bool(payload.active, 'Activo') };
   } else if (resource === 'delivery-points') {
+    const nextSortOrder = payload.sortOrder ?? before?.sort_order ?? (await db.prepare('SELECT COALESCE(MAX(sort_order), -1) + 1 AS next_order FROM delivery_points').first()).next_order;
     fields = {
       name: required(payload.name, 'Lugar'),
-      address: textValue(payload.address ?? '', 'Dirección o referencia', 500),
+      address: textValue(payload.address ?? '', 'Dirección', 500),
+      instructions: textValue(payload.instructions ?? '', 'Instrucciones de entrega', 1000),
       schedule: required(payload.schedule, 'Horario', 500),
       latitude: coordinate(payload.latitude, 'Latitud', -90, 90),
       longitude: coordinate(payload.longitude, 'Longitud', -180, 180),
-      sort_order: integerValue(payload.sortOrder ?? 0, 'Orden'),
+      sort_order: integerValue(nextSortOrder, 'Orden'),
       active: bool(payload.active, 'Activo'),
     };
   } else fail('Operación no permitida.');

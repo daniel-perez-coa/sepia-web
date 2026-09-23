@@ -3,6 +3,33 @@ import { saveRecord, setRecordActive, assignLegacyFeatured } from './admin-data.
 import { FEATURED_FIELDS, FEATURED_TEMPLATES, object } from '../shared/product-config.js';
 import { FEATURED_ADJUSTMENT_FIELDS } from '../shared/featured-config.js';
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+const lookupPlaces = async (query, explicit) => {
+  const photonUrl = new URL('https://photon.komoot.io/api/');
+  photonUrl.search = new URLSearchParams({ q: query, limit: '5', countrycode: 'MX', lat: '19.0414', lon: '-98.2063', zoom: '10' }).toString();
+  try {
+    const response = await fetch(photonUrl, { signal: AbortSignal.timeout(8000), cf: { cacheEverything: true, cacheTtl: 300 } });
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data.features) && (data.features.length || !explicit)) return data.features;
+    }
+  } catch { /* An explicit search can fall back to Nominatim. */ }
+  if (!explicit) throw new Response('No pudimos cargar sugerencias. Usa Buscar o selecciona el punto en el mapa.', { status: 502 });
+  const nominatimUrl = new URL('https://nominatim.openstreetmap.org/search');
+  nominatimUrl.search = new URLSearchParams({ q: query, format: 'jsonv2', limit: '5', countrycodes: 'mx', 'accept-language': 'es' }).toString();
+  try {
+    const response = await fetch(nominatimUrl, {
+      headers: { 'User-Agent': 'SepiaChromaStreet/1.0 (address lookup for admin delivery points)' },
+      signal: AbortSignal.timeout(8000),
+      cf: { cacheEverything: true, cacheTtl: 300 },
+    });
+    if (!response.ok) throw new Error();
+    const places = await response.json();
+    return places.map(place => ({
+      properties: { name: place.display_name },
+      geometry: { coordinates: [Number(place.lon), Number(place.lat)] },
+    }));
+  } catch { throw new Response('No pudimos buscar direcciones. Selecciona el punto directamente en el mapa.', { status: 502 }); }
+};
 const decodeAccessPayload = token => {
   try {
     const part = token.split('.')[1];
@@ -49,6 +76,11 @@ export const handleApiRequest = async (request, env) => {
     if (path.startsWith('/api/admin/')) {
       const actor = getAdminActor(request, env);
       if (path === '/api/admin/bootstrap' && request.method === 'GET') return json({ actor, ...await getAdminSnapshot(env.DB), featuredFields: FEATURED_FIELDS, featuredTemplates: FEATURED_TEMPLATES, featuredAdjustmentFields: FEATURED_ADJUSTMENT_FIELDS });
+      if (path === '/api/admin/place-suggestions' && request.method === 'GET') {
+        const query = url.searchParams.get('q')?.trim() ?? '';
+        if (query.length < 3 || query.length > 120) return json({ error: 'Escribe entre 3 y 120 caracteres para buscar.' }, 400);
+        return json({ features: await lookupPlaces(query, url.searchParams.get('explicit') === '1') });
+      }
       if (!['POST', 'PUT', 'DELETE'].includes(request.method)) return json({ error: 'Operación no permitida.' }, 405);
       const origin = request.headers.get('origin');
       if ((origin && origin !== url.origin) || request.headers.get('sec-fetch-site') === 'cross-site') return json({ error: 'Origen no permitido.' }, 403);

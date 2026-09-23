@@ -11,8 +11,10 @@ const state = { entries: [], deliveryPoints: [], whatsappPhone: '', ready: false
 const form = document.querySelector('[data-delivery-form]');
 const checkoutButton = document.querySelector('[data-checkout]');
 const checkoutStatus = document.querySelector('[data-checkout-status]');
+const deliveryConfirmButton = document.querySelector('[data-delivery-confirm]');
 const saveStatus = document.querySelector('[data-save-status]');
-const deliveryPanel = document.querySelector('[data-delivery-panel]');
+const deliveryModal = document.querySelector('[data-delivery-modal]');
+const deliverySelector = document.querySelector('[data-delivery-selector]');
 const deliverySummary = document.querySelector('[data-delivery-summary]');
 const shippingFields = document.querySelector('[data-shipping-fields]');
 const pueblaFields = document.querySelector('[data-puebla-fields]');
@@ -20,9 +22,17 @@ const pickupList = document.querySelector('[data-pickup-list]');
 const pickupLoading = document.querySelector('[data-pickup-loading]');
 const pickupEmpty = document.querySelector('[data-pickup-empty]');
 const pickupMap = document.querySelector('[data-pickup-map]');
+const pickupMapFrame = pickupMap.querySelector('[data-pickup-map-frame]');
 const postalStatus = document.querySelector('[data-postal-status]');
 const postalLookupButton = document.querySelector('[data-postal-lookup]');
 let saveTimer, postalTimer;
+
+const openDeliveryModal = () => {
+  if (!deliveryModal.open) deliveryModal.showModal();
+};
+const closeDeliveryModal = () => {
+  if (deliveryModal.open) deliveryModal.close();
+};
 
 const formatPrice = (minor, currency = 'MXN') => `${new Intl.NumberFormat('es-MX', { style: 'currency', currency }).format(Number(minor || 0) / 100)} ${currency}`;
 const el = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
@@ -43,10 +53,25 @@ const readDraft = () => {
     return draft && typeof draft === 'object' && Date.now() - Number(draft.updatedAt || 0) <= DRAFT_TTL ? draft : null;
   } catch { return null; }
 };
+const normalizeContactField = (control) => {
+  const clean = control.name === 'fullName'
+    ? value => value.replace(/\p{N}/gu, '')
+    : value => value.replace(/[^0-9]/g, '').slice(0, 10);
+  const previous = control.value, start = control.selectionStart, end = control.selectionEnd;
+  const normalized = clean(previous);
+  if (normalized !== previous) {
+    control.value = normalized;
+    if (document.activeElement === control && start !== null && end !== null) {
+      control.setSelectionRange(clean(previous.slice(0, start)).length, clean(previous.slice(0, end)).length);
+    }
+  }
+  if (control.name === 'fullName') control.setCustomValidity(control.value.trim() && /\p{L}/u.test(control.value) ? '' : 'Escribe tu nombre completo con letras.');
+  else control.setCustomValidity(!control.value || /^[0-9]{10}$/.test(control.value) ? '' : 'Escribe exactamente 10 dígitos de México.');
+};
 const draftValues = () => Object.fromEntries([
-  'fullName', 'company', 'phone', 'email', 'postalCode', 'colony', 'street', 'exteriorNumber', 'interiorNumber', 'municipality', 'state', 'crossStreets', 'references',
+  'fullName', 'phone', 'email', 'postalCode', 'colony', 'street', 'exteriorNumber', 'interiorNumber', 'municipality', 'state', 'crossStreets', 'references',
 ].map(name => [name, form.elements[name]?.value ?? '']).concat([
-  ['deliveryMethod', new FormData(form).get('deliveryMethod') || 'shipping'],
+  ['deliveryMethod', new FormData(form).get('deliveryMethod') || ''],
   ['pickupPoint', new FormData(form).get('pickupPoint') || ''],
   ['updatedAt', Date.now()],
 ]));
@@ -60,18 +85,29 @@ const saveDraft = () => {
   catch { saveStatus.textContent = 'No se pudo guardar'; }
 };
 const restoreDraft = (draft) => {
+  document.querySelectorAll('[name="deliveryMethod"]').forEach(method => { method.checked = false; });
   if (!draft) return;
-  for (const name of ['fullName', 'company', 'phone', 'email', 'postalCode', 'street', 'exteriorNumber', 'interiorNumber', 'municipality', 'state', 'crossStreets', 'references']) {
+  for (const name of ['fullName', 'phone', 'email', 'postalCode', 'street', 'exteriorNumber', 'interiorNumber', 'municipality', 'state', 'crossStreets', 'references']) {
     if (typeof draft[name] === 'string' && form.elements[name]) form.elements[name].value = draft[name];
   }
+  normalizeContactField(form.elements.fullName);
+  normalizeContactField(form.elements.phone);
   state.restoredColony = typeof draft.colony === 'string' ? draft.colony : '';
-  const method = form.querySelector(`[name="deliveryMethod"][value="${draft.deliveryMethod === 'puebla' ? 'puebla' : 'shipping'}"]`);
+  const hasShippingData = ['fullName', 'phone', 'postalCode', 'colony', 'street', 'exteriorNumber', 'municipality', 'state'].every(name => String(draft[name] || '').trim());
+  const hasPueblaData = ['fullName', 'phone', 'pickupPoint'].every(name => String(draft[name] || '').trim());
+  const methodValue = draft.deliveryMethod === 'puebla' && hasPueblaData ? 'puebla' : draft.deliveryMethod === 'shipping' && hasShippingData ? 'shipping' : '';
+  if (!methodValue) return;
+  const method = document.querySelector(`[name="deliveryMethod"][value="${methodValue}"]`);
   if (method) method.checked = true;
 };
 
-const selectedMethod = () => new FormData(form).get('deliveryMethod') || 'shipping';
+const selectedMethod = () => new FormData(form).get('deliveryMethod') || '';
 const selectedPoint = () => state.deliveryPoints.find(point => String(point.id) === String(new FormData(form).get('pickupPoint')));
 const selectedText = (name, fallback = '') => form.elements[name]?.value.trim() || fallback;
+const contactDetailsValid = () => {
+  const name = selectedText('fullName'), phone = selectedText('phone');
+  return /\p{L}/u.test(name) && !/\p{N}/u.test(name) && /^[0-9]{10}$/.test(phone);
+};
 
 const mapUrls = (point) => {
   const latitude = Number(point.latitude), longitude = Number(point.longitude), delta = 0.006;
@@ -86,10 +122,14 @@ const paintMap = () => {
   const point = selectedPoint(); pickupMap.hidden = !point;
   if (!point) return;
   const urls = mapUrls(point);
-  pickupMap.querySelector('[data-pickup-map-frame]').src = urls.embed;
+  pickupMapFrame.src = urls.embed;
   pickupMap.querySelector('[data-pickup-map-name]').textContent = point.name;
   pickupMap.querySelector('[data-pickup-map-link]').href = urls.google;
 };
+pickupMap.querySelector('[data-pickup-map-center]').addEventListener('click', () => {
+  const point = selectedPoint();
+  if (point) pickupMapFrame.src = mapUrls(point).embed;
+});
 
 const resetPostalResult = (message = '') => {
   state.postalReady = false;
@@ -134,10 +174,12 @@ const lookupPostalCode = async () => {
 };
 
 const updateDeliverySummary = () => {
-  const complete = selectedMethod() === 'puebla'
-    ? Boolean(selectedText('fullName') && selectedText('phone') && selectedPoint())
-    : Boolean(selectedText('fullName') && selectedText('phone') && state.postalReady && form.checkValidity());
-  deliverySummary.textContent = complete ? (selectedMethod() === 'puebla' ? 'Puebla · sábado' : 'Envío · listo') : 'Completar';
+  const method = selectedMethod();
+  const complete = method === 'puebla'
+    ? Boolean(selectedPoint() && contactDetailsValid() && form.checkValidity())
+    : method === 'shipping' && Boolean(contactDetailsValid() && state.postalReady && form.checkValidity());
+  deliverySummary.textContent = complete ? (method === 'puebla' ? 'Selecciona tu envío' : 'Envío · listo') : 'Completar';
+  deliveryConfirmButton.disabled = !complete;
 };
 const updateCheckoutState = () => {
   checkoutStatus.hidden = true;
@@ -145,7 +187,10 @@ const updateCheckoutState = () => {
   if (!state.ready) blockedMessage = 'Preparando tu pedido…';
   else if (!state.entries.length) blockedMessage = 'Agrega al menos un producto para continuar.';
   else if (!state.whatsappPhone) blockedMessage = 'La compra por WhatsApp no está disponible por el momento.';
+  else if (!selectedMethod()) blockedMessage = 'Elige cómo recibes tu pedido.';
+  else if (!contactDetailsValid()) blockedMessage = 'Escribe tu nombre sin números y un teléfono mexicano de 10 dígitos.';
   else if (selectedMethod() === 'puebla' && !state.deliveryPoints.length) blockedMessage = 'No hay puntos de entrega disponibles. Elige envío para continuar.';
+  else if (selectedMethod() === 'puebla' && !selectedPoint()) blockedMessage = 'Selecciona un lugar de entrega.';
   else if (selectedMethod() === 'shipping' && !state.postalReady) blockedMessage = 'Consulta y completa la dirección de envío.';
   else if (!form.checkValidity()) blockedMessage = 'Completa los datos obligatorios de entrega.';
   checkoutButton.disabled = Boolean(blockedMessage);
@@ -170,7 +215,9 @@ const renderDeliveryPoints = (restoredPointId = '') => {
     const label = el('label', 'pickup-option'), input = el('input'), body = el('span', 'pickup-option__body'), heading = el('span', 'pickup-option__heading');
     input.type = 'radio'; input.name = 'pickupPoint'; input.value = String(point.id); input.checked = String(point.id) === String(restoredPointId);
     heading.append(el('strong', '', point.name), el('span', '', point.schedule)); body.append(heading);
-    if (point.address) body.append(el('small', '', point.address)); label.append(input, body); return label;
+    if (point.address) body.append(el('small', '', point.address));
+    if (point.instructions) body.append(el('small', '', `Instrucciones: ${point.instructions}`));
+    label.append(input, body); return label;
   }));
   applyDeliveryMethod();
 };
@@ -207,9 +254,9 @@ const orderMessage = () => {
   const lines = ['Hola, quiero realizar este pedido en SEPIA:', '', ...products, '', `Subtotal: ${formatPrice(subtotal)}`, ''];
   if (data.deliveryMethod === 'puebla') {
     const point = selectedPoint(), { google } = mapUrls(point);
-    lines.push('Entrega: Gratis en Puebla (sábado)', `Punto: ${point.name}`, `Horario: ${point.schedule}`); if (point.address) lines.push(`Referencia: ${point.address}`); lines.push(`Mapa: ${google}`);
+    lines.push('Entrega: Gratis en Puebla (sábado)', `Punto: ${point.name}`, `Horario: ${point.schedule}`); if (point.address) lines.push(`Dirección: ${point.address}`); if (point.instructions) lines.push(`Instrucciones de entrega: ${point.instructions}`); lines.push(`Mapa: ${google}`);
   } else {
-    lines.push('Entrega: Envío por coordinar', `Destinatario: ${data.fullName}`, ...(data.company ? [`Empresa: ${data.company}`] : []), `Dirección: ${data.street} ${data.exteriorNumber}${data.interiorNumber ? `, Int. ${data.interiorNumber}` : ''}`, `Colonia: ${data.colony}`, `C.P.: ${data.postalCode}`, `Municipio / Alcaldía: ${data.municipality}`, `Estado: ${data.state}`, ...(data.crossStreets ? [`Entre calles: ${data.crossStreets}`] : []), ...(data.references ? [`Referencias: ${data.references}`] : []));
+    lines.push('Entrega: Envío por coordinar', `Destinatario: ${data.fullName}`, `Dirección: ${data.street} ${data.exteriorNumber}${data.interiorNumber ? `, Int. ${data.interiorNumber}` : ''}`, `Colonia: ${data.colony}`, `C.P.: ${data.postalCode}`, `Municipio / Alcaldía: ${data.municipality}`, `Estado: ${data.state}`, ...(data.crossStreets ? [`Entre calles: ${data.crossStreets}`] : []), ...(data.references ? [`Referencias: ${data.references}`] : []));
   }
   lines.push('', `Teléfono / WhatsApp: ${data.phone}`, ...(data.email ? [`Email: ${data.email}`] : [])); return lines.join('\n');
 };
@@ -224,20 +271,28 @@ const initCart = async () => {
 };
 
 form.addEventListener('input', event => {
+  if (event.target.name === 'fullName' || event.target.name === 'phone') normalizeContactField(event.target);
   if (event.target.name === 'postalCode') { form.elements.municipality.value = ''; form.elements.state.value = ''; clearTimeout(postalTimer); state.postalReady = false; state.postalCode = ''; resetPostalResult(''); postalTimer = window.setTimeout(lookupPostalCode, 450); }
   saveDraft(); updateCheckoutState();
 });
-form.addEventListener('change', event => { if (event.target.name === 'deliveryMethod') applyDeliveryMethod(); if (event.target.name === 'pickupPoint') paintMap(); saveDraft(); updateCheckoutState(); });
+deliverySelector.addEventListener('click', event => {
+  const method = event.target.closest('.delivery-method');
+  if (!method) return;
+  event.preventDefault();
+  const input = method.querySelector('[name="deliveryMethod"]');
+  input.checked = true; input.focus(); applyDeliveryMethod(); saveDraft(); openDeliveryModal();
+});
+deliverySelector.addEventListener('change', event => {
+  if (event.target.name === 'deliveryMethod') { applyDeliveryMethod(); saveDraft(); openDeliveryModal(); }
+});
+form.addEventListener('change', event => { if (event.target.name === 'pickupPoint') paintMap(); saveDraft(); updateCheckoutState(); });
 postalLookupButton.addEventListener('click', lookupPostalCode);
 form.addEventListener('submit', event => {
   event.preventDefault(); checkoutStatus.hidden = true;
-  if (checkoutButton.disabled) { updateCheckoutState(); deliveryPanel.open = true; return; }
-  if (!form.reportValidity()) { deliveryPanel.open = true; return; }
+  if (checkoutButton.disabled) { updateCheckoutState(); openDeliveryModal(); return; }
+  if (!form.reportValidity()) { openDeliveryModal(); form.reportValidity(); return; }
   saveDraft(); window.open(`https://wa.me/${state.whatsappPhone}?text=${encodeURIComponent(orderMessage())}`, '_blank', 'noopener,noreferrer');
 });
-document.querySelector('[data-clear-delivery]').addEventListener('click', () => {
-  localStorage.removeItem(DRAFT_KEY); form.reset(); state.postalCode = ''; state.postalReady = false; state.restoredColony = ''; resetPostalResult(''); applyDeliveryMethod(); paintMap(); announceSaved('Datos eliminados');
-});
-
+document.querySelectorAll('[data-close-delivery-modal]').forEach(button => button.addEventListener('click', () => { saveDraft(); closeDeliveryModal(); }));
 initSiteNavigation(); syncCartCount();
 initCart().catch(error => { document.querySelector('[data-cart-error]').hidden = false; document.querySelector('[data-cart-items]').replaceChildren(); checkoutStatus.textContent = 'No pudimos preparar la compra. Actualiza la página para intentarlo de nuevo.'; checkoutStatus.hidden = false; console.error(error); });

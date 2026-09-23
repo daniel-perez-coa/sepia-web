@@ -976,6 +976,161 @@
   grid-column: 1 / -1;
 }
 
+.admin-location-picker {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 0.0625rem solid rgba(9, 10, 13, 0.18);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.admin-location-picker__heading {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.admin-location-picker__heading > div:first-child {
+  font: 700 0.75rem/1.2 var(--font-mono);
+  letter-spacing: 0.035em;
+}
+
+.admin-location-picker__heading > p {
+  margin: 0;
+  color: rgba(9, 10, 13, 0.62);
+  font-size: 0.88rem;
+}
+
+.admin-address-search {
+  display: grid;
+  grid-column: 1 / -1;
+  position: relative;
+  z-index: 5;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.admin-address-search > .admin-field {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.admin-address-search__button {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 2.9rem;
+  padding: 0.7rem 1rem;
+}
+
+.admin-location-suggestions {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.2rem);
+  right: 0;
+  left: 0;
+  display: grid;
+  max-height: 15rem;
+  overflow-y: auto;
+  border: 0.0625rem solid rgba(9, 10, 13, 0.24);
+  border-radius: 0.65rem;
+  background: #fff;
+  box-shadow: 0 0.6rem 1.5rem rgba(9, 10, 13, 0.16);
+}
+
+.admin-location-suggestions[hidden] { display: none; }
+
+.admin-location-suggestion {
+  justify-content: flex-start;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 0;
+  border-bottom: 0.0625rem solid rgba(9, 10, 13, 0.1);
+  background: #fff;
+  color: var(--color-ink);
+  font: 500 0.85rem/1.35 var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-location-suggestion:hover,
+.admin-location-suggestion:focus-visible {
+  background: rgba(56, 85, 255, 0.08);
+  outline: none;
+}
+
+.admin-location-map {
+  position: relative;
+  min-height: 22rem;
+  overflow: hidden;
+  border: 0.0625rem solid rgba(9, 10, 13, 0.35);
+  border-radius: 0.75rem;
+  background: #d9e0d2;
+  cursor: crosshair;
+  isolation: isolate;
+}
+
+.admin-location-map:focus-visible {
+  outline: 0.2rem solid var(--color-primary);
+  outline-offset: 0.15rem;
+}
+
+.admin-location-map__tiles,
+.admin-location-map__tiles img {
+  position: absolute;
+}
+
+.admin-location-map__tiles { inset: 0; z-index: 0; }
+.admin-location-map__tiles img { width: 256px; height: 256px; max-width: none; user-select: none; }
+
+.admin-location-map__marker {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -100%);
+  color: var(--color-primary);
+  font-size: 2.35rem;
+  line-height: 1;
+  filter: drop-shadow(0 0.15rem 0.12rem rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+.admin-location-map__zoom {
+  position: absolute;
+  z-index: 3;
+  top: 0.7rem;
+  right: 0.7rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.admin-location-map__zoom .admin-secondary-action {
+  width: 2.4rem;
+  min-height: 2.4rem;
+  padding: 0;
+  border-radius: 0.45rem;
+  background: #fff;
+  font-size: 1.2rem;
+  box-shadow: 0 0.12rem 0.35rem rgba(0, 0, 0, 0.2);
+}
+
+.admin-location-picker__status {
+  min-height: 1.35rem;
+  margin: 0;
+  color: rgba(9, 10, 13, 0.66);
+  font-size: 0.82rem;
+}
+
+.admin-location-picker__attribution {
+  justify-self: end;
+  color: rgba(9, 10, 13, 0.62);
+  font: 600 0.65rem/1.2 var(--font-mono);
+  text-decoration: underline;
+  text-underline-offset: 0.15rem;
+}
+
 .admin-field > span,
 .admin-fieldset legend {
   font-family: var(--font-mono);
@@ -1291,4 +1446,7 @@
   .admin-fieldset__options {
     grid-template-columns: 1fr;
   }
+
+  .admin-address-search__button { padding-inline: 0.75rem; }
+  .admin-location-map { min-height: 18rem; }
 }
